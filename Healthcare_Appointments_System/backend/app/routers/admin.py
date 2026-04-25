@@ -6,7 +6,8 @@ from app.dependencies import CurrentAdmin, DBSession
 from app.models.user import User, UserRole
 from app.models.doctor import Doctor
 from app.models.appointment import Appointment, AppointmentStatus
-from app.schemas.user import UserResponse
+from app.schemas.user import UserResponse, UserActiveUpdate
+from app.models.waitlist import WaitlistEntry  # noqa: F401 — ensures mapper sees WaitlistEntry
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
@@ -47,7 +48,7 @@ async def list_users(
 )
 async def toggle_user_active(
     user_id: int,
-    is_active: bool,
+    payload: UserActiveUpdate,
     _: CurrentAdmin,
     db: DBSession,
 ) -> User:
@@ -55,7 +56,7 @@ async def toggle_user_active(
     user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    user.is_active = is_active
+    user.is_active = payload.is_active
     await db.flush()
     await db.refresh(user)
     return user
@@ -76,7 +77,7 @@ async def get_stats(_: CurrentAdmin, db: DBSession) -> dict:
     ).scalar_one()
     total_appointments = (await db.execute(select(func.count(Appointment.id)))).scalar_one()
 
-    # Per-status counts
+    # Per-status counts (lowercase keys to match frontend expectations)
     status_counts: dict[str, int] = {}
     for appt_status in AppointmentStatus:
         count = (
@@ -84,7 +85,20 @@ async def get_stats(_: CurrentAdmin, db: DBSession) -> dict:
                 select(func.count(Appointment.id)).where(Appointment.status == appt_status)
             )
         ).scalar_one()
-        status_counts[appt_status.value] = count
+        status_counts[appt_status.value.lower()] = count
+
+    # Total revenue from completed appointments (sum of doctor consultation fees)
+    revenue_result = await db.execute(
+        select(func.coalesce(func.sum(Doctor.consultation_fee), 0))
+        .join(Appointment, Appointment.doctor_id == Doctor.id)
+        .where(Appointment.status == AppointmentStatus.COMPLETED)
+    )
+    total_revenue = float(revenue_result.scalar_one())
+
+    # Waitlist depth per platform
+    total_waitlist = (
+        await db.execute(select(func.count(WaitlistEntry.id)))
+    ).scalar_one()
 
     return {
         "users": {
@@ -94,6 +108,12 @@ async def get_stats(_: CurrentAdmin, db: DBSession) -> dict:
         },
         "appointments": {
             "total": total_appointments,
-            **status_counts,
+            **{k.lower(): v for k, v in status_counts.items()},
+        },
+        "revenue": {
+            "total_completed": total_revenue,
+        },
+        "waitlist": {
+            "total": total_waitlist,
         },
     }

@@ -26,6 +26,13 @@ class UserCreate(UserBase):
             raise ValueError("Password must contain at least one digit")
         return v
 
+    @field_validator("role")
+    @classmethod
+    def role_is_registrable(cls, v: UserRole) -> UserRole:
+        if v in (UserRole.ADMIN, UserRole.RECEPTIONIST):
+            raise ValueError("Cannot self-register as ADMIN or RECEPTIONIST")
+        return v
+
 
 class UserUpdate(BaseModel):
     full_name: str | None = Field(default=None, min_length=2, max_length=255)
@@ -56,3 +63,7 @@ class UserPublic(BaseModel):
     id: int
     full_name: str
     avatar_url: str | None = None
+
+
+class UserActiveUpdate(BaseModel):
+    is_active: bool

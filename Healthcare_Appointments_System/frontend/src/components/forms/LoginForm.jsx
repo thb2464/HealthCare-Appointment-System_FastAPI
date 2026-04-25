@@ -20,13 +20,13 @@ export default function LoginForm() {
     setLoading(true);
     try {
       const { data: tokens } = await login(form.email, form.password);
-      // fetch user data
+      loginUser(tokens, null);
       const { getMe } = await import("../../api/authApi");
       const { data: user } = await getMe();
       loginUser(tokens, user);
       toast("Welcome back, " + user.full_name + "!", "success");
       const destinations = { patient: "/dashboard", doctor: "/doctor/dashboard", admin: "/admin" };
-      navigate(destinations[user.role] || "/");
+      navigate(destinations[user.role?.toLowerCase()] || "/");
     } catch (err) {
       toast(err.response?.data?.detail || "Login failed", "error");
     } finally {

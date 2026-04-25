@@ -1,55 +1,58 @@
-# Healthcare Appointment Web Application — Implementation Plan
+# Healthcare Appointment Scheduling Web Application — Implementation Plan
 
-## Business Concept
+## 1. Business Concept
 
-A web-based platform that connects **patients** with **healthcare providers** (doctors, specialists, clinics). The system streamlines the appointment lifecycle — from discovery and booking through reminders and follow-ups — reducing no-shows, eliminating phone-tag, and giving both parties a single source of truth for scheduling.
+A modern healthcare scheduling platform is no longer just a booking tool — it is a core operational strategy that optimizes patient flow and integrates deeply with clinical workflows. The system shifts the paradigm from manual phone-based scheduling to an automated, self-service model, significantly reducing administrative costs and patient wait times.
 
-**Core value propositions:**
-- Patients can self-serve: search, book, reschedule, and cancel without calling a clinic.
-- Providers manage availability in one place and get an up-to-date daily schedule.
-- Admins oversee the platform, manage users, and resolve disputes.
+### Core Value Propositions
+
+- **Patient Empowerment:** 24/7 self-service booking, automated multi-tier reminders, and fast check-ins to minimize waiting times.
+- **Provider Efficiency:** Real-time availability management and a clear daily schedule view to minimize idle time and absorb clinical variability.
+- **Smart Automation:** Automated waitlist to instantly fill slots when last-minute cancellations occur, protecting clinic revenue.
+- **Data Integrity:** Slot locking during booking confirmation prevents double-booking under concurrent load.
 
 ---
 
-## User Roles
+## 2. User Roles
 
 | Role | Description |
-|---|---|
-| **Patient** | Books, reschedules, and cancels appointments; views history |
-| **Doctor / Provider** | Manages availability, views daily schedule, updates appointment status |
-| **Admin** | Manages all users, providers, specialties, and platform settings |
+| :--- | :--- |
+| **Patient** | Searches for providers, books/reschedules/cancels slots, receives Email reminders, and leaves post-visit reviews. |
+| **Doctor / Provider** | Manages weekly availability, accesses daily schedule, confirms/completes appointments, and adds clinical notes. |
+| **Receptionist / Staff** | *(Planned)* Manages walk-ins, handles schedule overrides, and updates appointment statuses on behalf of patients. |
+| **Admin** | Manages all users and providers, oversees platform-wide analytics, manages medical specialties, and deactivates accounts. |
 
 ---
 
-## User Stories
+## 3. User Stories
 
 ### Patient
-1. As a patient, I can register and log in securely.
-2. As a patient, I can search for doctors by specialty, location, or name.
-3. As a patient, I can view a doctor's profile (bio, specialty, available slots).
-4. As a patient, I can book an available appointment slot.
-5. As a patient, I can view all my upcoming and past appointments.
-6. As a patient, I can reschedule or cancel an upcoming appointment.
-7. As a patient, I can receive confirmation and reminder notifications (email / in-app).
-8. As a patient, I can leave a rating/review after a completed appointment.
+1. As a patient, I can register and log in securely with a validated email and strong password.
+2. As a patient, I can search for doctors by specialty, location, or name to find the right provider.
+3. As a patient, I can view a doctor's full profile — bio, specialty, consultation fee, ratings, and available slots.
+4. As a patient, I can book an available appointment slot with a reason for visit.
+5. As a patient, I can view all my upcoming and past appointments in a personal dashboard.
+6. As a patient, I can reschedule or cancel an upcoming appointment before it is confirmed.
+7. As a patient, I can receive automated email confirmations and reminders before my visit.
+8. As a patient, I can leave a rating and review after a completed appointment.
 
 ### Doctor / Provider
-1. As a doctor, I can register, log in, and complete my provider profile.
-2. As a doctor, I can set my working hours and recurring availability.
-3. As a doctor, I can view my daily/weekly appointment schedule.
-4. As a doctor, I can accept, reschedule, or cancel a patient appointment.
-5. As a doctor, I can mark an appointment as completed and add notes.
-6. As a doctor, I can view patient appointment history for context.
+1. As a doctor, I can register, log in, and complete my provider profile (bio, specialty, fee, clinic address).
+2. As a doctor, I can set my weekly working hours and slot duration to control my availability.
+3. As a doctor, I can view my daily and weekly appointment schedule in a clear calendar view.
+4. As a doctor, I can confirm, reschedule, or cancel a patient appointment.
+5. As a doctor, I can mark an appointment as completed and add post-visit notes.
+6. As a doctor, I can view a patient's appointment history for clinical context.
 
 ### Admin
-1. As an admin, I can manage (CRUD) all users and providers.
-2. As an admin, I can manage medical specialties and clinic/location data.
-3. As an admin, I can view platform-wide appointment statistics and reports.
-4. As an admin, I can deactivate or suspend any account.
+1. As an admin, I can manage (view, activate, deactivate) all users and providers on the platform.
+2. As an admin, I can manage medical specialties (create, delete) used for doctor categorization.
+3. As an admin, I can view platform-wide statistics — total users, appointments by status, and trends.
+4. As an admin, I can suspend any account to enforce data privacy and compliance.
 
 ---
 
-## Core Workflow
+## 4. Core Workflow
 
 ```
 Patient registers / logs in
@@ -61,10 +64,11 @@ Search doctors (specialty / name / location)
 View doctor profile & available slots
         │
         ▼
-Select slot → Confirm booking
+Select slot → [Slot Lock applied] → Confirm booking
         │
         ▼
 System creates Appointment (status: PENDING)
+Email confirmation dispatched automatically
         │
    ┌────┴────┐
    │         │
@@ -73,6 +77,7 @@ confirms  can cancel / reschedule
    │
    ▼
 Status → CONFIRMED
+Reminder email dispatched (24h before)
    │
    ▼
 Appointment date arrives
@@ -82,6 +87,9 @@ Doctor marks COMPLETED + adds notes
    │
    ▼
 Patient can leave review
+   │
+   ▼
+[If cancelled] → Slot released → Waitlist notified automatically
 ```
 
 **Appointment Status Flow:**
@@ -94,7 +102,7 @@ CONFIRMED → RESCHEDULED → CONFIRMED
 
 ---
 
-## System Architecture
+## 5. System Architecture
 
 ### High-Level Overview (Monolith)
 
@@ -113,7 +121,7 @@ CONFIRMED → RESCHEDULED → CONFIRMED
 │             appointments · reviews · admin              │
 │  /assets → StaticFiles  (compiled React JS/CSS)         │
 │  /*      → SPA fallback  (index.html)                   │
-│  Middleware: CORS (dev only) · JWT auth                  │
+│  Middleware: CORS (dev only) · JWT auth · Role guards   │
 └────────────────────┬────────────────────────────────────┘
                      │ SQLAlchemy 2 ORM (async)
 ┌────────────────────▼────────────────────────────────────┐
@@ -123,14 +131,14 @@ CONFIRMED → RESCHEDULED → CONFIRMED
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Monolith design decisions:**
+**Design decisions:**
 - No separate `services/` layer — booking logic lives in `routers/appointments.py`, availability logic in `routers/doctors.py`.
 - React SPA is compiled (`npm run build`) into `backend/app/static/` and served by FastAPI's `StaticFiles` mount + SPA fallback route.
-- Single Docker container (multi-stage build: Node → Python) replaces the previous separate `frontend` and `backend` containers.
+- Single Docker container (multi-stage build: Node → Python) + one PostgreSQL container via docker-compose.
 
 ---
 
-## Backend Architecture — FastAPI
+## 6. Backend Architecture — FastAPI
 
 ### Project Structure
 
@@ -154,15 +162,15 @@ backend/
 │   │   ├── appointment.py
 │   │   └── review.py
 │   ├── routers/                 # Route handlers + inlined business logic
-│   │   ├── auth.py              # Auth logic inline
+│   │   ├── auth.py
 │   │   ├── users.py
-│   │   ├── doctors.py           # Availability helpers inlined (get_open_slots, is_slot_available, …)
-│   │   ├── appointments.py      # Booking helpers inlined (_book, _reschedule, _validate_status_transition, …)
+│   │   ├── doctors.py           # get_open_slots, is_slot_available helpers
+│   │   ├── appointments.py      # _book, _reschedule, _validate_status_transition helpers
 │   │   ├── reviews.py
 │   │   └── admin.py
-│   └── utils/                   # No services/ layer — business logic lives in routers
+│   └── utils/
 │       ├── security.py          # JWT encode/decode, bcrypt hashing
-│       └── email.py             # Email notification helpers
+│       └── email.py             # Email notification helpers (confirmations, reminders)
 ├── alembic/                     # DB migrations
 ├── tests/
 └── requirements.txt             # at project root
@@ -171,10 +179,11 @@ backend/
 ### Key API Endpoints
 
 | Method | Path | Access | Description |
-|---|---|---|---|
+| :--- | :--- | :--- | :--- |
 | POST | `/api/auth/register` | Public | Patient or doctor registration |
 | POST | `/api/auth/login` | Public | Login → JWT access + refresh tokens |
 | POST | `/api/auth/refresh` | Public | Refresh access token |
+| GET | `/api/auth/me` | Auth | Get current user profile |
 | GET | `/api/doctors` | Public | Search/list doctors (filter by specialty, name) |
 | GET | `/api/doctors/{id}` | Public | Doctor profile + available slots |
 | GET | `/api/doctors/{id}/availability` | Public | Available time slots for booking |
@@ -191,9 +200,7 @@ backend/
 
 ---
 
-## Database Schema
-
-### Key Tables
+## 7. Database Schema
 
 ```
 users
@@ -226,24 +233,23 @@ reviews
 
 ---
 
-## Frontend Architecture — React + Tailwind CSS
+## 8. Frontend Architecture — React + Tailwind CSS
 
 ### Project Structure
 
 ```
 frontend/
-├── public/
 ├── src/
 │   ├── main.jsx
 │   ├── App.jsx                  # Route definitions (React Router v6)
-│   ├── api/                     # API layer
-│   │   ├── axiosClient.js       # Axios base instance + JWT interceptors
+│   ├── api/
+│   │   ├── axiosClient.js       # Axios base instance + JWT interceptors + auto-refresh
 │   │   ├── authApi.js
 │   │   ├── doctorApi.js
 │   │   └── appointmentApi.js
 │   ├── context/
 │   │   └── AuthContext.jsx      # JWT storage, current user state
-│   ├── components/              # Reusable UI components
+│   ├── components/
 │   │   ├── Navbar.jsx
 │   │   ├── DoctorCard.jsx
 │   │   ├── AppointmentCard.jsx
@@ -254,7 +260,7 @@ frontend/
 │   │   │   ├── LoginForm.jsx
 │   │   │   ├── RegisterForm.jsx
 │   │   │   └── BookingForm.jsx
-│   │   └── ui/                  # Generic: Button, Badge, Modal, Toast
+│   │   └── ui/                  # Button, Badge, Modal, Toast
 │   ├── pages/
 │   │   ├── LandingPage.jsx
 │   │   ├── auth/
@@ -283,49 +289,54 @@ frontend/
 ### Key Pages & Features
 
 | Page | Key Features |
-|---|---|
+| :--- | :--- |
 | Landing | Hero section, specialty highlights, CTA to register |
-| Login / Register | Role selection (Patient / Doctor), form validation |
+| Login / Register | Role selection (Patient / Doctor), form validation, strong password rules |
 | Search Doctors | Filters (specialty, name), paginated doctor cards |
 | Doctor Profile | Bio, avg rating, reviews list, interactive slot picker |
 | Booking Confirmation | Summary card, visit reason input, confirm button |
-| Patient Dashboard | Upcoming / past appointments, cancel / reschedule |
-| Doctor Dashboard | Today's schedule list, pending confirmation queue |
+| Patient Dashboard | Upcoming / past appointments, cancel / reschedule actions |
+| Doctor Dashboard | Today's schedule, pending confirmation queue, complete + notes |
 | Availability Settings | Weekly hours grid + slot duration selector |
-| Admin Dashboard | Stats cards, sortable user management table |
+| Admin Dashboard | Stats cards, user management table, specialty management |
 
 ---
 
-## Technology Stack
+## 9. Technology Stack
 
 | Layer | Technology |
-|---|---|
+| :--- | :--- |
 | Frontend framework | React 18 (Vite) |
 | Styling | Tailwind CSS 3 |
 | HTTP client | Axios |
 | Routing | React Router v6 |
 | State management | React Context + custom hooks |
-| Backend framework | FastAPI |
+| Backend framework | FastAPI (Python) |
 | ORM | SQLAlchemy 2 (async) |
 | Database | PostgreSQL 15 |
-| Authentication | JWT (python-jose) + bcrypt |
+| Authentication | JWT (python-jose) + bcrypt (passlib) |
 | Migrations | Alembic |
 | Containerization | Docker (multi-stage) + docker-compose (2 services: app + db) |
 | Environment config | pydantic-settings (.env) |
+| Email | fastapi-mail + aiosmtplib + Jinja2 |
+| Testing (backend) | pytest + pytest-asyncio + httpx |
 
 ---
 
-## Non-Functional Requirements
+## 10. Non-Functional Requirements
 
-- **Security:** bcrypt password hashing; JWT short-lived access token + refresh token rotation; role-based guards on every protected endpoint.
-- **Data integrity:** Prevent double-booking inside `routers/appointments.py`; unique constraint on `(doctor_id, scheduled_at)`; one review per appointment.
-- **Validation:** Pydantic schemas on backend; client-side form validation on frontend.
-- **Responsiveness:** Tailwind responsive utilities; mobile-first layout.
-- **Error Handling:** Consistent `{ "detail": "..." }` JSON error responses; toast notifications on frontend.
+- **Security:** bcrypt password hashing (min 8 chars, 1 uppercase, 1 digit); JWT short-lived access token + refresh token rotation; RBAC role guards on every protected endpoint; HTTPS in production (TLS 1.2+).
+- **Data Integrity:** Slot locking during booking prevents double-booking under concurrent requests; unique constraint on `(doctor_id, scheduled_at)`; one review per completed appointment.
+- **Availability:** System must remain operational 24/7 to support self-service booking outside clinic hours.
+- **Performance:** API responses under 2 seconds under normal load; async SQLAlchemy + asyncpg for non-blocking DB access.
+- **Validation:** Pydantic v2 schemas on backend; client-side form validation on frontend with clear error messages via Toast.
+- **Responsiveness:** Tailwind responsive utilities; mobile-first layout for patients booking on phones.
+- **Error Handling:** Consistent `{ "detail": "..." }` JSON error responses; HTTP status codes 400/401/403/404/409/422; toast notifications on frontend.
+- **Compliance:** No plaintext passwords stored; `.env` secrets excluded from version control; CORS restricted to known origins.
 
 ---
 
-## Monorepo Layout
+## 11. Monorepo Layout
 
 ```
 /  (project root)
@@ -333,17 +344,56 @@ frontend/
 ├── frontend/           React + Vite application (JS/JSX)
 ├── Dockerfile          Multi-stage monolith image (Node build → Python runtime)
 ├── docker-compose.yml  2 services: app (port 8000) + postgres
+├── .env                Environment variables (git-ignored)
 ├── .env.example        Shared environment variable template
+├── requirements.txt    Python dependencies
 └── PLAN.md             ← this file
 ```
 
 ---
 
-## Verification Plan
+## 12. Verification & Testing Plan
 
-1. **Unit tests (backend):** pytest + httpx AsyncClient — cover auth flow, booking conflict detection, role guard enforcement.
+1. **Unit tests (backend):** pytest + httpx AsyncClient — cover auth flow, booking conflict detection, role guard enforcement, status transition validation.
 2. **Swagger UI:** Exercise all endpoints manually at `/docs` after spinning up docker-compose.
 3. **End-to-end patient flow:** Register → search → book → doctor confirms → patient reschedules → patient cancels → verify status transitions in DB.
 4. **End-to-end doctor flow:** Set availability → view schedule → mark appointment completed → verify review eligibility for patient.
-5. **Admin flow:** Log in as admin → list users → deactivate account → view stats dashboard.
-6. **Frontend:** Navigate all pages in both desktop and mobile viewports; verify protected routes redirect unauthenticated users.
+5. **Admin flow:** Log in as admin → list users → deactivate account → manage specialties → view stats dashboard.
+6. **Concurrency testing:** Simulate simultaneous booking requests for the same slot — verify slot locking prevents double-booking.
+7. **Email notifications:** Verify confirmation and reminder emails are dispatched at the correct appointment lifecycle events.
+8. **Frontend:** Navigate all pages in both desktop and mobile viewports; verify protected routes redirect unauthenticated users to login.
+
+# Reschedule Process:
+# Appointment Re-negotiation Process (Reschedule)
+**Compliance Standard:** HL7 FHIR Standards
+
+This automated workflow is triggered upon receiving a `Reschedule` request from either a Patient or a Provider. The system strictly executes the following four-step re-negotiation protocol:
+
+---
+
+### 1. Receive & Update Status
+* **Data Logging:** Record the `proposedNewTime` within the Appointment resource.
+* **Participant State Management:**
+    * Update the requesting participant’s status to `tentative`.
+    * Set all other involved participants' statuses to `needs-action` to prompt for concurrence.
+
+### 2. Resource Management (Slot Management)
+* **Slot Release:** Immediately revert the original time slot to `FREE` status in the scheduling system.
+* **Smart Waitlist Trigger:** Automatically dispatch notifications to patients on the **Smart Waitlist** regarding the newly available opening.
+* **Concurrency Control:** Apply a **Temporary Slot Lock** to the newly selected time period to prevent race conditions or double-booking.
+
+### 3. Business Rules Validation
+* **Policy Compliance:** Evaluate the request timestamp against administrative policies (e.g., the **48-hour rule**).
+* **Financial Processing:** * Automatically calculate applicable rescheduling fees if the request violates clinic policy.
+    * Execute deposit deductions or generate billing invoices as dictated by the business logic.
+
+### 4. Finalize & Notify
+* **Agreement Verification:** Once all participants have updated their status to `accepted`.
+* **System Finalization:**
+    * Update the overall Appointment status to `booked`.
+    * Transition the new time slot status to `BUSY`.
+* **Automated Communication:** Dispatch final confirmation via **SMS or Email** containing the updated schedule details to all relevant parties.
+
+---
+**FHIR Mapping Note:** - **Resources:** `Appointment`, `Slot`, `Schedule`, `Communication`.
+- **Status Codes:** Follows `AppointmentStatus` and `ParticipantStatus` value sets.

@@ -14,7 +14,7 @@ export default function RegisterForm() {
     email: "",
     phone: "",
     password: "",
-    role: "patient",
+    role: "PATIENT",
   });
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
@@ -28,12 +28,13 @@ export default function RegisterForm() {
     try {
       await register({ ...form, phone: form.phone || undefined });
       const { data: tokens } = await login(form.email, form.password);
+      loginUser(tokens, null);
       const { getMe } = await import("../../api/authApi");
       const { data: user } = await getMe();
       loginUser(tokens, user);
       toast("Account created! Welcome, " + user.full_name, "success");
       const destinations = { patient: "/dashboard", doctor: "/doctor/dashboard" };
-      navigate(destinations[user.role] || "/");
+      navigate(destinations[user.role?.toLowerCase()] || "/");
     } catch (err) {
       toast(err.response?.data?.detail || "Registration failed", "error");
     } finally {
@@ -113,9 +114,9 @@ export default function RegisterForm() {
             <button
               key={r}
               type="button"
-              onClick={() => setForm((f) => ({ ...f, role: r }))}
+              onClick={() => setForm((f) => ({ ...f, role: r.toUpperCase() }))}
               className={`py-3 px-4 rounded-xl border text-sm font-medium capitalize transition-all ${
-                form.role === r
+                form.role === r.toUpperCase()
                   ? "bg-teal-500/15 border-teal-500/50 text-teal-400"
                   : "glass glass-hover text-slate-400 border-white/[0.06]"
               }`}

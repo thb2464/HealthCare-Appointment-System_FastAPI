@@ -8,16 +8,6 @@ from app.schemas.user import UserResponse, UserUpdate
 router = APIRouter(prefix="/api/users", tags=["Users"])
 
 
-# ── Get current user ───────────────────────────────────────────────────────────
-@router.get(
-    "/me",
-    response_model=UserResponse,
-    summary="Get own profile",
-)
-async def get_my_profile(current_user: CurrentUser) -> User:
-    return current_user
-
-
 # ── Update current user ────────────────────────────────────────────────────────
 @router.patch(
     "/me",

@@ -8,7 +8,7 @@ export default function LoginPage() {
   if (loading) return null;
   if (user) {
     const dest = { patient: "/dashboard", doctor: "/doctor/dashboard", admin: "/admin" };
-    return <Navigate to={dest[user.role] || "/"} replace />;
+    return <Navigate to={dest[user.role?.toLowerCase()] || "/"} replace />;
   }
 
   return (

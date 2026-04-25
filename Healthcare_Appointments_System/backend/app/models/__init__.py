@@ -6,6 +6,7 @@ from app.models.doctor import Doctor
 from app.models.review import Review
 from app.models.specialty import Specialty
 from app.models.user import User, UserRole
+from app.models.waitlist import WaitlistEntry
 
 __all__ = [
     "User",
@@ -17,4 +18,5 @@ __all__ = [
     "Appointment",
     "AppointmentStatus",
     "Review",
+    "WaitlistEntry",
 ]

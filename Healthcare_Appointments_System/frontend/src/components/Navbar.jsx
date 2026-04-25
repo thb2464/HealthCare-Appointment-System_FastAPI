@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
 
 const MedIcon = () => (
   <svg className="w-7 h-7 text-teal-400" viewBox="0 0 32 32" fill="none">

@@ -40,13 +40,13 @@ export default function AdminDashboard() {
   const [specLoading, setSpecLoading] = useState(false);
 
   useEffect(() => {
-    if (user?.role === "admin") {
+    if (user?.role?.toLowerCase() === "admin") {
       adminGetStats().then(({ data }) => setStats(data)).catch(() => {});
     }
   }, [user]);
 
   useEffect(() => {
-    if (tab === "users" && user?.role === "admin") {
+    if (tab === "users" && user?.role?.toLowerCase() === "admin") {
       setUsersLoading(true);
       const params = {};
       if (roleFilter) params.role = roleFilter;
@@ -59,13 +59,13 @@ export default function AdminDashboard() {
   }, [tab, roleFilter, activeFilter, user]);
 
   useEffect(() => {
-    if (tab === "specialties" && user?.role === "admin") {
+    if (tab === "specialties" && user?.role?.toLowerCase() === "admin") {
       getSpecialties().then(({ data }) => setSpecialties(data)).catch(() => {});
     }
   }, [tab, user]);
 
   if (authLoading) return null;
-  if (!user || user.role !== "admin") return <Navigate to="/login" replace />;
+  if (!user || user.role?.toLowerCase() !== "admin") return <Navigate to="/login" replace />;
 
   const handleToggleUser = async (u) => {
     try {

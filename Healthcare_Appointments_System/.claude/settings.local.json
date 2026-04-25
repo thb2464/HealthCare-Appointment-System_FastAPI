@@ -19,7 +19,17 @@
       "mcp__serena__edit_memory",
       "Bash(pip install:*)",
       "Bash(python -m pytest tests/ -v --tb=short)",
-      "Bash(d:\\\\CCNLTHD\\\\Healthcare_Appointments_System\\\\venv\\\\Scripts\\\\activate.bat)"
+      "Bash(d:\\\\CCNLTHD\\\\Healthcare_Appointments_System\\\\venv\\\\Scripts\\\\activate.bat)",
+      "Bash(python -c \"import sys; print\\(sys.version\\)\")",
+      "Bash(pip show:*)",
+      "Bash(python -c \"from app.main import app; print\\('Import OK'\\)\")",
+      "Bash(venv\\\\Scripts\\\\python.exe -c \"from passlib.context import CryptContext; ctx = CryptContext\\(schemes=['bcrypt'], deprecated='auto'\\); print\\(ctx.hash\\('Admin123'\\)\\)\")",
+      "Bash(venv/Scripts/python.exe -c \"from passlib.context import CryptContext; ctx = CryptContext\\(schemes=['bcrypt'], deprecated='auto'\\); print\\(ctx.hash\\('Admin123'\\)\\)\")",
+      "Bash(venv/Scripts/python.exe -c ' *)",
+      "mcp__serena__replace_content",
+      "Bash(../venv/Scripts/python.exe -m alembic revision --autogenerate -m \"add_arrived_status_receptionist_role_waitlist_table\")",
+      "Bash(../venv/Scripts/python.exe -m alembic upgrade head)",
+      "Bash(../venv/Scripts/python.exe -c \"from app.main import app; print\\('OK — app loaded'\\)\")"
     ]
   },
   "enabledMcpjsonServers": [

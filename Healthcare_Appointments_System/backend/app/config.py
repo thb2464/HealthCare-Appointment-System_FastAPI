@@ -8,6 +8,11 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    @property
+    def email_configured(self) -> bool:
+        """True when SMTP credentials are present and emails will actually be sent."""
+        return bool(self.MAIL_FROM and self.MAIL_USERNAME and self.MAIL_PASSWORD)
+
     # ── Database ───────────────────────────────────────────────────────────
     DATABASE_URL: str = (
         "postgresql+asyncpg://postgres:password@localhost:5432/healthcare_db"

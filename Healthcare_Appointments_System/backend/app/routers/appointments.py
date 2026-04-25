@@ -1,10 +1,10 @@
 """
-Appointments router — booking, listing, status updates, rescheduling, cancellation.
-
-Booking logic (formerly BookingService) is co-located here in the monolith.
+Appointments router — booking, listing, status updates, rescheduling, cancellation, check-in.
+Booking logic is co-located here in the monolith.
 """
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, HTTPException, Query, status
@@ -18,12 +18,20 @@ from app.models.appointment import Appointment, AppointmentStatus
 from app.models.availability import Availability
 from app.models.doctor import Doctor
 from app.models.user import UserRole
+from app.models.waitlist import WaitlistEntry
 from app.schemas.appointment import (
     AppointmentCreate,
     AppointmentStatusUpdate,
     AppointmentReschedule,
     AppointmentResponse,
     AppointmentListResponse,
+)
+from app.utils.email import (
+    send_appointment_confirmation,
+    send_appointment_confirmed_by_doctor,
+    send_appointment_cancelled,
+    send_appointment_completed,
+    send_waitlist_slot_available,
 )
 
 router = APIRouter(prefix="/api/appointments", tags=["Appointments"])
@@ -36,7 +44,7 @@ _LOAD = [
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Booking helpers (inlined from BookingService)
+# Booking helpers
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _slot_lock_key(doctor_id: int, scheduled_at: datetime) -> int:
@@ -57,9 +65,6 @@ async def _acquire_advisory_lock(db: AsyncSession, lock_key: int) -> None:
                 detail="This slot is currently being booked. Please try again.",
             )
     except OperationalError:
-        # pg_try_advisory_xact_lock is PostgreSQL-only; silently skip on other
-        # engines (e.g. SQLite used in tests).  The DB-level unique constraint
-        # on (doctor_id, scheduled_at) still prevents double-booking.
         pass
 
 
@@ -81,7 +86,6 @@ async def _get_active_doctor(db: AsyncSession, doctor_id: int) -> Doctor:
 
 
 async def _get_slot_duration(db: AsyncSession, doctor_id: int, scheduled_at: datetime) -> int:
-    """Return slot_duration_minutes from matching availability window, default 30."""
     slot_time = scheduled_at.astimezone(timezone.utc).time().replace(second=0, microsecond=0)
     weekday = scheduled_at.astimezone(timezone.utc).weekday()
     result = await db.execute(
@@ -131,10 +135,12 @@ def _validate_status_transition(
     allowed: dict[AppointmentStatus, set[AppointmentStatus]] = {
         AppointmentStatus.PENDING: {AppointmentStatus.CONFIRMED, AppointmentStatus.CANCELLED},
         AppointmentStatus.CONFIRMED: {
+            AppointmentStatus.ARRIVED,
             AppointmentStatus.COMPLETED,
             AppointmentStatus.CANCELLED,
             AppointmentStatus.RESCHEDULED,
         },
+        AppointmentStatus.ARRIVED: {AppointmentStatus.COMPLETED, AppointmentStatus.CANCELLED},
         AppointmentStatus.RESCHEDULED: {AppointmentStatus.CONFIRMED, AppointmentStatus.CANCELLED},
         AppointmentStatus.COMPLETED: set(),
         AppointmentStatus.CANCELLED: set(),
@@ -147,7 +153,7 @@ def _validate_status_transition(
                 f"Valid transitions: {[s.value for s in allowed.get(current, set())]}"
             ),
         )
-    if new == AppointmentStatus.COMPLETED and role != UserRole.DOCTOR:
+    if new == AppointmentStatus.COMPLETED and role not in (UserRole.DOCTOR, UserRole.ADMIN):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only doctors can mark appointments as COMPLETED",
@@ -156,6 +162,13 @@ def _validate_status_transition(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only doctors or admins can confirm appointments",
+        )
+    if new == AppointmentStatus.ARRIVED and role not in (
+        UserRole.RECEPTIONIST, UserRole.ADMIN, UserRole.DOCTOR
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only receptionists, doctors, or admins can mark a patient as arrived",
         )
 
 
@@ -271,6 +284,33 @@ async def _reschedule(
     await db.flush()
 
 
+async def _notify_waitlist(db: AsyncSession, doctor_id: int) -> None:
+    """Notify the oldest waitlist patient for a doctor when a slot is freed."""
+    result = await db.execute(
+        select(WaitlistEntry)
+        .options(
+            selectinload(WaitlistEntry.patient),
+            selectinload(WaitlistEntry.doctor).selectinload(Doctor.user),
+        )
+        .where(WaitlistEntry.doctor_id == doctor_id)
+        .order_by(WaitlistEntry.created_at)
+        .limit(1)
+    )
+    entry = result.scalar_one_or_none()
+    if not entry:
+        return
+    doctor_name = entry.doctor.user.full_name if entry.doctor and entry.doctor.user else "your doctor"
+    asyncio.create_task(
+        send_waitlist_slot_available(
+            to_email=entry.patient.email,
+            patient_name=entry.patient.full_name,
+            doctor_name=doctor_name,
+        )
+    )
+    await db.delete(entry)
+    await db.flush()
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Route handlers
 # ══════════════════════════════════════════════════════════════════════════════
@@ -296,7 +336,17 @@ async def book_appointment(
     result = await db.execute(
         select(Appointment).options(*_LOAD).where(Appointment.id == appt.id)
     )
-    return result.scalar_one()
+    appt = result.scalar_one()
+    doctor_name = appt.doctor.user.full_name if appt.doctor and appt.doctor.user else "your doctor"
+    asyncio.create_task(
+        send_appointment_confirmation(
+            to_email=current_user.email,
+            patient_name=current_user.full_name,
+            scheduled_at=appt.scheduled_at.isoformat(),
+            doctor_name=doctor_name,
+        )
+    )
+    return appt
 
 
 @router.get(
@@ -323,7 +373,7 @@ async def list_appointments(
         if not doctor:
             return []
         stmt = stmt.where(Appointment.doctor_id == doctor.id)
-    # Admin sees all
+    # Admin and Receptionist see all
 
     if status_filter:
         stmt = stmt.where(Appointment.status == status_filter)
@@ -377,11 +427,47 @@ async def update_appointment(
     _assert_access(current_user, appt)
     _validate_status_transition(appt.status, payload.status, current_user.role)
 
+    prev_status = appt.status
     appt.status = payload.status
     if payload.notes is not None:
         appt.notes = payload.notes
     await db.flush()
     await db.refresh(appt)
+
+    doctor_name = appt.doctor.user.full_name if appt.doctor and appt.doctor.user else "your doctor"
+    patient_email = appt.patient.email
+    patient_name = appt.patient.full_name
+    scheduled_str = appt.scheduled_at.isoformat()
+
+    if payload.status == AppointmentStatus.CONFIRMED:
+        asyncio.create_task(
+            send_appointment_confirmed_by_doctor(
+                to_email=patient_email,
+                patient_name=patient_name,
+                scheduled_at=scheduled_str,
+                doctor_name=doctor_name,
+            )
+        )
+    elif payload.status == AppointmentStatus.CANCELLED:
+        asyncio.create_task(
+            send_appointment_cancelled(
+                to_email=patient_email,
+                patient_name=patient_name,
+                scheduled_at=scheduled_str,
+                doctor_name=doctor_name,
+            )
+        )
+        if prev_status == AppointmentStatus.CONFIRMED:
+            await _notify_waitlist(db, appt.doctor_id)
+    elif payload.status == AppointmentStatus.COMPLETED:
+        asyncio.create_task(
+            send_appointment_completed(
+                to_email=patient_email,
+                patient_name=patient_name,
+                doctor_name=doctor_name,
+            )
+        )
+
     return appt
 
 
@@ -410,7 +496,55 @@ async def reschedule_appointment(
             detail="Only PENDING or CONFIRMED appointments can be rescheduled",
         )
 
+    if current_user.role == UserRole.PATIENT:
+        if appt.status != AppointmentStatus.PENDING:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Patients can only reschedule PENDING appointments (before doctor confirmation)",
+            )
+    elif current_user.role == UserRole.DOCTOR:
+        if appt.status != AppointmentStatus.CONFIRMED:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Doctors can only reschedule CONFIRMED appointments",
+            )
+
     await _reschedule(db=db, appointment=appt, new_time=payload.scheduled_at)
+    await db.refresh(appt)
+    return appt
+
+
+@router.patch(
+    "/{appointment_id}/arrive",
+    response_model=AppointmentResponse,
+    summary="Mark patient as arrived (receptionist / doctor / admin only)",
+)
+async def mark_arrived(
+    appointment_id: int,
+    current_user: CurrentUser,
+    db: DBSession,
+) -> Appointment:
+    if current_user.role not in (UserRole.RECEPTIONIST, UserRole.ADMIN, UserRole.DOCTOR):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only receptionists, doctors, or admins can mark a patient as arrived",
+        )
+
+    result = await db.execute(
+        select(Appointment).options(*_LOAD).where(Appointment.id == appointment_id)
+    )
+    appt = result.scalar_one_or_none()
+    if not appt:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
+
+    if appt.status != AppointmentStatus.CONFIRMED:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Only CONFIRMED appointments can be marked as arrived (current: {appt.status.value})",
+        )
+
+    appt.status = AppointmentStatus.ARRIVED
+    await db.flush()
     await db.refresh(appt)
     return appt
 
@@ -433,20 +567,41 @@ async def cancel_appointment(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
     _assert_access(current_user, appt)
 
+    if current_user.role == UserRole.PATIENT and appt.status == AppointmentStatus.CONFIRMED:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Patients cannot cancel a confirmed appointment. Please contact the clinic.",
+        )
+
     if appt.status in (AppointmentStatus.COMPLETED, AppointmentStatus.CANCELLED):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Cannot cancel a {appt.status.value} appointment",
         )
+
+    was_confirmed = appt.status == AppointmentStatus.CONFIRMED
     appt.status = AppointmentStatus.CANCELLED
     await db.flush()
     await db.refresh(appt)
+
+    doctor_name = appt.doctor.user.full_name if appt.doctor and appt.doctor.user else "your doctor"
+    asyncio.create_task(
+        send_appointment_cancelled(
+            to_email=appt.patient.email,
+            patient_name=appt.patient.full_name,
+            scheduled_at=appt.scheduled_at.isoformat(),
+            doctor_name=doctor_name,
+        )
+    )
+    if was_confirmed:
+        await _notify_waitlist(db, appt.doctor_id)
+
     return appt
 
 
 # ── Access guard ───────────────────────────────────────────────────────────────
 def _assert_access(user, appt: Appointment) -> None:
-    if user.role == UserRole.ADMIN:
+    if user.role in (UserRole.ADMIN, UserRole.RECEPTIONIST):
         return
     if user.role == UserRole.PATIENT and appt.patient_id == user.id:
         return

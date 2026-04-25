@@ -25,7 +25,13 @@ _INDEX_HTML  = _STATIC_DIR / "index.html"
 # ── Lifespan ───────────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    yield  # startup / shutdown hooks go here
+    if not settings.email_configured:
+        import logging
+        logging.getLogger(__name__).warning(
+            "Email not configured (MAIL_FROM/MAIL_USERNAME/MAIL_PASSWORD unset). "
+            "Notifications will be logged only."
+        )
+    yield
 
 
 # ── App factory ────────────────────────────────────────────────────────────────

@@ -75,11 +75,15 @@ def require_roles(*roles: UserRole):
 require_patient = require_roles(UserRole.PATIENT)
 require_doctor  = require_roles(UserRole.DOCTOR)
 require_admin   = require_roles(UserRole.ADMIN)
+require_receptionist = require_roles(UserRole.RECEPTIONIST)
 require_doctor_or_admin = require_roles(UserRole.DOCTOR, UserRole.ADMIN)
+require_receptionist_or_admin = require_roles(UserRole.RECEPTIONIST, UserRole.ADMIN)
 
 # Annotated shortcuts for cleaner router signatures
-CurrentUser         = Annotated[User, Depends(get_current_active_user)]
-CurrentPatient      = Annotated[User, Depends(require_patient)]
-CurrentDoctor       = Annotated[User, Depends(require_doctor)]
-CurrentAdmin        = Annotated[User, Depends(require_admin)]
-CurrentDoctorOrAdmin = Annotated[User, Depends(require_doctor_or_admin)]
+CurrentUser              = Annotated[User, Depends(get_current_active_user)]
+CurrentPatient           = Annotated[User, Depends(require_patient)]
+CurrentDoctor            = Annotated[User, Depends(require_doctor)]
+CurrentAdmin             = Annotated[User, Depends(require_admin)]
+CurrentReceptionist      = Annotated[User, Depends(require_receptionist)]
+CurrentDoctorOrAdmin     = Annotated[User, Depends(require_doctor_or_admin)]
+CurrentReceptionistOrAdmin = Annotated[User, Depends(require_receptionist_or_admin)]

@@ -95,10 +95,10 @@ pip install -r requirements.txt
 
 # Apply database migrations
 cd backend
-alembic upgrade head
+python -m alembic upgrade head
 
 # Start FastAPI dev server
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 - API: **http://localhost:8000**

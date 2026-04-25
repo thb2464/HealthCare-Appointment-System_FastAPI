@@ -47,6 +47,7 @@ class AppointmentListResponse(BaseModel):
     end_at: datetime
     status: AppointmentStatus
     reason: str | None = None
+    notes: str | None = None
     created_at: datetime
     patient: UserPublic
     doctor: DoctorListItem
