@@ -397,3 +397,56 @@ This automated workflow is triggered upon receiving a `Reschedule` request from 
 ---
 **FHIR Mapping Note:** - **Resources:** `Appointment`, `Slot`, `Schedule`, `Communication`.
 - **Status Codes:** Follows `AppointmentStatus` and `ParticipantStatus` value sets.
+
+
+# 13. Comprehensive Healthcare Appointment Workflow (End-to-End)
+## Modern Healthcare System (Based on HL7 FHIR Standards & Operational Governance)
+
+This document outlines the professional workflow for medical scheduling, from initial discovery to post-visit care, utilizing international data interoperability standards.
+
+---
+
+### 1. Discovery & Proposed
+* **Search:** Patients search for doctors, specialties, or services. The system queries available time slots (Status: `FREE`) based on the practitioner's `Schedule`.
+* **Proposal & Temporary Hold:** * Once a slot is selected, an `Appointment` resource is created with a `proposed` status.
+    * **Slot Locking:** The system triggers a temporary lock on the selected slot to prevent **double-booking** while the patient completes form entry or payment.
+
+### 2. Payment & Confirmation (Booked)
+* **Payment/Deposit:** * To ensure commitment, patients may be required to pay a deposit (e.g., 30% of the service fee).
+    * Slots are usually held for a specific window (e.g., 2 hours) awaiting payment confirmation.
+    * Integration with `Coverage` and `Claim` resources allows for real-time insurance eligibility checks.
+* **Finalization:** Upon successful payment, the appointment status transitions to `booked`, and the slot status updates to `BUSY`.
+* **Automated Reminders:** Multi-channel notifications (SMS/Email/In-app) are sent 24 hours and 2 hours prior to the appointment to minimize **no-show** rates.
+
+### 3. Rescheduling Process
+The rescheduling flow operates as a **Re-negotiation** mechanism with strict financial rules:
+* **Negotiation Mechanism:** * The requester sends a `proposedNewTime`. 
+    * Requester status becomes `tentative`; the respondent status becomes `needs-action`. 
+    * The new time is only finalized as `booked` once all parties have `accepted`.
+* **Financial Rules (Sample):**
+    * *Over 48 hours notice:* First reschedule is free; subsequent changes may incur a processing fee.
+    * *Within 48 hours notice:* A penalty (e.g., 30% of the deposit) may be automatically applied.
+* **Slot Management:** The original slot is immediately released back to `FREE`. The **Smart Waitlist** feature then notifies queued patients of the new opening to optimize clinic revenue.
+
+### 4. Cancellation & Refund
+* **Cancellation:** If a request is `declined` or the patient cancels, the status moves to `cancelled`. If the patient fails to appear without notice, it is recorded as a `noshow`.
+* **Refund/Penalty Policy:**
+    * **Early Cancellation (>48h):** Patient incurs a small cancellation fee, and the remainder is **refunded**.
+    * **Late Cancellation/No-show (<48h):** Usually results in a 100% deposit penalty to cover operational losses.
+    * **Data Integrity:** The `cancellationReason` is always logged for financial auditing.
+
+### 5. Arrival & Clinical Encounter
+* **Check-in:** On the day of the visit, the patient scans a **QR code** at a Kiosk or Reception. The status immediately updates to `arrived`, bypassing traditional paperwork.
+* **Clinical Encounter:** * This event triggers the creation of an `Encounter` record in the HIS/EMR system.
+    * The clinician tracks vitals, orders tests, or issues prescriptions.
+    * Any additional sub-services (lab tests, imaging) require payment via the app or counter before execution.
+
+### 6. Fulfillment & Post-visit Care
+* **Completion:** Once the consultation ends, the appointment status is marked as `fulfilled`.
+* **Patient Engagement:**
+    * **Feedback:** Automated Quality of Service surveys (Rating/Review).
+    * **Patient Portal:** Patients access their **Electronic Health Records (EHR)**, including lab results, prescriptions, and vitals.
+    * **Follow-up:** The system proposes or automatically schedules follow-up appointments based on the doctor's orders.
+
+---
+*Technical Note: This workflow maps directly to HL7 FHIR resources including **Appointment, Slot, Patient, Coverage, and Encounter**.*

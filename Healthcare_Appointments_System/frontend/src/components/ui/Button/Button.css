@@ -1,0 +1,36 @@
+/* Button base — layout shared by every variant */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* gap-2 */
+}
+
+/* Size modifiers */
+.btn--sm {
+  padding: 0.375rem 0.75rem; /* py-1.5 px-3 */
+  font-size: 0.75rem;        /* text-xs */
+}
+
+.btn--lg {
+  padding: 0.75rem 1.5rem;   /* py-3 px-6 */
+  font-size: 1rem;            /* text-base */
+}
+
+/* Loader spinner */
+.btn__spinner {
+  width: 1rem;               /* w-4 */
+  height: 1rem;              /* h-4 */
+  border-width: 2px;         /* border-2 */
+  border-style: solid;
+  border-color: currentColor; /* border-current */
+  border-top-color: transparent; /* border-t-transparent */
+  border-radius: 9999px;     /* rounded-full */
+  animation: btn-spin 0.6s linear infinite; /* animate-spin */
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

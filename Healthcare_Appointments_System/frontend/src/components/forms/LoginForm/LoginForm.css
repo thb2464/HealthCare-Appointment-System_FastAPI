@@ -1,0 +1,82 @@
+/* LoginForm.css — BEM component styles */
+
+/* ── Form root ─────────────────────────────────────────────── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* space-y-5 */
+}
+
+/* ── Individual field wrapper ──────────────────────────────── */
+.login-form__field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Password field: relative wrapper for the eye toggle ───── */
+.login-form__password-wrap {
+  position: relative;
+}
+
+/*
+ * The password <input> needs right-side padding so typed text
+ * never slides under the eye button.  The global `.input` class
+ * sets px-4 (1rem); we override only the right padding here.
+ */
+.login-form__password-wrap .input {
+  padding-right: 2.75rem; /* ~pr-10 */
+}
+
+/* ── Eye toggle button ─────────────────────────────────────── */
+.login-form__eye-btn {
+  position: absolute;
+  right: 0.75rem; /* right-3 */
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b; /* slate-500 */
+  transition: color 0.2s ease;
+  line-height: 0; /* collapse extra inline height around SVG */
+}
+
+.login-form__eye-btn:hover {
+  color: #cbd5e1; /* slate-300 */
+}
+
+/* ── Eye icon SVG ──────────────────────────────────────────── */
+.login-form__eye-icon {
+  width: 1rem;  /* w-4 */
+  height: 1rem; /* h-4 */
+  display: block;
+}
+
+/* ── Footer: "No account? Create one" ─────────────────────── */
+.login-form__footer {
+  text-align: center;
+  font-size: 0.875rem; /* text-sm */
+  color: #64748b;       /* slate-500 */
+}
+
+.login-form__footer a {
+  color: #2dd4bf;       /* teal-400 */
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.login-form__footer a:hover {
+  color: #5eead4; /* teal-300 */
+}
+
+/* ── Responsive tweaks ─────────────────────────────────────── */
+@media (max-width: 480px) {
+  .login-form {
+    gap: 1rem;
+  }
+}

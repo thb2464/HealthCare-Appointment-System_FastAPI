@@ -1,0 +1,231 @@
+/* SearchPage.css — BEM styles for SearchPage */
+
+/* ─── Page wrapper ─────────────────────────────────── */
+.search-page {
+  max-width: 80rem;       /* max-w-7xl */
+  margin-inline: auto;
+  padding: 2.5rem 1rem;   /* py-10 px-4 */
+}
+
+/* ─── Header ───────────────────────────────────────── */
+.search-page__header {
+  margin-bottom: 2rem;    /* mb-8 */
+}
+
+.search-page__title {
+  font-family: var(--font-display, inherit);
+  font-weight: 700;
+  font-size: 1.875rem;    /* text-3xl */
+  color: #f1f5f9;         /* text-slate-100 */
+  margin: 0 0 0.25rem;   /* mb-1 */
+  line-height: 1.2;
+}
+
+.search-page__subtitle {
+  color: #94a3b8;         /* text-slate-400 */
+  font-size: 0.875rem;    /* text-sm */
+  margin: 0;
+}
+
+/* ─── Search bar form ──────────────────────────────── */
+.search-page__bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;           /* gap-3 */
+  margin-bottom: 2rem;    /* mb-8 */
+}
+
+/* Input wrapper — holds the icon + text input */
+.search-page__search-input-wrap {
+  position: relative;
+  flex: 1;
+}
+
+.search-page__search-icon {
+  position: absolute;
+  left: 0.875rem;         /* left-3.5 */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;            /* w-4 */
+  height: 1rem;           /* h-4 */
+  color: #64748b;         /* text-slate-500 */
+  pointer-events: none;
+}
+
+/*
+ * The text input inside the wrap inherits the global .input utility class.
+ * We only need to add the left-padding for the icon here.
+ */
+.search-page__search-input-wrap .input {
+  padding-left: 2.5rem;  /* pl-10 */
+}
+
+/* Specialty select — also inherits global .input */
+.search-page__select {
+  background-color: rgba(4, 13, 26, 0.5); /* bg-navy-900/50 */
+}
+
+/* Submit button inherits .btn-primary; no extra overrides needed */
+
+/* ─── Results section ──────────────────────────────── */
+.search-page__results {
+  /* intentionally empty — acts as a logical wrapper */
+}
+
+/* ─── Doctor grid (live + skeleton) ───────────────── */
+.search-page__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;           /* gap-5 */
+}
+
+/* ─── Individual skeleton card ─────────────────────── */
+.search-page__skeleton-card {
+  /* inherits .card via className — add spacing here */
+  padding: 1.25rem;       /* p-5 */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;           /* space-y-3 */
+}
+
+.search-page__skeleton-card .skeleton-avatar {
+  height: 3.5rem;         /* h-14 */
+  width: 3.5rem;          /* w-14 */
+  border-radius: 1rem;    /* rounded-2xl */
+}
+
+.search-page__skeleton-card .skeleton-line--lg {
+  height: 1rem;           /* h-4 */
+  width: 75%;             /* w-3/4 */
+  border-radius: 0.25rem;
+}
+
+.search-page__skeleton-card .skeleton-line--md {
+  height: 0.75rem;        /* h-3 */
+  width: 50%;             /* w-1/2 */
+  border-radius: 0.25rem;
+}
+
+.search-page__skeleton-card .skeleton-line--sm {
+  height: 0.75rem;        /* h-3 */
+  width: 66.67%;          /* w-2/3 */
+  border-radius: 0.25rem;
+}
+
+/* ─── Empty state ──────────────────────────────────── */
+.search-page__empty {
+  text-align: center;
+  padding-block: 6rem;    /* py-24 */
+}
+
+.search-page__empty-icon {
+  width: 4rem;            /* w-16 */
+  height: 4rem;           /* h-16 */
+  border-radius: 1rem;    /* rounded-2xl */
+  background-color: #1e293b; /* bg-slate-800 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline: auto;
+  margin-bottom: 1rem;    /* mb-4 */
+  font-size: 1.5rem;      /* text-2xl */
+}
+
+.search-page__empty-title {
+  color: #94a3b8;         /* text-slate-400 */
+  font-weight: 500;
+  margin: 0;
+}
+
+.search-page__empty-hint {
+  color: #64748b;         /* text-slate-500 */
+  font-size: 0.875rem;    /* text-sm */
+  margin: 0.25rem 0 0;   /* mt-1 */
+}
+
+/* ─── Pagination ───────────────────────────────────── */
+.search-page__pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;           /* gap-3 */
+  margin-top: 2.5rem;     /* mt-10 */
+}
+
+/*
+ * Previous / Next buttons inherit .btn-secondary.
+ * disabled:opacity-40 is handled by the global utility; mirrored here as
+ * a fallback for environments where the Tailwind variant may not apply.
+ */
+.search-page__pagination .btn-secondary:disabled {
+  opacity: 0.4;
+}
+
+.search-page__page-label {
+  display: flex;
+  align-items: center;
+  padding-inline: 1rem;   /* px-4 */
+  font-size: 0.875rem;    /* text-sm */
+  color: #94a3b8;         /* text-slate-400 */
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════ */
+
+/* ── Tablet / small screens (≥ 640 px) ─────────────── */
+@media (min-width: 640px) {
+  .search-page {
+    padding-inline: 1.5rem; /* sm:px-6 */
+  }
+
+  .search-page__bar {
+    flex-direction: row;    /* sm:flex-row */
+  }
+
+  .search-page__select {
+    width: 14rem;           /* sm:w-56 */
+    flex-shrink: 0;
+  }
+
+  .search-page__grid {
+    grid-template-columns: repeat(2, 1fr); /* sm:grid-cols-2 */
+  }
+}
+
+/* ── Desktop (≥ 1024 px) ────────────────────────────── */
+@media (min-width: 1024px) {
+  .search-page {
+    padding-inline: 2rem;   /* lg:px-8 */
+  }
+
+  .search-page__grid {
+    grid-template-columns: repeat(3, 1fr); /* lg:grid-cols-3 */
+  }
+}
+
+/* ── Wide desktop (≥ 1280 px) ───────────────────────── */
+@media (min-width: 1280px) {
+  .search-page__grid {
+    grid-template-columns: repeat(4, 1fr); /* xl:grid-cols-4 */
+  }
+}
+
+/* ── Mobile (≤ 640 px) — explicit overrides ─────────── */
+@media (max-width: 640px) {
+  .search-page__title {
+    font-size: 1.5rem;      /* scale down on very small screens */
+  }
+
+  .search-page__bar {
+    flex-direction: column;
+  }
+
+  .search-page__select {
+    width: 100%;
+  }
+
+  .search-page__pagination {
+    gap: 0.5rem;
+  }
+}

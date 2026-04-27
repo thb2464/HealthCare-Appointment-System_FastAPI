@@ -1,0 +1,283 @@
+/* ============================================================
+   Navbar.css — component-specific styles for <Navbar />
+   Uses CSS custom properties defined in index.css (:root)
+   ============================================================ */
+
+/* ── Root bar ─────────────────────────────────────────────── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(4, 13, 26, 0.80); /* --color-bg at 80% */
+}
+
+/* ── Inner container ──────────────────────────────────────── */
+.navbar__container {
+  max-width: 80rem; /* 7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* ── Top row (logo | desktop-links | right-side) ─────────── */
+.navbar__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem; /* h-16 */
+}
+
+/* ── Logo ─────────────────────────────────────────────────── */
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem; /* gap-2.5 */
+  text-decoration: none;
+}
+
+.navbar__logo-icon {
+  width: 1.75rem;   /* w-7 */
+  height: 1.75rem;  /* h-7 */
+  color: var(--color-accent-light);
+  flex-shrink: 0;
+}
+
+.navbar__logo-text {
+  font-family: var(--font-display, inherit);
+  font-weight: 700;
+  font-size: 1.25rem; /* text-xl */
+  color: #f1f5f9; /* slate-100 */
+  transition: color 0.2s;
+}
+
+.navbar__logo:hover .navbar__logo-text {
+  color: var(--color-accent-light);
+}
+
+/* ── Desktop navigation links ─────────────────────────────── */
+.navbar__desktop-links {
+  display: none; /* hidden on mobile — shown via media query */
+  align-items: center;
+  gap: 0.25rem; /* gap-1 */
+}
+
+/* ── Right-side area ──────────────────────────────────────── */
+.navbar__right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* gap-3 */
+}
+
+/* ── Guest actions (Sign in / Get started) ────────────────── */
+.navbar__guest-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* gap-2 */
+}
+
+/* ── User dropdown wrapper ────────────────────────────────── */
+.navbar__user-menu {
+  position: relative;
+}
+
+/* ── User trigger button ──────────────────────────────────── */
+.navbar__user-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem; /* gap-2.5 */
+  padding: 0.375rem 0.75rem; /* py-1.5 px-3 */
+  border-radius: 0.75rem; /* rounded-xl */
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* ── Avatar circle ────────────────────────────────────────── */
+.navbar__avatar {
+  width: 1.75rem;    /* w-7 */
+  height: 1.75rem;   /* h-7 */
+  border-radius: 9999px;
+  background: linear-gradient(to bottom right, #2dd4bf, #0d9488); /* teal-400 → teal-600 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #040d1a; /* navy-950 / --color-bg */
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── User display name (hidden on xs, visible sm+) ───────── */
+.navbar__username {
+  display: none; /* hidden < sm */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+  color: #e2e8f0; /* slate-200 / --color-text */
+  max-width: 8.75rem; /* max-w-[140px] */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Chevron icon ─────────────────────────────────────────── */
+.navbar__chevron {
+  width: 0.875rem;  /* w-3.5 */
+  height: 0.875rem; /* h-3.5 */
+  color: var(--color-muted);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.navbar__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* ── Dropdown panel ───────────────────────────────────────── */
+.navbar__dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 0.5rem; /* mt-2 */
+  width: 13rem; /* w-52 */
+  overflow: hidden;
+  animation: navbar-slide-down 0.15s ease-out both;
+}
+
+@keyframes navbar-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Dropdown header (role + email) ──────────────────────── */
+.navbar__dropdown-header {
+  padding: 0.75rem 1rem; /* py-3 px-4 */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.navbar__dropdown-role {
+  font-size: 0.75rem; /* text-xs */
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em; /* tracking-wider */
+}
+
+.navbar__dropdown-email {
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+  color: #e2e8f0; /* slate-200 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 0.125rem; /* mt-0.5 */
+}
+
+/* ── Mobile nav links block (inside dropdown) ─────────────── */
+.navbar__mobile-links {
+  display: block; /* shown on mobile */
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+/* ── Shared dropdown item styles ─────────────────────────── */
+.navbar__dropdown-link,
+.navbar__dropdown-btn {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 1rem; /* py-2.5 px-4 */
+  font-size: 0.875rem; /* text-sm */
+  text-decoration: none;
+  transition: color 0.15s, background-color 0.15s;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.navbar__dropdown-link {
+  color: #cbd5e1; /* slate-300 */
+}
+
+.navbar__dropdown-link:hover {
+  color: var(--color-accent-light);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* ── Sign-out button ──────────────────────────────────────── */
+.navbar__dropdown-btn {
+  color: #f87171; /* red-400 */
+}
+
+.navbar__dropdown-btn:hover {
+  background-color: rgba(239, 68, 68, 0.10); /* red-500/10 */
+}
+
+/* ── Dropdown actions section ─────────────────────────────── */
+.navbar__dropdown-actions {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+/* ============================================================
+   RESPONSIVE — small screens (< 768 px)
+   ============================================================ */
+@media (max-width: 768px) {
+  .navbar__container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Desktop links stay hidden on mobile */
+  .navbar__desktop-links {
+    display: none;
+  }
+
+  /* Mobile nav links section in dropdown is visible */
+  .navbar__mobile-links {
+    display: block;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — medium+ screens (≥ 769 px)
+   ============================================================ */
+@media (min-width: 769px) {
+  .navbar__container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  /* Show desktop nav links */
+  .navbar__desktop-links {
+    display: flex;
+  }
+
+  /* Hide mobile links section in dropdown */
+  .navbar__mobile-links {
+    display: none;
+  }
+
+  /* Show user display name next to avatar */
+  .navbar__username {
+    display: block;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — large screens (≥ 1024 px)
+   ============================================================ */
+@media (min-width: 1024px) {
+  .navbar__container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}

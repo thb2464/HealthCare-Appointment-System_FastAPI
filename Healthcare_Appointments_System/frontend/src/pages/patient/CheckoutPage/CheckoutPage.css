@@ -1,0 +1,175 @@
+/* CheckoutPage.css */
+
+.checkout-page {
+  max-width: 36rem;
+  margin-inline: auto;
+  padding: 2.5rem 1rem;
+}
+
+/* ── Back button ──────────────────────────────────────── */
+.checkout-page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.checkout-page__back-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+/* ── Header ───────────────────────────────────────────── */
+.checkout-page__header {
+  margin-bottom: 1.5rem;
+}
+
+.checkout-page__title {
+  font-weight: 700;
+  font-size: 1.75rem;
+  color: #f1f5f9;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.checkout-page__subtitle {
+  color: #94a3b8;
+  font-size: 0.875rem;
+  margin: 0.25rem 0 0;
+}
+
+/* ── Card ─────────────────────────────────────────────── */
+.checkout-page__card {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Doctor row ───────────────────────────────────────── */
+.checkout-page__doctor {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.checkout-page__doctor-avatar {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(
+    to bottom right,
+    rgba(20, 184, 166, 0.2),
+    #0f2044
+  );
+  border: 1px solid rgba(20, 184, 166, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(94, 234, 212, 0.87);
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.checkout-page__doctor-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0;
+}
+
+.checkout-page__doctor-specialty {
+  font-size: 0.875rem;
+  color: rgba(45, 212, 191, 0.8);
+  margin: 0.125rem 0 0;
+}
+
+/* ── Divider ──────────────────────────────────────────── */
+.checkout-page__divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin: 0;
+}
+
+/* ── Details grid ─────────────────────────────────────── */
+.checkout-page__details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.checkout-page__detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.checkout-page__detail-row--col {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.checkout-page__detail-label {
+  font-size: 0.8125rem;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.checkout-page__detail-value {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  text-align: right;
+}
+
+.checkout-page__detail-value--accent {
+  color: #2dd4bf;
+}
+
+.checkout-page__detail-reason {
+  text-align: left;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* ── Notice ───────────────────────────────────────────── */
+.checkout-page__notice {
+  font-size: 0.8125rem;
+  color: #64748b;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.75rem;
+  padding: 0.875rem 1rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.checkout-page__notice strong {
+  color: #94a3b8;
+}
+
+/* ── Actions ──────────────────────────────────────────── */
+.checkout-page__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.checkout-page__actions > * {
+  flex: 1;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (min-width: 640px) {
+  .checkout-page { padding-inline: 1.5rem; }
+  .checkout-page__card { padding: 2rem; }
+}
+
+@media (max-width: 480px) {
+  .checkout-page__title { font-size: 1.5rem; }
+  .checkout-page__actions { flex-direction: column; }
+}

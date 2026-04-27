@@ -1,0 +1,350 @@
+/* AvailabilitySettings.css */
+
+/* ── Page container ──────────────────────────────────────────────── */
+.avail-page {
+  max-width: 56rem;
+  margin-inline: auto;
+  padding: 2.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ── Header row ──────────────────────────────────────────────────── */
+.avail-page__header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.avail-page__titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.avail-page__title {
+  font-weight: 700;
+  font-size: 1.875rem;
+  color: #f1f5f9; /* slate-100 */
+  line-height: 1.2;
+}
+
+.avail-page__subtitle {
+  font-size: 0.875rem;
+  color: #94a3b8; /* slate-400 */
+  margin-top: 0.25rem;
+}
+
+.avail-page__top-save {
+  flex-shrink: 0;
+}
+
+/* ── Days list ───────────────────────────────────────────────────── */
+.avail-page__days {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Individual day card ─────────────────────────────────────────── */
+.avail-page__day {
+  transition: all 150ms ease;
+  opacity: 0.7;
+}
+
+.avail-page__day--active {
+  opacity: 1;
+  border-color: rgba(20, 184, 166, 0.2) !important; /* teal-500/20 */
+}
+
+/* ── Day header bar ──────────────────────────────────────────────── */
+.avail-page__day-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.avail-page__day-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ── Day badge (day abbreviation circle) ─────────────────────────── */
+.avail-page__day-badge {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  background: #0f172a; /* navy-800 */
+  color: #475569; /* slate-600 */
+  flex-shrink: 0;
+}
+
+.avail-page__day-badge--active {
+  background: rgba(20, 184, 166, 0.15); /* teal-500/15 */
+  color: #2dd4bf; /* teal-400 */
+  border: 1px solid rgba(20, 184, 166, 0.2);
+}
+
+/* ── Day name text ───────────────────────────────────────────────── */
+.avail-page__day-name {
+  font-weight: 500;
+  color: #64748b; /* slate-500 — inactive default */
+}
+
+.avail-page__day-name--active {
+  color: #e2e8f0; /* slate-200 */
+}
+
+/* ── Window count pill ───────────────────────────────────────────── */
+.avail-page__day-count {
+  font-size: 0.75rem;
+  color: #2dd4bf; /* teal-400 */
+  background: rgba(20, 184, 166, 0.1); /* teal-500/10 */
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+}
+
+/* ── Add-window button ───────────────────────────────────────────── */
+.avail-page__add-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: #2dd4bf; /* teal-400 */
+}
+
+.avail-page__add-btn:hover {
+  background: rgba(20, 184, 166, 0.1) !important;
+}
+
+.avail-page__add-btn-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* ── Windows container ───────────────────────────────────────────── */
+.avail-page__windows {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Single window row ───────────────────────────────────────────── */
+.avail-page__window {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+}
+
+/* ── Field (label + input pair) ──────────────────────────────────── */
+.avail-page__field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avail-page__field-label {
+  font-size: 0.75rem;
+  color: #64748b; /* slate-500 */
+  white-space: nowrap;
+}
+
+.avail-page__field-label--from {
+  width: 2rem;
+}
+
+.avail-page__field-label--to {
+  width: 1.5rem;
+}
+
+/* ── Time input ──────────────────────────────────────────────────── */
+.avail-page__time-input {
+  width: 8rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  font-size: 0.875rem;
+}
+
+/* ── Duration select ─────────────────────────────────────────────── */
+.avail-page__duration-select {
+  width: 7rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  font-size: 0.875rem;
+  background: rgba(15, 23, 42, 0.5); /* navy-900/50 */
+}
+
+/* ── Controls (toggle + delete) ──────────────────────────────────── */
+.avail-page__window-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+/* ── Toggle switch ───────────────────────────────────────────────── */
+.avail-page__toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.avail-page__toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.avail-page__toggle-track {
+  width: 2.25rem;
+  height: 1.25rem;
+  background: #334155; /* slate-700 */
+  border-radius: 9999px;
+  transition: background 200ms;
+  position: relative;
+}
+
+.avail-page__toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1rem;
+  height: 1rem;
+  background: white;
+  border-radius: 50%;
+  transition: transform 200ms;
+}
+
+.avail-page__toggle-input:checked + .avail-page__toggle-track {
+  background: #14b8a6; /* teal-500 */
+}
+
+.avail-page__toggle-input:checked + .avail-page__toggle-track::after {
+  transform: translateX(1rem);
+}
+
+/* ── Delete button ───────────────────────────────────────────────── */
+.avail-page__delete-btn {
+  color: #475569; /* slate-600 */
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  transition: color 150ms;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avail-page__delete-btn:hover {
+  color: #f87171; /* red-400 */
+}
+
+.avail-page__delete-btn-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ── Empty day message ───────────────────────────────────────────── */
+.avail-page__empty-day {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.75rem;
+  color: #475569; /* slate-600 */
+}
+
+/* ── Sticky save footer ──────────────────────────────────────────── */
+.avail-page__sticky-footer {
+  position: sticky;
+  bottom: 1.25rem;
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── Skeleton loading state ──────────────────────────────────────── */
+.avail-page__skeleton-wrap {
+  max-width: 56rem;
+  margin-inline: auto;
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.avail-page__skeleton-item {
+  height: 5rem;
+  border-radius: 1rem;
+}
+
+/* ── Responsive — mobile ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .avail-page {
+    padding: 1.25rem 0.75rem;
+    gap: 1.25rem;
+  }
+
+  .avail-page__header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .avail-page__top-save {
+    align-self: flex-end;
+  }
+
+  .avail-page__title {
+    font-size: 1.5rem;
+  }
+
+  .avail-page__day-header {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Stack window row vertically on small screens */
+  .avail-page__window {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.625rem;
+  }
+
+  /* Hide the short text labels — the input type is self-explanatory */
+  .avail-page__field-label {
+    display: none;
+  }
+
+  /* Full-width inputs and selects */
+  .avail-page__time-input,
+  .avail-page__duration-select {
+    width: 100%;
+  }
+
+  .avail-page__field {
+    width: 100%;
+  }
+
+  /* Push controls to the right */
+  .avail-page__window-controls {
+    margin-left: auto;
+  }
+}

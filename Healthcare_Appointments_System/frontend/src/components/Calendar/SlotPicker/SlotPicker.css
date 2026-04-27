@@ -1,0 +1,189 @@
+/* SlotPicker.css — BEM component styles */
+
+/* ── Root ────────────────────────────────────────────── */
+.slot-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 */
+}
+
+/* ── Week navigation row ─────────────────────────────── */
+.slot-picker__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.slot-picker__nav-btn {
+  /* btn-ghost is kept as a global class; these add the geometry */
+  padding: 0.5rem;      /* p-2 */
+  border-radius: 0.5rem; /* rounded-lg */
+}
+
+.slot-picker__nav-btn svg {
+  width: 1rem;  /* w-4 */
+  height: 1rem; /* h-4 */
+  display: block;
+}
+
+.slot-picker__week-label {
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;    /* font-medium */
+  color: #cbd5e1;      /* text-slate-300 */
+}
+
+/* ── Month calendar header (day-of-week labels) ───────── */
+.slot-picker__cal-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.slot-picker__cal-dow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #64748b;
+  padding-block: 0.25rem;
+}
+
+/* ── Calendar grid ───────────────────────────────────── */
+.slot-picker__cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+}
+
+/* Day button — base */
+.slot-picker__cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.slot-picker__cal-day:not(:disabled):hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+}
+
+/* past / disabled */
+.slot-picker__cal-day--past {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* selected date */
+.slot-picker__cal-day--active {
+  background-color: #14b8a6;
+  color: #020617;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(20, 184, 166, 0.35);
+}
+
+/* today (not active) */
+.slot-picker__cal-day--today {
+  border: 1px solid rgba(20, 184, 166, 0.5);
+  color: #2dd4bf;
+}
+
+/* ── Slots section label ─────────────────────────────── */
+.slot-picker__slots-label {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* ── Slot area ───────────────────────────────────────── */
+
+/* Loading skeleton grid */
+.slot-picker__loading {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* grid-cols-3 (mobile) */
+  gap: 0.5rem;                           /* gap-2 */
+}
+
+.slot-picker__loading .skeleton {
+  height: 2.5rem;        /* h-10 */
+  border-radius: 0.75rem; /* rounded-xl */
+}
+
+/* Scrollable slot grid */
+.slot-picker__slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* grid-cols-3 (mobile) */
+  gap: 0.5rem;                           /* gap-2 */
+  max-height: 16rem;                     /* max-h-64 */
+  overflow-y: auto;
+  padding-right: 0.25rem;               /* pr-1 */
+}
+
+/* Individual slot button — base */
+.slot-picker__slot {
+  padding: 0.625rem 0.5rem; /* py-2.5 px-2 */
+  border-radius: 0.75rem;   /* rounded-xl */
+  font-size: 0.875rem;      /* text-sm */
+  font-weight: 500;         /* font-medium */
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.slot-picker__slot:hover {
+  color: #2dd4bf; /* hover:text-teal-400 */
+}
+
+/* Slot — selected modifier */
+.slot-picker__slot--selected {
+  background-color: #14b8a6;                    /* bg-teal-500 */
+  color: #020617;                               /* text-navy-950 */
+  box-shadow: 0 0 12px rgba(20, 184, 166, 0.4); /* shadow-glow-sm */
+}
+
+/* ── Empty state ─────────────────────────────────────── */
+.slot-picker__empty {
+  text-align: center;  /* text-center */
+  padding: 2rem 0;     /* py-8 */
+  color: #64748b;      /* text-slate-500 */
+  font-size: 0.875rem; /* text-sm */
+}
+
+/* ── Summary bar ─────────────────────────────────────── */
+.slot-picker__summary {
+  font-size: 0.875rem;                        /* text-sm */
+  text-align: center;                         /* text-center */
+  color: #2dd4bf;                             /* text-teal-400 */
+  background-color: rgba(20, 184, 166, 0.1); /* bg-teal-500/10 */
+  border: 1px solid rgba(20, 184, 166, 0.2); /* border border-teal-500/20 */
+  border-radius: 0.75rem;                     /* rounded-xl */
+  padding: 0.625rem 1rem;                     /* py-2.5 px-4 */
+}
+
+/* ── Responsive overrides ────────────────────────────── */
+@media (min-width: 640px) {
+  /* sm: expand to 4-column slot grids */
+  .slot-picker__loading,
+  .slot-picker__slots {
+    grid-template-columns: repeat(4, 1fr); /* sm:grid-cols-4 */
+  }
+}
+
+@media (max-width: 480px) {
+  .slot-picker__cal-day {
+    font-size: 0.75rem;
+  }
+
+  .slot-picker__slots {
+    max-height: 10rem;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

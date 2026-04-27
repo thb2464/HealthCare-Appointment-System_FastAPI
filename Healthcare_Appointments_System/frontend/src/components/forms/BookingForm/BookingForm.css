@@ -1,0 +1,169 @@
+/* BookingForm.css — BEM component styles */
+
+/* ─── Form shell ─────────────────────────────────────────────── */
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* space-y-6 */
+}
+
+/* ─── Doctor card ────────────────────────────────────────────── */
+.booking-form__doctor {
+  display: flex;
+  align-items: center;
+  gap: 1rem;                                    /* gap-4           */
+  padding: 1rem;                                /* p-4             */
+  border-radius: 0.75rem;                       /* rounded-xl      */
+  border: 1px solid rgba(255, 255, 255, 0.06);  /* border-white/[0.06] */
+  /* glass global class also applied */
+}
+
+.booking-form__doctor-avatar {
+  flex-shrink: 0;
+  width: 3rem;                                  /* w-12            */
+  height: 3rem;                                 /* h-12            */
+  border-radius: 0.75rem;                       /* rounded-xl      */
+  background: linear-gradient(
+    to bottom right,
+    rgba(20, 184, 166, 0.2),                   /* from-teal-500/20 */
+    #0f2044                                    /* to-navy-700      */
+  );
+  border: 1px solid rgba(20, 184, 166, 0.2);   /* border-teal-500/20 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(94, 234, 212, 0.87);             /* text-teal-400   */
+  font-weight: 700;                             /* font-bold       */
+  font-family: var(--font-display, inherit);    /* font-display    */
+}
+
+.booking-form__doctor-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.booking-form__doctor-name {
+  font-weight: 600;                             /* font-semibold   */
+  color: #f1f5f9;                               /* text-slate-100  */
+  margin: 0;
+}
+
+.booking-form__doctor-specialty {
+  font-size: 0.875rem;                          /* text-sm         */
+  color: rgba(45, 212, 191, 0.8);              /* text-teal-400/80 */
+  margin: 0;
+}
+
+.booking-form__doctor-fee {
+  font-size: 0.75rem;                           /* text-xs         */
+  color: #64748b;                               /* text-slate-400  */
+  margin: 0.125rem 0 0;                         /* mt-0.5          */
+}
+
+.booking-form__doctor-fee-value {
+  color: #cbd5e1;                               /* text-slate-300  */
+  font-weight: 500;                             /* font-medium     */
+}
+
+/* ─── Slot picker section ────────────────────────────────────── */
+.booking-form__slot-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.booking-form__slot-label {
+  /* global .label sets margin-bottom: 0.375rem (mb-1.5);
+     override to match the original mb-3 spacing */
+  margin-bottom: 0.75rem;
+}
+
+.booking-form__slot-card {
+  padding: 1rem;                                /* p-4             */
+  /* card global class also applied */
+}
+
+/* ─── Reason section ─────────────────────────────────────────── */
+.booking-form__reason-section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* .booking-form__reason-label inherits everything from global .label */
+
+.booking-form__reason-optional {
+  color: #475569;                               /* text-slate-600  */
+}
+
+.booking-form__reason-char-count {
+  font-size: 0.75rem;                           /* text-xs         */
+  color: #475569;                               /* text-slate-600  */
+  text-align: right;                            /* text-right      */
+  margin-top: 0.25rem;                          /* mt-1            */
+}
+
+/* ─── Booking summary ────────────────────────────────────────── */
+.booking-form__summary {
+  padding: 1rem;                                /* p-4             */
+  background-color: rgba(20, 184, 166, 0.05);  /* bg-teal-500/5   */
+  border: 1px solid rgba(20, 184, 166, 0.2);   /* border-teal-500/20 */
+  border-radius: 0.75rem;                       /* rounded-xl      */
+  font-size: 0.875rem;                          /* text-sm         */
+}
+
+.booking-form__summary-label {
+  color: #94a3b8;                               /* text-slate-400  */
+  margin: 0 0 0.25rem;                          /* mb-1            */
+  font-size: 0.75rem;                           /* text-xs         */
+  text-transform: uppercase;                    /* uppercase       */
+  letter-spacing: 0.05em;                       /* tracking-wider  */
+  font-weight: 500;                             /* font-medium     */
+}
+
+.booking-form__summary-text {
+  color: #e2e8f0;                               /* text-slate-200  */
+  margin: 0;
+}
+
+.booking-form__summary-text--accent {
+  color: #2dd4bf;                               /* text-teal-400   */
+  font-weight: 500;                             /* font-medium     */
+}
+
+.booking-form__summary-text--bold {
+  font-weight: 500;                             /* font-medium     */
+}
+
+/* ─── Submit button ──────────────────────────────────────────── */
+.booking-form__submit {
+  width: 100%;                                  /* w-full          */
+}
+
+/* ─── Responsive breakpoints ─────────────────────────────────── */
+
+/* Tablet (≥ 640 px) */
+@media (min-width: 640px) {
+  .booking-form__doctor-avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
+
+/* Desktop (≥ 1024 px) */
+@media (min-width: 1024px) {
+  .booking-form {
+    gap: 2rem;
+  }
+
+  .booking-form__doctor {
+    padding: 1.25rem;
+  }
+
+  .booking-form__slot-card {
+    padding: 1.25rem;
+  }
+
+  .booking-form__summary {
+    padding: 1.25rem;
+  }
+}

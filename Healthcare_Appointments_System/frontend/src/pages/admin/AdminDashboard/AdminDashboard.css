@@ -1,0 +1,1375 @@
+/* ============================================================
+   AdminDashboard.css — BEM component styles
+   Global utilities kept in className: card, glass, btn-primary,
+   btn-secondary, btn-ghost, btn-danger, input, label,
+   animate-fade-in, skeleton, section-title, stat-card, badge,
+   badge-*, divider, text-gradient, scrollbar-thin
+   ============================================================ */
+
+/* ── Root container ──────────────────────────────────────── */
+.admin-dash {
+  /* Override the old block-level centering */
+  display: flex;
+  flex-direction: row;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  align-items: flex-start;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.admin-dash__header {
+  margin-bottom: 2rem; /* mb-8 */
+}
+
+.admin-dash__title {
+  font-family: var(--font-display, inherit);
+  font-weight: 700;
+  font-size: 1.875rem; /* text-3xl */
+  color: #f1f5f9;      /* slate-100 */
+  line-height: 1.2;
+}
+
+.admin-dash__subtitle {
+  color: #94a3b8;      /* slate-400 */
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* ── Tab bar ─────────────────────────────────────────────── */
+.admin-dash__tabs {
+  display: none;
+}
+
+.admin-dash__tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8; /* slate-400 */
+}
+
+.admin-dash__tab:hover {
+  color: #e2e8f0;                     /* slate-200 */
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.admin-dash__tab--active {
+  background: rgba(20, 184, 166, 0.2); /* teal-500/20 */
+  color: #2dd4bf;                      /* teal-400 */
+}
+
+/* ── Overview section ────────────────────────────────────── */
+.admin-dash__overview {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-dash__stats-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.admin-dash__stats-grid--4 {
+  grid-template-columns: 1fr;
+}
+
+/* Skeleton placeholder grid (same structure) */
+.admin-dash__skeleton-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.admin-dash__skeleton-item {
+  height: 7rem;   /* h-28 */
+  border-radius: 1rem;
+}
+
+.admin-dash__skeleton-item--sm {
+  height: 3.5rem; /* h-14 */
+  border-radius: 0.75rem;
+}
+
+/* Stat card header row */
+.admin-dash__stat-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.admin-dash__stat-value {
+  font-family: var(--font-display, inherit);
+  font-weight: 700;
+  font-size: 1.875rem; /* text-3xl */
+}
+
+.admin-dash__stat-value--teal   { color: #2dd4bf; }
+.admin-dash__stat-value--slate  { color: #f1f5f9; }
+.admin-dash__stat-value--green  { color: #4ade80; }
+.admin-dash__stat-value--amber  { color: #fbbf24; }
+.admin-dash__stat-value--violet { color: #a78bfa; }
+.admin-dash__stat-value--red    { color: #f87171; }
+.admin-dash__stat-value--orange { color: #fb923c; }
+
+.admin-dash__stat-icon {
+  font-size: 1.5rem; /* text-2xl */
+}
+
+.admin-dash__stat-label {
+  color: #cbd5e1;     /* slate-300 */
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.admin-dash__stat-sub {
+  font-size: 0.75rem;
+  color: #475569; /* slate-600 */
+  margin-top: 0.125rem;
+}
+
+/* ── Two-column chart / breakdown row ────────────────────── */
+.admin-dash__charts-row {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+.admin-dash__chart-card {
+  padding: 1.5rem;
+}
+
+.admin-dash__chart-title {
+  font-family: var(--font-display, inherit);
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 1rem;
+}
+
+/* Status breakdown bar */
+.admin-dash__status-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-dash__status-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-dash__status-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.admin-dash__status-label {
+  color: #94a3b8; /* slate-400 */
+}
+
+.admin-dash__status-count {
+  font-weight: 600;
+}
+
+.admin-dash__status-count--amber  { color: #fbbf24; }
+.admin-dash__status-count--teal   { color: #2dd4bf; }
+.admin-dash__status-count--violet { color: #a78bfa; }
+.admin-dash__status-count--green  { color: #4ade80; }
+.admin-dash__status-count--red    { color: #f87171; }
+.admin-dash__status-count--blue   { color: #60a5fa; }
+.admin-dash__status-count--orange { color: #fb923c; }
+
+.admin-dash__status-pct {
+  color: #475569; /* slate-600 */
+  font-weight: 400;
+}
+
+.admin-dash__status-track {
+  height: 0.375rem;
+  background: #0f172a; /* navy-900 */
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.admin-dash__status-bar {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+}
+
+.admin-dash__status-bar--amber  { background: #fbbf24; }
+.admin-dash__status-bar--teal   { background: #2dd4bf; }
+.admin-dash__status-bar--violet { background: #a78bfa; }
+.admin-dash__status-bar--green  { background: #4ade80; }
+.admin-dash__status-bar--red    { background: #f87171; }
+.admin-dash__status-bar--blue   { background: #60a5fa; }
+.admin-dash__status-bar--orange { background: #fb923c; }
+
+/* Chart date labels */
+.admin-dash__chart-dates {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #475569;
+  margin-top: 0.5rem;
+}
+
+/* Mini bar chart */
+.admin-dash__mini-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+  height: 5rem; /* h-20 */
+}
+
+.admin-dash__bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.admin-dash__bar {
+  width: 100%;
+  background: rgba(20, 184, 166, 0.3);
+  border-radius: 0.125rem;
+  transition: background 0.2s;
+}
+
+.admin-dash__bar:hover {
+  background: rgba(20, 184, 166, 0.6);
+}
+
+.admin-dash__no-data {
+  color: #475569;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+/* ── Filter / control row ────────────────────────────────── */
+.admin-dash__filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-dash__filter-left {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.admin-dash__filter-right {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Role / status pill bar */
+.admin-dash__pill-bar {
+  display: flex;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.admin-dash__pill {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+}
+
+.admin-dash__pill:hover {
+  color: #e2e8f0;
+}
+
+.admin-dash__pill--active {
+  background: rgba(20, 184, 166, 0.2);
+  color: #2dd4bf;
+}
+
+/* Status filter — scrollable on mobile */
+.admin-dash__status-filter {
+  display: flex;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+/* Filter select */
+.admin-dash__select {
+  width: 9rem;  /* w-36 */
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.admin-dash__select--lg {
+  width: 12rem; /* w-48 */
+}
+
+/* ── Search bar ──────────────────────────────────────────── */
+.admin-dash__search {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.admin-dash__search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  color: #64748b; /* slate-500 */
+  pointer-events: none;
+}
+
+.admin-dash__search-input {
+  padding-left: 2.25rem !important; /* pl-9, overrides .input */
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+/* ── Users table ─────────────────────────────────────────── */
+.admin-dash__table-wrap {
+  overflow: hidden;
+}
+
+.admin-dash__table-scroll {
+  overflow-x: auto;
+}
+
+.admin-dash__table {
+  width: 100%;
+  font-size: 0.875rem;
+  border-collapse: collapse;
+}
+
+.admin-dash__table thead tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.admin-dash__table th {
+  text-align: left;
+  padding: 0.875rem 1.25rem 0.875rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #64748b;       /* slate-500 */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.admin-dash__table th:last-child {
+  text-align: right;
+}
+
+.admin-dash__table th.admin-dash__th--narrow {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.admin-dash__table tbody {
+  /* divide-y handled per row */
+}
+
+.admin-dash__table tbody tr {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.15s;
+}
+
+.admin-dash__table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Cells */
+.admin-dash__td {
+  padding: 0.875rem 1rem;
+  vertical-align: middle;
+}
+
+.admin-dash__td--first {
+  padding-left: 1.25rem;
+}
+
+.admin-dash__td--right {
+  text-align: right;
+}
+
+/* Hide on mobile / show at breakpoints */
+.admin-dash__td--hide-sm,
+.admin-dash__th--hide-sm {
+  display: none;
+}
+
+.admin-dash__td--hide-md,
+.admin-dash__th--hide-md {
+  display: none;
+}
+
+.admin-dash__td--hide-lg,
+.admin-dash__th--hide-lg {
+  display: none;
+}
+
+/* Table footer count */
+.admin-dash__table-footer {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.75rem;
+  color: #475569; /* slate-600 */
+}
+
+/* ── User row elements ───────────────────────────────────── */
+.admin-dash__user-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.admin-dash__user-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), #0c1f3f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2dd4bf;
+  font-weight: 700;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.admin-dash__user-avatar--lg {
+  width: 3.5rem;
+  height: 3.5rem;
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, #2dd4bf, #0d9488);
+  color: #040d1a;
+}
+
+.admin-dash__user-name {
+  font-weight: 500;
+  color: #e2e8f0;
+  transition: color 0.15s;
+}
+
+.admin-dash__user-btn:hover .admin-dash__user-name {
+  color: #2dd4bf;
+}
+
+.admin-dash__user-email {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* Role badge (inline — not the global .badge, just inline span) */
+.admin-dash__role-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid;
+  text-transform: capitalize;
+}
+
+.admin-dash__role-badge--doctor       { background: rgba(20,184,166,0.1); color: #2dd4bf; border-color: rgba(20,184,166,0.2); }
+.admin-dash__role-badge--patient      { background: rgba(96,165,250,0.1); color: #60a5fa; border-color: rgba(96,165,250,0.2); }
+.admin-dash__role-badge--admin        { background: rgba(192,132,252,0.1); color: #c084fc; border-color: rgba(192,132,252,0.2); }
+.admin-dash__role-badge--receptionist { background: rgba(167,139,250,0.1); color: #a78bfa; border-color: rgba(167,139,250,0.2); }
+.admin-dash__role-badge--default      { background: #334155; color: #cbd5e1; border-color: #475569; }
+
+/* Active status text */
+.admin-dash__status-active   { font-size: 0.75rem; font-weight: 600; color: #4ade80; }
+.admin-dash__status-inactive { font-size: 0.75rem; font-weight: 600; color: #475569; }
+
+/* Toggle action button */
+.admin-dash__toggle-btn {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.admin-dash__toggle-btn--deactivate {
+  color: #f87171;
+}
+
+.admin-dash__toggle-btn--deactivate:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.admin-dash__toggle-btn--activate {
+  color: #4ade80;
+}
+
+.admin-dash__toggle-btn--activate:hover {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+/* ── Appointment table extras ────────────────────────────── */
+.admin-dash__appt-doctor-specialty {
+  font-size: 0.75rem;
+  color: rgba(45, 212, 191, 0.7);
+}
+
+.admin-dash__appt-time {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.admin-dash__appt-relative {
+  font-size: 0.75rem;
+  color: #475569;
+}
+
+.admin-dash__appt-reason {
+  font-size: 0.75rem;
+  color: #64748b;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-dash__manage-btn {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  color: #2dd4bf;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-dash__manage-btn:hover {
+  background: rgba(20, 184, 166, 0.1);
+}
+
+/* ── Appointment modal ───────────────────────────────────── */
+.admin-dash__modal-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.admin-dash__detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.admin-dash__detail-card {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-dash__detail-label {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.admin-dash__detail-value {
+  font-weight: 500;
+  color: #f1f5f9;
+}
+
+.admin-dash__detail-specialty {
+  font-size: 0.75rem;
+  color: #2dd4bf;
+}
+
+/* Reason / cancellation reason blocks */
+.admin-dash__reason-block {
+  font-size: 0.875rem;
+  color: #cbd5e1;
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.admin-dash__cancel-reason-block {
+  font-size: 0.875rem;
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.05);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+/* Flags row (deposit paid / rescheduled / fee) */
+.admin-dash__flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-dash__flag {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid;
+}
+
+.admin-dash__flag--green  { background: rgba(34,197,94,0.1);  color: #4ade80; border-color: rgba(34,197,94,0.2);  }
+.admin-dash__flag--blue   { background: rgba(96,165,250,0.1); color: #60a5fa; border-color: rgba(96,165,250,0.2); }
+.admin-dash__flag--amber  { background: rgba(245,158,11,0.1); color: #fbbf24; border-color: rgba(245,158,11,0.2); }
+
+/* Status picker grid */
+.admin-dash__status-picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.admin-dash__status-btn {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.admin-dash__status-btn--inactive {
+  background: rgba(255,255,255,0.04);
+  color: #94a3b8;
+  backdrop-filter: blur(4px);
+}
+
+.admin-dash__status-btn--inactive:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.admin-dash__status-btn--active {
+  background: rgba(20, 184, 166, 0.15);
+  border-color: rgba(20, 184, 166, 0.4);
+  color: #2dd4bf;
+}
+
+/* Modal action row */
+.admin-dash__modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.admin-dash__modal-actions .admin-dash__modal-btn {
+  flex: 1;
+}
+
+/* ── Doctors grid ─────────────────────────────────────────── */
+.admin-dash__doctors-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.admin-dash__doctor-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: all 0.3s;
+}
+
+.admin-dash__doctor-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.admin-dash__doctor-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #2dd4bf, #0d9488);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #040d1a;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.admin-dash__doctor-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-dash__doctor-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-dash__doctor-specialty {
+  font-size: 0.75rem;
+  color: #2dd4bf;
+}
+
+.admin-dash__doctor-rating {
+  font-size: 0.75rem;
+  color: #fbbf24;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.admin-dash__doctor-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.admin-dash__doctor-stat {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.admin-dash__doctor-stat-key {
+  color: #64748b;
+}
+
+.admin-dash__doctor-stat-val {
+  color: #cbd5e1;
+  font-weight: 500;
+  margin-top: 0.125rem;
+}
+
+.admin-dash__doctor-bio {
+  font-size: 0.75rem;
+  color: #64748b;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.admin-dash__doctor-edit-btn {
+  font-size: 0.75rem;
+  padding: 0.375rem 0;
+  width: 100%;
+  margin-top: auto;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.75rem;
+  text-align: center;
+}
+
+/* Doctor edit modal grid */
+.admin-dash__edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* ── Specialties grid ────────────────────────────────────── */
+.admin-dash__specialties-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.admin-dash__specialty-card {
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  transition: all 0.3s;
+}
+
+.admin-dash__specialty-card:hover .admin-dash__specialty-delete {
+  opacity: 1;
+}
+
+.admin-dash__specialty-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.admin-dash__specialty-icon {
+  font-size: 1.5rem;
+}
+
+.admin-dash__specialty-name {
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.admin-dash__specialty-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.admin-dash__specialty-delete {
+  color: #475569;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.75rem;
+  flex-shrink: 0;
+  padding: 0.25rem;
+  opacity: 0;
+  transition: color 0.2s, opacity 0.2s;
+}
+
+.admin-dash__specialty-delete:hover {
+  color: #f87171;
+}
+
+/* ── "Add specialty" / filter row ────────────────────────── */
+.admin-dash__actions-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-dash__filter-count {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+/* ── Loading / empty states ──────────────────────────────── */
+.admin-dash__loading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-dash__empty {
+  text-align: center;
+  padding: 5rem 0;
+}
+
+.admin-dash__empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-dash__empty-title {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.admin-dash__empty-sub {
+  color: #475569;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* ── Create-user modal role picker ───────────────────────── */
+.admin-dash__role-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.admin-dash__role-btn {
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  background: none;
+}
+
+.admin-dash__role-btn--active {
+  background: rgba(20, 184, 166, 0.15);
+  border-color: rgba(20, 184, 166, 0.5);
+  color: #2dd4bf;
+}
+
+.admin-dash__role-btn--inactive {
+  color: #94a3b8;
+  border-color: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(4px);
+}
+
+/* ── User detail modal ────────────────────────────────────── */
+.admin-dash__user-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-dash__user-detail-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  font-size: 1.125rem;
+}
+
+.admin-dash__user-detail-email {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.admin-dash__detail-pairs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  font-size: 0.875rem;
+}
+
+.admin-dash__detail-pair-key {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.admin-dash__detail-pair-val {
+  margin-top: 0.125rem;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.admin-dash__detail-pair-val--green { color: #4ade80; }
+.admin-dash__detail-pair-val--red   { color: #f87171; }
+
+/* ── Animate helpers (slide-up used inside tabs) ─────────── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.admin-dash__tab-content {
+  animation: slideUp 0.2s ease;
+}
+
+/* ── Spacing helpers ─────────────────────────────────────── */
+.admin-dash__space-y-4 > * + * { margin-top: 1rem; }
+.admin-dash__space-y-5 > * + * { margin-top: 1.25rem; }
+.admin-dash__space-y-6 > * + * { margin-top: 1.5rem; }
+
+/* ── Side layout ──────────────────────────────────────────── */
+.admin-dash__sidebar {
+  width: 14rem;
+  min-height: 100vh;
+  background: #0a1929;
+  border-right: 1px solid rgba(45,212,191,0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 0;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.admin-dash__sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(45,212,191,0.08);
+  margin-bottom: 1rem;
+}
+
+.admin-dash__sidebar-icon {
+  font-size: 1.5rem;
+}
+
+.admin-dash__sidebar-title {
+  font-weight: 700;
+  color: #e2e8f0;
+  font-size: 0.9375rem;
+}
+
+.admin-dash__sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0 0.75rem;
+  flex: 1;
+}
+
+.admin-dash__sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+}
+
+.admin-dash__sidebar-item:hover {
+  background: rgba(255,255,255,0.04);
+  color: #e2e8f0;
+}
+
+.admin-dash__sidebar-item--active {
+  background: rgba(20,184,166,0.12);
+  color: #2dd4bf;
+  font-weight: 600;
+}
+
+.admin-dash__sidebar-item-icon {
+  font-size: 1.1rem;
+  width: 1.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.admin-dash__sidebar-footer {
+  padding: 1rem 1.25rem 0;
+  border-top: 1px solid rgba(45,212,191,0.08);
+  margin-top: 1rem;
+}
+
+.admin-dash__sidebar-footer-text {
+  font-size: 0.75rem;
+  color: #475569;
+}
+
+.admin-dash__main {
+  flex: 1;
+  padding: 2rem 1.5rem;
+  overflow-x: hidden;
+  min-width: 0;
+}
+
+.admin-dash__main-header {
+  margin-bottom: 2rem;
+}
+
+/* ── User sub-tabs (Patients / Staff) ────────────────────── */
+.admin-dash__user-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-dash__user-tab {
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-dash__user-tab:hover {
+  background: rgba(255,255,255,0.04);
+  color: #e2e8f0;
+}
+
+.admin-dash__user-tab--active {
+  background: rgba(20,184,166,0.12);
+  color: #2dd4bf;
+  border-color: rgba(20,184,166,0.3);
+}
+
+/* ── Pagination ───────────────────────────────────────────── */
+.admin-dash__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding-top: 1.25rem;
+}
+
+.admin-dash__page-label {
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.admin-dash__page-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+/* ── Responsive: tablet ≥ 640px ──────────────────────────── */
+@media (min-width: 640px) {
+  .admin-dash__stats-grid,
+  .admin-dash__stats-grid--4,
+  .admin-dash__skeleton-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-dash__doctors-grid,
+  .admin-dash__specialties-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Show "joined" column on ≥sm */
+  .admin-dash__td--hide-sm,
+  .admin-dash__th--hide-sm {
+    display: table-cell;
+  }
+}
+
+/* ── Responsive: medium ≥ 768px ─────────────────────────── */
+@media (min-width: 768px) {
+  .admin-dash__td--hide-md,
+  .admin-dash__th--hide-md {
+    display: table-cell;
+  }
+
+  .admin-dash__specialties-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Status filter pills wrap on mobile, become a scrollable row */
+  .admin-dash__status-filter {
+    flex-wrap: nowrap;
+  }
+}
+
+/* ── Responsive: desktop ≥ 1024px ───────────────────────── */
+@media (min-width: 1024px) {
+  .admin-dash__stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .admin-dash__stats-grid--4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .admin-dash__charts-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-dash__doctors-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .admin-dash__specialties-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Show phone & scheduled columns on ≥md */
+  .admin-dash__td--hide-md,
+  .admin-dash__th--hide-md {
+    display: table-cell;
+  }
+
+  /* Show reason column on ≥lg */
+  .admin-dash__td--hide-lg,
+  .admin-dash__th--hide-lg {
+    display: table-cell;
+  }
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .admin-dash {
+    flex-direction: column;
+  }
+
+  .admin-dash__sidebar {
+    width: 100%;
+    height: auto;
+    min-height: unset;
+    position: static;
+    padding: 0.75rem;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: none;
+    border-bottom: 1px solid rgba(45,212,191,0.1);
+  }
+
+  .admin-dash__sidebar-brand,
+  .admin-dash__sidebar-footer {
+    display: none;
+  }
+
+  .admin-dash__sidebar-nav {
+    flex-direction: row;
+    gap: 0.25rem;
+    padding: 0;
+    overflow-x: auto;
+    flex: unset;
+    width: 100%;
+  }
+
+  .admin-dash__sidebar-item {
+    white-space: nowrap;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    gap: 0.375rem;
+    flex-shrink: 0;
+  }
+
+  .admin-dash__main {
+    padding: 1rem;
+  }
+
+  .admin-dash__main-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .admin-dash__title {
+    font-size: 1.5rem;
+  }
+
+  .admin-dash__filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-dash__filter-left {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-dash__filter-right {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-dash__search {
+    min-width: unset;
+  }
+
+  /* Pill bar scrollable on mobile */
+  .admin-dash__pill-bar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-dash__pill {
+    flex-shrink: 0;
+  }
+
+  /* Status filter scrollable */
+  .admin-dash__status-filter {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* User sub-tabs full width */
+  .admin-dash__user-tabs {
+    flex-wrap: wrap;
+  }
+
+  .admin-dash__user-tab {
+    flex: 1;
+    text-align: center;
+  }
+
+  .admin-dash__detail-grid,
+  .admin-dash__detail-pairs,
+  .admin-dash__edit-grid,
+  .admin-dash__role-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-dash__status-picker {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-dash__modal-actions {
+    flex-direction: column;
+  }
+
+  .admin-dash__select,
+  .admin-dash__select--lg {
+    width: 100%;
+  }
+
+  /* Pagination full width on mobile */
+  .admin-dash__pagination {
+    gap: 0.5rem;
+  }
+
+  .admin-dash__page-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Overview charts stack */
+  .admin-dash__charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Extra small screens < 480px ─────────────────────────── */
+@media (max-width: 480px) {
+  .admin-dash__sidebar-item-label {
+    display: none;
+  }
+
+  .admin-dash__sidebar-item {
+    padding: 0.5rem;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+
+  .admin-dash__sidebar-item-icon {
+    width: auto;
+  }
+
+  .admin-dash__status-picker {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-dash__doctors-grid,
+  .admin-dash__specialties-grid {
+    grid-template-columns: 1fr;
+  }
+}

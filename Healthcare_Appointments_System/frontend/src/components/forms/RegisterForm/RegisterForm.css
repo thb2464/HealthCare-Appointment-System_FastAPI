@@ -1,0 +1,141 @@
+/* RegisterForm.css — BEM component styles */
+
+/* ── Form root ─────────────────────────────────────────────── */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 */
+}
+
+/* ── Individual field wrapper ──────────────────────────────── */
+.register-form__field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Password field: relative wrapper for the eye toggle ───── */
+.register-form__password-wrap {
+  position: relative;
+}
+
+/*
+ * Extra right padding so typed text never slides under the
+ * eye button.  The global `.input` sets px-4; we widen only
+ * the right side here.
+ */
+.register-form__password-wrap .input {
+  padding-right: 2.75rem; /* ~pr-10 */
+}
+
+/* ── Eye toggle button ─────────────────────────────────────── */
+.register-form__eye-btn {
+  position: absolute;
+  right: 0.75rem; /* right-3 */
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b; /* slate-500 */
+  transition: color 0.2s ease;
+  line-height: 0;
+}
+
+.register-form__eye-btn:hover {
+  color: #cbd5e1; /* slate-300 */
+}
+
+/* Eye icon SVG dimensions */
+.register-form__eye-btn svg {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+}
+
+/* ── Password hint text ────────────────────────────────────── */
+.register-form__hint {
+  font-size: 0.75rem;   /* text-xs */
+  color: #475569;        /* slate-600 */
+  margin-top: 0.375rem;  /* mt-1.5 */
+}
+
+/* ── Optional label suffix ─────────────────────────────────── */
+.register-form__optional {
+  color: #475569; /* slate-600 */
+  font-weight: 400;
+}
+
+/* ── Role selector grid ────────────────────────────────────── */
+.register-form__role-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem; /* gap-3 */
+}
+
+/* ── Individual role button ────────────────────────────────── */
+.register-form__role-btn {
+  padding: 0.75rem 1rem;   /* py-3 px-4 */
+  border-radius: 0.75rem;  /* rounded-xl */
+  border: 1px solid rgba(255, 255, 255, 0.06); /* border-white/[0.06] */
+  font-size: 0.875rem;     /* text-sm */
+  font-weight: 500;
+  text-transform: capitalize;
+  cursor: pointer;
+  color: #94a3b8;           /* slate-400 */
+  /* mirror glass + glass-hover values from index.css */
+  background-color: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(4px);
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+              color 0.2s ease;
+}
+
+.register-form__role-btn:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Active / selected role button ────────────────────────── */
+.register-form__role-btn--active {
+  background-color: rgba(20, 184, 166, 0.15); /* teal-500/15 */
+  border-color: rgba(20, 184, 166, 0.5);       /* teal-500/50 */
+  color: #2dd4bf;                               /* teal-400 */
+}
+
+.register-form__role-btn--active:hover {
+  background-color: rgba(20, 184, 166, 0.2);
+  border-color: rgba(20, 184, 166, 0.6);
+}
+
+/* ── Footer: "Already have an account? Sign in" ───────────── */
+.register-form__footer {
+  text-align: center;
+  font-size: 0.875rem; /* text-sm */
+  color: #64748b;       /* slate-500 */
+}
+
+.register-form__footer a {
+  color: #2dd4bf;       /* teal-400 */
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.register-form__footer a:hover {
+  color: #5eead4; /* teal-300 */
+}
+
+/* ── Responsive tweaks ─────────────────────────────────────── */
+@media (max-width: 480px) {
+  .register-form {
+    gap: 0.875rem;
+  }
+
+  /* Stack role buttons on very narrow viewports */
+  .register-form__role-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -22,26 +22,22 @@ export const rescheduleAppointment = (id, scheduledAt) =>
     scheduled_at: scheduledAt,
   });
 
+/** PATCH /api/appointments/:id/arrive */
+export const markArrived = (id) =>
+  axiosClient.patch(`/api/appointments/${id}/arrive`);
+
 /** DELETE /api/appointments/:id  (cancel) */
-export const cancelAppointment = (id) =>
-  axiosClient.delete(`/api/appointments/${id}`);
-
-/** GET /api/reviews/doctor/:doctorId */
-export const getDoctorReviews = (doctorId, params = {}) =>
-  axiosClient.get(`/api/reviews/doctor/${doctorId}`, { params });
-
-/** POST /api/reviews */
-export const createReview = (data) => axiosClient.post("/api/reviews", data);
-
-/** GET /api/admin/users */
-export const adminGetUsers = (params = {}) =>
-  axiosClient.get("/api/admin/users", { params });
-
-/** PATCH /api/admin/users/:id */
-export const adminToggleUser = (userId, is_active) =>
-  axiosClient.patch(`/api/admin/users/${userId}`, null, {
-    params: { is_active },
+export const cancelAppointment = (id, cancellationReason) =>
+  axiosClient.delete(`/api/appointments/${id}`, {
+    data: { cancellation_reason: cancellationReason || undefined },
   });
 
-/** GET /api/admin/stats */
-export const adminGetStats = () => axiosClient.get("/api/admin/stats");
+/** PATCH /api/appointments/:id/noshow */
+export const markNoShow = (id, cancellationReason) =>
+  axiosClient.patch(`/api/appointments/${id}/noshow`, {
+    cancellation_reason: cancellationReason || undefined,
+  });
+
+/** GET /api/appointments/:id/checkin-token */
+export const getCheckinToken = (id) =>
+  axiosClient.get(`/api/appointments/${id}/checkin-token`);

@@ -1,0 +1,122 @@
+/* BookingPage.css — BEM styles for BookingPage */
+
+/* ─── Page wrapper ─────────────────────────────────── */
+.booking-page {
+  max-width: 42rem;       /* max-w-2xl */
+  margin-inline: auto;
+  padding: 2.5rem 1rem;   /* py-10 px-4 */
+}
+
+/* ─── Loading skeleton ─────────────────────────────── */
+.booking-page__loading {
+  max-width: 42rem;       /* max-w-2xl */
+  margin-inline: auto;
+  padding: 3rem 1rem;     /* py-12 px-4 */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;              /* space-y-4 */
+}
+
+.booking-page__loading .skeleton-title {
+  height: 3rem;           /* h-12 */
+  width: 12rem;           /* w-48 */
+  border-radius: 0.75rem; /* rounded-xl */
+}
+
+.booking-page__loading .skeleton-body {
+  height: 16rem;          /* h-64 */
+  border-radius: 1rem;    /* rounded-2xl */
+}
+
+/* ─── Back button ──────────────────────────────────── */
+/*
+ * .booking-page__back-btn inherits the global .btn-ghost utility class.
+ * We add layout-specific properties here.
+ */
+.booking-page__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;            /* gap-2 */
+  margin-bottom: 1.5rem;  /* mb-6 */
+  font-size: 0.875rem;    /* text-sm */
+}
+
+.booking-page__back-btn svg {
+  width: 1rem;            /* w-4 */
+  height: 1rem;           /* h-4 */
+  flex-shrink: 0;
+}
+
+/* ─── Header block ─────────────────────────────────── */
+.booking-page__header {
+  margin-bottom: 1.5rem;  /* mb-6 */
+}
+
+.booking-page__title {
+  font-family: var(--font-display, inherit);
+  font-weight: 700;
+  font-size: 1.875rem;    /* text-3xl */
+  color: #f1f5f9;         /* text-slate-100 */
+  margin: 0;
+  line-height: 1.2;
+}
+
+.booking-page__subtitle {
+  color: #94a3b8;         /* text-slate-400 */
+  font-size: 0.875rem;    /* text-sm */
+  margin: 0.25rem 0 0;   /* mt-1 */
+}
+
+/* ─── Form card ────────────────────────────────────── */
+/*
+ * .booking-page__card inherits the global .card utility class.
+ * Padding is specified here so it doesn't bleed into the shared .card base.
+ */
+.booking-page__card {
+  padding: 1.75rem;       /* p-7 */
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════ */
+
+/* ── Tablet / small screens (≥ 640 px) ─────────────── */
+@media (min-width: 640px) {
+  .booking-page {
+    padding-inline: 1.5rem; /* sm:px-6 */
+  }
+
+  .booking-page__loading {
+    padding-inline: 1.5rem;
+  }
+}
+
+/* ── Desktop (≥ 1024 px) ────────────────────────────── */
+@media (min-width: 1024px) {
+  .booking-page {
+    padding-inline: 2rem;
+  }
+
+  .booking-page__loading {
+    padding-inline: 2rem;
+  }
+
+  .booking-page__card {
+    padding: 2rem;         /* slightly more breathing room on large screens */
+  }
+}
+
+/* ── Mobile (≤ 640 px) — explicit overrides ─────────── */
+@media (max-width: 640px) {
+  .booking-page__title {
+    font-size: 1.5rem;    /* scale down on very small screens */
+  }
+
+  .booking-page__card {
+    padding: 1.25rem;     /* reduce card padding on small screens */
+  }
+
+  .booking-page__loading .skeleton-title {
+    width: 8rem;
+  }
+}

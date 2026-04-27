@@ -1,0 +1,381 @@
+/* PatientDashboard.css */
+
+/* ─── Layout ─────────────────────────────────────────────── */
+.patient-dash {
+  max-width: 64rem;          /* ~5xl */
+  margin-inline: auto;
+  padding: 2.5rem 1rem;      /* py-10 px-4 */
+}
+
+/* ─── Header ──────────────────────────────────────────────── */
+.patient-dash__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.patient-dash__title {
+  font-weight: 700;
+  font-size: 1.875rem;       /* text-3xl */
+  line-height: 1.2;
+  color: #e2e8f0;            /* slate-100 */
+  margin: 0;
+}
+
+.patient-dash__subtitle {
+  color: #64748b;            /* slate-400 */
+  font-size: 0.875rem;       /* text-sm */
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+}
+
+.patient-dash__subtitle-name {
+  color: #2dd4bf;            /* teal-400 */
+}
+
+/* ─── Stats grid ──────────────────────────────────────────── */
+.patient-dash__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.patient-dash__stat-value {
+  font-weight: 700;
+  font-size: 1.875rem;       /* text-3xl */
+  line-height: 1;
+}
+
+.patient-dash__stat-value--total     { color: #e2e8f0; }   /* slate-100 */
+.patient-dash__stat-value--upcoming  { color: #2dd4bf; }   /* teal-400  */
+.patient-dash__stat-value--completed { color: #4ade80; }   /* green-400 */
+.patient-dash__stat-value--cancelled { color: #64748b; }   /* slate-500 */
+
+.patient-dash__stat-label {
+  font-size: 0.75rem;        /* text-xs */
+  color: #64748b;            /* slate-500 */
+}
+
+/* ─── Controls row (tabs + sort) ─────────────────────────── */
+.patient-dash__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.patient-dash__sort-select {
+  width: auto;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+/* ─── Tabs ────────────────────────────────────────────────── */
+.patient-dash__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;             /* gap-1.5 */
+}
+
+.patient-dash__tab {
+  padding: 0.375rem 1rem;    /* py-1.5 px-4 */
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  /* inherits glass + glass-hover via class */
+  color: #94a3b8;            /* slate-400 */
+  background-color: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(4px);
+}
+
+.patient-dash__tab:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.patient-dash__tab--active {
+  background-color: rgba(20, 184, 166, 0.15);  /* teal-500/15 */
+  color: #2dd4bf;                               /* teal-400   */
+  border-color: rgba(20, 184, 166, 0.3);        /* teal-500/30 */
+}
+
+.patient-dash__tab--active:hover {
+  background-color: rgba(20, 184, 166, 0.2);
+}
+
+/* ─── Loading skeletons ───────────────────────────────────── */
+.patient-dash__loading {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.patient-dash__loading-item {
+  height: 9rem;              /* h-36 */
+  border-radius: 1rem;       /* rounded-2xl */
+}
+
+/* ─── Empty state ─────────────────────────────────────────── */
+.patient-dash__empty {
+  text-align: center;
+  padding: 5rem 1.5rem;      /* py-20 */
+}
+
+.patient-dash__empty-icon {
+  font-size: 2.5rem;         /* text-4xl */
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.patient-dash__empty-title {
+  color: #94a3b8;            /* slate-400 */
+  font-weight: 500;
+  margin: 0;
+}
+
+.patient-dash__empty-hint {
+  color: #64748b;            /* slate-500 */
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Appointment list ────────────────────────────────────── */
+.patient-dash__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ─── Action buttons (inside appointment cards) ───────────── */
+.patient-dash__action-btn {
+  font-size: 0.75rem;        /* text-xs */
+  padding: 0.375rem 0.75rem; /* py-1.5 px-3 */
+  cursor: pointer;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+/* Reschedule — btn-secondary style */
+.patient-dash__action-btn--reschedule {
+  background-color: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(4px);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+}
+
+.patient-dash__action-btn--reschedule:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Cancel — btn-danger style */
+.patient-dash__action-btn--cancel {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;            /* red-400 */
+}
+
+.patient-dash__action-btn--cancel:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* Review — btn-ghost + amber accent */
+.patient-dash__action-btn--review {
+  background-color: transparent;
+  color: #fbbf24;            /* amber-400 */
+  border: none;
+  padding-inline: 1rem;
+  padding-block: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.patient-dash__action-btn--review:hover {
+  background-color: rgba(251, 191, 36, 0.1);  /* amber-400/10 */
+}
+
+/* ─── Modal — cancel body ────────────────────────────────── */
+.patient-dash__modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.patient-dash__modal-warn {
+  font-size: 0.875rem;
+  color: #94a3b8;            /* slate-400 */
+  margin: 0;
+}
+
+.patient-dash__modal-reason-label {
+  /* Uses global .label — this block adds the optional-text colour */
+}
+
+.patient-dash__modal-reason-label .patient-dash__optional {
+  color: #475569;            /* slate-600 */
+}
+
+.patient-dash__modal-reason {
+  resize: none;
+  /* keeps global .input styles */
+}
+
+.patient-dash__modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.patient-dash__modal-actions > * {
+  flex: 1;
+}
+
+/* ─── Modal — reschedule body ────────────────────────────── */
+.patient-dash__reschedule-section {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.patient-dash__reschedule-section > * {
+  flex: 1;
+}
+
+/* ─── Modal — review body ────────────────────────────────── */
+.patient-dash__review-stars {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.patient-dash__review-star {
+  font-size: 1.5rem;         /* text-2xl */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: transform 0.15s;
+  color: #334155;            /* slate-700 (inactive) */
+}
+
+.patient-dash__review-star:hover {
+  transform: scale(1.1);
+}
+
+.patient-dash__review-star--active {
+  color: #fbbf24;            /* amber-400 */
+}
+
+.patient-dash__review-textarea {
+  resize: none;
+  /* keeps global .input styles */
+}
+
+/* ─── Card wrap (clickable) ───────────────────────────────── */
+.patient-dash__card-wrap {
+  cursor: pointer;
+}
+
+.patient-dash__card-wrap:hover {
+  opacity: 0.9;
+}
+
+/* ─── Detail modal — reschedule view ─────────────────────── */
+.patient-dash__detail-reschedule {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.patient-dash__detail-reschedule-info {
+  padding: 0.75rem 1rem;
+  background-color: rgba(20, 184, 166, 0.05);
+  border: 1px solid rgba(20, 184, 166, 0.15);
+  border-radius: 0.75rem;
+}
+
+/* ─── Detail modal ────────────────────────────────────────── */
+.patient-dash__detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.patient-dash__detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.patient-dash__detail-value {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  margin-top: 0.25rem;
+}
+
+.patient-dash__detail-sub {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 480px) {
+  .patient-dash__detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Responsive ──────────────────────────────────────────── */
+
+/* sm: 640 px */
+@media (min-width: 640px) {
+  .patient-dash {
+    padding-inline: 1.5rem;  /* sm:px-6 */
+  }
+
+  .patient-dash__stats {
+    grid-template-columns: repeat(4, 1fr);  /* sm:grid-cols-4 */
+  }
+}
+
+/* lg: 1024 px */
+@media (min-width: 1024px) {
+  .patient-dash {
+    padding-inline: 2rem;    /* lg:px-8 */
+  }
+}
+
+/* xs / very-small screens */
+@media (max-width: 479px) {
+  .patient-dash__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .patient-dash__title {
+    font-size: 1.5rem;
+  }
+
+  .patient-dash__tabs {
+    gap: 0.25rem;
+  }
+
+  .patient-dash__modal-actions,
+  .patient-dash__reschedule-section {
+    flex-direction: column;
+  }
+}

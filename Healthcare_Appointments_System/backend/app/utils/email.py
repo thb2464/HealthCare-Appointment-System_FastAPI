@@ -138,3 +138,56 @@ async def send_waitlist_slot_available(
             "— MediCare Team"
         ),
     )
+
+
+async def send_followup_suggestion(
+    to_email: str, patient_name: str, doctor_name: str
+) -> None:
+    await _send(
+        subject="Follow-up Appointment Recommended",
+        recipients=[to_email],
+        body=(
+            f"Dear {patient_name},\n\n"
+            f"Your visit with Dr. {doctor_name} is now complete. "
+            "Based on your consultation, a follow-up appointment may be beneficial.\n\n"
+            "Log in to your MediCare patient portal to schedule a follow-up, "
+            "review your Electronic Health Records, lab results, and prescriptions.\n\n"
+            "— MediCare Team"
+        ),
+    )
+
+
+async def send_noshow_recorded(
+    to_email: str, patient_name: str, doctor_name: str
+) -> None:
+    await _send(
+        subject="Missed Appointment — No-Show Recorded",
+        recipients=[to_email],
+        body=(
+            f"Dear {patient_name},\n\n"
+            f"We noticed you did not attend your scheduled appointment with Dr. {doctor_name}.\n\n"
+            "Your appointment has been recorded as a no-show. "
+            "If this was a mistake or you need to reschedule, please contact the clinic.\n\n"
+            "— MediCare Team"
+        ),
+    )
+
+
+async def send_appointment_reminder(
+    to_email: str,
+    patient_name: str,
+    scheduled_at: str,
+    doctor_name: str,
+    hours_before: int = 24,
+) -> None:
+    await _send(
+        subject=f"Appointment Reminder — {hours_before}h Notice",
+        recipients=[to_email],
+        body=(
+            f"Dear {patient_name},\n\n"
+            f"This is a reminder that your appointment with Dr. {doctor_name} "
+            f"is scheduled for {scheduled_at} (UTC), approximately {hours_before} hour(s) from now.\n\n"
+            "Please arrive on time. You can manage your appointment via your patient dashboard.\n\n"
+            "— MediCare Team"
+        ),
+    )

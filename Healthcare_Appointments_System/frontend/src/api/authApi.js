@@ -19,3 +19,6 @@ export const getMe = () => axiosClient.get("/api/auth/me");
 /** POST /api/auth/refresh */
 export const refreshToken = (refresh_token) =>
   axiosClient.post("/api/auth/refresh", { refresh_token });
+
+/** PATCH /api/users/me */
+export const updateProfile = (data) => axiosClient.patch("/api/users/me", data);

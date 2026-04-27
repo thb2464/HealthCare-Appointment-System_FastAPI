@@ -5,9 +5,12 @@ Booking logic is co-located here in the monolith.
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import hmac
+import time as _time
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, Request, status
 from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError, OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,8 +26,11 @@ from app.schemas.appointment import (
     AppointmentCreate,
     AppointmentStatusUpdate,
     AppointmentReschedule,
+    AppointmentNoShowRequest,
+    AppointmentCancelRequest,
     AppointmentResponse,
     AppointmentListResponse,
+    CheckinTokenResponse,
 )
 from app.utils.email import (
     send_appointment_confirmation,
@@ -32,6 +38,8 @@ from app.utils.email import (
     send_appointment_cancelled,
     send_appointment_completed,
     send_waitlist_slot_available,
+    send_followup_suggestion,
+    send_noshow_recorded,
 )
 
 router = APIRouter(prefix="/api/appointments", tags=["Appointments"])
@@ -41,6 +49,9 @@ _LOAD = [
     selectinload(Appointment.doctor).selectinload(Doctor.user),
     selectinload(Appointment.doctor).selectinload(Doctor.specialty),
 ]
+
+# Token validity window (seconds)
+_CHECKIN_TOKEN_TTL = 3600  # 1 hour
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -121,7 +132,7 @@ async def _is_slot_available(db: AsyncSession, doctor_id: int, scheduled_at: dat
         select(Appointment.scheduled_at).where(
             Appointment.doctor_id == doctor_id,
             Appointment.scheduled_at == utc_dt.replace(second=0, microsecond=0),
-            Appointment.status.notin_([AppointmentStatus.CANCELLED]),
+            Appointment.status.notin_([AppointmentStatus.CANCELLED, AppointmentStatus.NOSHOW]),
         )
     )
     return conflict.scalar_one_or_none() is None
@@ -139,11 +150,17 @@ def _validate_status_transition(
             AppointmentStatus.COMPLETED,
             AppointmentStatus.CANCELLED,
             AppointmentStatus.RESCHEDULED,
+            AppointmentStatus.NOSHOW,
         },
-        AppointmentStatus.ARRIVED: {AppointmentStatus.COMPLETED, AppointmentStatus.CANCELLED},
+        AppointmentStatus.ARRIVED: {
+            AppointmentStatus.COMPLETED,
+            AppointmentStatus.CANCELLED,
+            AppointmentStatus.NOSHOW,
+        },
         AppointmentStatus.RESCHEDULED: {AppointmentStatus.CONFIRMED, AppointmentStatus.CANCELLED},
         AppointmentStatus.COMPLETED: set(),
         AppointmentStatus.CANCELLED: set(),
+        AppointmentStatus.NOSHOW: set(),
     }
     if new not in allowed.get(current, set()):
         raise HTTPException(
@@ -170,6 +187,13 @@ def _validate_status_transition(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only receptionists, doctors, or admins can mark a patient as arrived",
         )
+    if new == AppointmentStatus.NOSHOW and role not in (
+        UserRole.DOCTOR, UserRole.RECEPTIONIST, UserRole.ADMIN
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only doctors, receptionists, or admins can mark a no-show",
+        )
 
 
 async def _book(
@@ -187,10 +211,16 @@ async def _book(
     else:
         scheduled_at = scheduled_at.astimezone(timezone.utc)
 
-    if scheduled_at <= datetime.now(timezone.utc):
+    now = datetime.now(timezone.utc)
+    if scheduled_at <= now:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot book an appointment in the past",
+        )
+    if scheduled_at < now + timedelta(days=2):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Appointments must be booked at least 2 days in advance",
         )
 
     if not await _is_slot_available(db, doctor_id, scheduled_at):
@@ -206,7 +236,7 @@ async def _book(
         select(Appointment).where(
             Appointment.doctor_id == doctor_id,
             Appointment.scheduled_at == scheduled_at,
-            Appointment.status.notin_([AppointmentStatus.CANCELLED]),
+            Appointment.status.notin_([AppointmentStatus.CANCELLED, AppointmentStatus.NOSHOW]),
         )
     )
     if conflict.scalar_one_or_none():
@@ -267,7 +297,7 @@ async def _reschedule(
         select(Appointment).where(
             Appointment.doctor_id == appointment.doctor_id,
             Appointment.scheduled_at == new_time,
-            Appointment.status.notin_([AppointmentStatus.CANCELLED]),
+            Appointment.status.notin_([AppointmentStatus.CANCELLED, AppointmentStatus.NOSHOW]),
             Appointment.id != appointment.id,
         )
     )
@@ -278,6 +308,13 @@ async def _reschedule(
         )
 
     slot_minutes = await _get_slot_duration(db, appointment.doctor_id, new_time)
+
+    # Financial penalty: if more than 1 reschedule and new time is < 48h away
+    appointment.reschedule_count = (appointment.reschedule_count or 0) + 1
+    hours_until = (new_time - datetime.now(timezone.utc)).total_seconds() / 3600
+    if appointment.reschedule_count > 1 and hours_until < 48:
+        appointment.reschedule_fee_applied = True
+
     appointment.scheduled_at = new_time
     appointment.end_at = new_time + timedelta(minutes=slot_minutes)
     appointment.status = AppointmentStatus.RESCHEDULED
@@ -309,6 +346,58 @@ async def _notify_waitlist(db: AsyncSession, doctor_id: int) -> None:
     )
     await db.delete(entry)
     await db.flush()
+
+
+async def _auto_noshow_conflicts(
+    db: AsyncSession,
+    doctor_id: int,
+    scheduled_at: datetime,
+    exclude_appointment_id: int,
+) -> None:
+    """Auto-mark conflicting CONFIRMED/ARRIVED appointments as NOSHOW when a slot is definitively taken."""
+    result = await db.execute(
+        select(Appointment).where(
+            Appointment.doctor_id == doctor_id,
+            Appointment.scheduled_at == scheduled_at,
+            Appointment.id != exclude_appointment_id,
+            Appointment.status.in_([AppointmentStatus.CONFIRMED, AppointmentStatus.ARRIVED]),
+        )
+    )
+    conflicts = result.scalars().all()
+    for appt in conflicts:
+        appt.status = AppointmentStatus.NOSHOW
+    if conflicts:
+        await db.flush()
+
+
+# ── Check-in token helpers ─────────────────────────────────────────────────────
+
+def _generate_checkin_token(appointment_id: int, secret: str) -> tuple[str, int]:
+    """Returns (token, expires_at_unix)."""
+    expires_at = int(_time.time()) + _CHECKIN_TOKEN_TTL
+    msg = f"{appointment_id}:{expires_at}".encode()
+    sig = hmac.new(secret.encode(), msg, hashlib.sha256).hexdigest()
+    return f"{appointment_id}:{expires_at}:{sig}", expires_at
+
+
+def _verify_checkin_token(token: str, secret: str) -> int:
+    """Returns appointment_id if valid, raises HTTPException otherwise."""
+    try:
+        appt_id_str, expires_str, sig = token.split(":", 2)
+        appt_id = int(appt_id_str)
+        expires_at = int(expires_str)
+    except (ValueError, AttributeError):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid check-in token")
+
+    if int(_time.time()) > expires_at:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Check-in token has expired")
+
+    msg = f"{appt_id}:{expires_at}".encode()
+    expected_sig = hmac.new(secret.encode(), msg, hashlib.sha256).hexdigest()  # type: ignore[attr-defined]
+    if not hmac.compare_digest(sig, expected_sig):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid check-in token")
+
+    return appt_id
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -428,9 +517,14 @@ async def update_appointment(
     _validate_status_transition(appt.status, payload.status, current_user.role)
 
     prev_status = appt.status
-    appt.status = payload.status
+    new_status = payload.status
+    appt.status = new_status
     if payload.notes is not None:
         appt.notes = payload.notes
+    if payload.cancellation_reason is not None:
+        appt.cancellation_reason = payload.cancellation_reason
+    if new_status == AppointmentStatus.CONFIRMED:
+        await _auto_noshow_conflicts(db, appt.doctor_id, appt.scheduled_at, appt.id)
     await db.flush()
     await db.refresh(appt)
 
@@ -457,7 +551,7 @@ async def update_appointment(
                 doctor_name=doctor_name,
             )
         )
-        if prev_status == AppointmentStatus.CONFIRMED:
+        if prev_status in (AppointmentStatus.CONFIRMED, AppointmentStatus.RESCHEDULED):
             await _notify_waitlist(db, appt.doctor_id)
     elif payload.status == AppointmentStatus.COMPLETED:
         asyncio.create_task(
@@ -467,6 +561,22 @@ async def update_appointment(
                 doctor_name=doctor_name,
             )
         )
+        asyncio.create_task(
+            send_followup_suggestion(
+                to_email=patient_email,
+                patient_name=patient_name,
+                doctor_name=doctor_name,
+            )
+        )
+    elif payload.status == AppointmentStatus.NOSHOW:
+        asyncio.create_task(
+            send_noshow_recorded(
+                to_email=patient_email,
+                patient_name=patient_name,
+                doctor_name=doctor_name,
+            )
+        )
+        await _notify_waitlist(db, appt.doctor_id)
 
     return appt
 
@@ -509,7 +619,10 @@ async def reschedule_appointment(
                 detail="Doctors can only reschedule CONFIRMED appointments",
             )
 
+    # Notify waitlist — the original slot is being freed
+    old_doctor_id = appt.doctor_id
     await _reschedule(db=db, appointment=appt, new_time=payload.scheduled_at)
+    await _notify_waitlist(db, old_doctor_id)
     await db.refresh(appt)
     return appt
 
@@ -549,6 +662,130 @@ async def mark_arrived(
     return appt
 
 
+@router.patch(
+    "/{appointment_id}/noshow",
+    response_model=AppointmentResponse,
+    summary="Mark appointment as no-show (doctor / receptionist / admin only)",
+)
+async def mark_noshow(
+    appointment_id: int,
+    payload: AppointmentNoShowRequest,
+    current_user: CurrentUser,
+    db: DBSession,
+) -> Appointment:
+    if current_user.role not in (UserRole.DOCTOR, UserRole.RECEPTIONIST, UserRole.ADMIN):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only doctors, receptionists, or admins can mark a no-show",
+        )
+
+    result = await db.execute(
+        select(Appointment).options(*_LOAD).where(Appointment.id == appointment_id)
+    )
+    appt = result.scalar_one_or_none()
+    if not appt:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
+
+    if appt.status not in (AppointmentStatus.CONFIRMED, AppointmentStatus.ARRIVED):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Only CONFIRMED or ARRIVED appointments can be marked as no-show (current: {appt.status.value})",
+        )
+
+    appt.status = AppointmentStatus.NOSHOW
+    if payload.cancellation_reason:
+        appt.cancellation_reason = payload.cancellation_reason
+
+    await db.flush()
+    await db.refresh(appt)
+
+    doctor_name = appt.doctor.user.full_name if appt.doctor and appt.doctor.user else "your doctor"
+    asyncio.create_task(
+        send_noshow_recorded(
+            to_email=appt.patient.email,
+            patient_name=appt.patient.full_name,
+            doctor_name=doctor_name,
+        )
+    )
+    await _notify_waitlist(db, appt.doctor_id)
+    return appt
+
+
+@router.get(
+    "/{appointment_id}/checkin-token",
+    response_model=CheckinTokenResponse,
+    summary="Generate a QR check-in token for an appointment (doctor / admin only)",
+)
+async def get_checkin_token(
+    appointment_id: int,
+    request: Request,
+    current_user: CurrentUser,
+    db: DBSession,
+) -> CheckinTokenResponse:
+    if current_user.role not in (UserRole.DOCTOR, UserRole.ADMIN, UserRole.RECEPTIONIST):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only doctors, receptionists, or admins can generate check-in tokens",
+        )
+
+    result = await db.execute(
+        select(Appointment).options(*_LOAD).where(Appointment.id == appointment_id)
+    )
+    appt = result.scalar_one_or_none()
+    if not appt:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
+
+    if appt.status != AppointmentStatus.CONFIRMED:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Check-in tokens can only be generated for CONFIRMED appointments",
+        )
+
+    from app.config import settings
+    secret = settings.SECRET_KEY
+    token, expires_unix = _generate_checkin_token(appointment_id, secret)
+    expires_dt = datetime.fromtimestamp(expires_unix, tz=timezone.utc)
+
+    base_url = str(request.base_url).rstrip("/")
+    checkin_url = f"{base_url}/api/appointments/{appointment_id}/checkin?token={token}"
+
+    return CheckinTokenResponse(token=token, expires_at=expires_dt, checkin_url=checkin_url)
+
+
+@router.post(
+    "/{appointment_id}/checkin",
+    response_model=AppointmentResponse,
+    summary="Patient QR check-in (public — validates signed token)",
+)
+async def checkin_appointment(
+    appointment_id: int,
+    db: DBSession,
+    token: str = Query(..., description="Signed check-in token from the QR code"),
+) -> Appointment:
+    from app.config import settings
+    verified_id = _verify_checkin_token(token, settings.SECRET_KEY)
+    if verified_id != appointment_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token does not match appointment")
+
+    result = await db.execute(
+        select(Appointment).options(*_LOAD).where(Appointment.id == appointment_id)
+    )
+    appt = result.scalar_one_or_none()
+    if not appt:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
+
+    if appt.status != AppointmentStatus.CONFIRMED:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cannot check in: appointment is {appt.status.value} (expected CONFIRMED)",
+        )
+
+    appt.status = AppointmentStatus.ARRIVED
+    await db.flush()
+    await db.refresh(appt)
+    return appt
+
+
 @router.delete(
     "/{appointment_id}",
     response_model=AppointmentResponse,
@@ -558,6 +795,7 @@ async def cancel_appointment(
     appointment_id: int,
     current_user: CurrentUser,
     db: DBSession,
+    payload: AppointmentCancelRequest = AppointmentCancelRequest(),
 ) -> Appointment:
     result = await db.execute(
         select(Appointment).options(*_LOAD).where(Appointment.id == appointment_id)
@@ -573,14 +811,16 @@ async def cancel_appointment(
             detail="Patients cannot cancel a confirmed appointment. Please contact the clinic.",
         )
 
-    if appt.status in (AppointmentStatus.COMPLETED, AppointmentStatus.CANCELLED):
+    if appt.status in (AppointmentStatus.COMPLETED, AppointmentStatus.CANCELLED, AppointmentStatus.NOSHOW):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Cannot cancel a {appt.status.value} appointment",
         )
 
-    was_confirmed = appt.status == AppointmentStatus.CONFIRMED
+    was_confirmed = appt.status in (AppointmentStatus.CONFIRMED, AppointmentStatus.RESCHEDULED)
     appt.status = AppointmentStatus.CANCELLED
+    if payload.cancellation_reason:
+        appt.cancellation_reason = payload.cancellation_reason
     await db.flush()
     await db.refresh(appt)
 

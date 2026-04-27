@@ -1,0 +1,23 @@
+/* Badge component — dot indicator styles */
+
+/* Base dot geometry (replaces: w-1.5 h-1.5 rounded-full) */
+.badge-dot {
+  display: inline-block;
+  width: 0.375rem;   /* w-1.5 */
+  height: 0.375rem;  /* h-1.5 */
+  border-radius: 9999px; /* rounded-full */
+  flex-shrink: 0;
+}
+
+/* Per-status dot colours (replaces STATUS_DOTS Tailwind strings) */
+.badge-dot--pending      { background-color: rgb(251 191 36);  }  /* amber-400  */
+.badge-dot--confirmed    { background-color: rgb(52  211 153); }  /* teal-400   */
+.badge-dot--arrived      { background-color: rgb(167 139 250); }  /* violet-400 */
+.badge-dot--completed    { background-color: rgb(74  222 128); }  /* green-400  */
+.badge-dot--cancelled    { background-color: rgb(248 113 113); }  /* red-400    */
+.badge-dot--rescheduled  { background-color: rgb(96  165 250); }  /* blue-400   */
+.badge-dot--noshow       { background-color: rgb(251 146 60);  }  /* orange-400 */
+
+/* Fallback — unknown/unrecognised status */
+.badge--unknown     { @apply badge bg-slate-700 text-slate-300; }
+.badge-dot--unknown { background-color: rgb(148 163 184); }       /* slate-400  */

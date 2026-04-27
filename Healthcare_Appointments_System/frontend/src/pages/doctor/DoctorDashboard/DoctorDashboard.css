@@ -1,0 +1,420 @@
+/* ============================================================
+   DoctorDashboard – BEM component styles
+   Block: doctor-dash
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   Block root
+   ---------------------------------------------------------- */
+.doctor-dash {
+  max-width: 64rem;          /* ~5xl */
+  margin-inline: auto;
+  padding: 2.5rem 1rem;
+}
+
+/* ----------------------------------------------------------
+   Header
+   ---------------------------------------------------------- */
+.doctor-dash__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.doctor-dash__title {
+  font-family: var(--font-display, inherit);
+  font-weight: 700;
+  font-size: 1.875rem;
+  color: #f1f5f9;            /* slate-100 */
+  line-height: 1.2;
+}
+
+.doctor-dash__subtitle {
+  font-size: 0.875rem;
+  color: #64748b;            /* slate-400 */
+  margin-top: 0.25rem;
+}
+
+.doctor-dash__subtitle-name {
+  color: #2dd4bf;            /* teal-400 */
+}
+
+/* ----------------------------------------------------------
+   Header action buttons group
+   ---------------------------------------------------------- */
+.doctor-dash__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.doctor-dash__action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.doctor-dash__action-btn-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+/* ----------------------------------------------------------
+   Stats row
+   ---------------------------------------------------------- */
+.doctor-dash__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.doctor-dash__stat-value {
+  font-family: var(--font-display, inherit);
+  font-weight: 700;
+  font-size: 1.875rem;
+  line-height: 1;
+}
+
+.doctor-dash__stat-value--total     { color: #f1f5f9; }   /* slate-100  */
+.doctor-dash__stat-value--pending   { color: #fbbf24; }   /* amber-400  */
+.doctor-dash__stat-value--confirmed { color: #2dd4bf; }   /* teal-400   */
+.doctor-dash__stat-value--arrived   { color: #a78bfa; }   /* violet-400 */
+.doctor-dash__stat-value--completed { color: #4ade80; }   /* green-400  */
+
+.doctor-dash__stat-label {
+  font-size: 0.75rem;
+  color: #475569;            /* slate-500 */
+  margin-top: 0.25rem;
+}
+
+/* ----------------------------------------------------------
+   Tabs bar  (status filter + view toggle)
+   ---------------------------------------------------------- */
+.doctor-dash__tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.doctor-dash__tab-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.doctor-dash__tab {
+  padding: 0.375rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.doctor-dash__tab--active {
+  background-color: rgba(20, 184, 166, 0.15);
+  color: #2dd4bf;
+  border-color: rgba(20, 184, 166, 0.30);
+}
+
+/* ----------------------------------------------------------
+   Tab actions (sort + view toggle grouped)
+   ---------------------------------------------------------- */
+.doctor-dash__tab-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.doctor-dash__sort-select {
+  width: auto;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  font-size: 0.8125rem;
+}
+
+/* ----------------------------------------------------------
+   View toggle  (list | calendar)
+   ---------------------------------------------------------- */
+.doctor-dash__view-toggle {
+  display: flex;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.doctor-dash__view-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: #64748b;
+}
+
+.doctor-dash__view-btn:hover {
+  color: #cbd5e1;
+}
+
+.doctor-dash__view-btn--active {
+  background-color: rgba(20, 184, 166, 0.20);
+  color: #2dd4bf;
+}
+
+/* ----------------------------------------------------------
+   Calendar view wrapper
+   ---------------------------------------------------------- */
+.doctor-dash__week-view {
+  padding: 1.5rem;
+}
+
+/* ----------------------------------------------------------
+   List of appointment cards
+   ---------------------------------------------------------- */
+.doctor-dash__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ----------------------------------------------------------
+   Loading skeletons
+   ---------------------------------------------------------- */
+.doctor-dash__loading {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.doctor-dash__skeleton-item {
+  height: 9rem;
+  border-radius: 1rem;
+}
+
+/* ----------------------------------------------------------
+   Empty state
+   ---------------------------------------------------------- */
+.doctor-dash__empty {
+  text-align: center;
+  padding: 5rem 1.5rem;
+}
+
+.doctor-dash__empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.doctor-dash__empty-title {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.doctor-dash__empty-hint {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.doctor-dash__empty-link {
+  display: inline-flex;
+  margin-top: 1.5rem;
+}
+
+/* ----------------------------------------------------------
+   Modals – shared inner layout
+   ---------------------------------------------------------- */
+.doctor-dash__modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.doctor-dash__modal-warn {
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.doctor-dash__modal-warn strong {
+  color: #4ade80;            /* green-400 */
+}
+
+.doctor-dash__modal-reason {
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.doctor-dash__modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.doctor-dash__modal-actions > * {
+  flex: 1;
+}
+
+.doctor-dash__modal-reschedule-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.doctor-dash__modal-reschedule-actions > * {
+  flex: 1;
+}
+
+/* ----------------------------------------------------------
+   Profile form
+   ---------------------------------------------------------- */
+.doctor-dash__profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.doctor-dash__profile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.doctor-dash__profile-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.doctor-dash__profile-label {
+  /* uses global .label */
+}
+
+.doctor-dash__profile-input {
+  /* uses global .input */
+}
+
+.doctor-dash__profile-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.doctor-dash__profile-actions > * {
+  flex: 1;
+}
+
+/* ----------------------------------------------------------
+   Inline appointment-action buttons
+   ---------------------------------------------------------- */
+.doctor-dash__appt-btn {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.doctor-dash__appt-btn--noshow {
+  color: #fb923c;            /* orange-400 */
+}
+
+.doctor-dash__appt-btn--noshow:hover {
+  background-color: rgba(251, 146, 60, 0.10);
+}
+
+/* ----------------------------------------------------------
+   Responsive — mobile  (≤ 640 px)
+   ---------------------------------------------------------- */
+@media (max-width: 640px) {
+  .doctor-dash {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .doctor-dash__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .doctor-dash__title {
+    font-size: 1.5rem;
+  }
+
+  .doctor-dash__actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .doctor-dash__stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .doctor-dash__tabs {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .doctor-dash__tab-group {
+    width: 100%;
+  }
+
+  .doctor-dash__tab-actions {
+    align-self: flex-start;
+  }
+
+  .doctor-dash__sort-select {
+    font-size: 0.8125rem;
+  }
+
+  .doctor-dash__view-toggle {
+    align-self: flex-start;
+  }
+
+  .doctor-dash__week-view {
+    padding: 0.75rem;
+  }
+
+  .doctor-dash__empty {
+    padding: 3rem 1rem;
+  }
+
+  .doctor-dash__profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .doctor-dash__modal-actions,
+  .doctor-dash__modal-reschedule-actions,
+  .doctor-dash__profile-actions {
+    flex-direction: column;
+  }
+}
+
+/* ----------------------------------------------------------
+   Responsive — desktop  (≥ 1024 px)
+   ---------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .doctor-dash {
+    padding: 2.5rem 2rem;
+  }
+
+  .doctor-dash__stats {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .doctor-dash__profile-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .doctor-dash__header {
+    margin-bottom: 2rem;
+  }
+}

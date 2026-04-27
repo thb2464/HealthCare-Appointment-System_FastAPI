@@ -1,0 +1,3 @@
+1. In "my appointments" of patients and doctor it add the new appointment in the end of the list, it must be at the top. And add sort like new to old, old to new...
+2. There is no responsive in admin dashboard session, so make it responsive.
+3. When click in appointment details it must has something to reschedule or add reschedule button beside the appointments.

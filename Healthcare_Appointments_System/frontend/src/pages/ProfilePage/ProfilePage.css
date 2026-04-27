@@ -1,0 +1,174 @@
+/* ProfilePage.css */
+
+/* ── Layout wrapper ───────────────────────────────────────── */
+.profile-page {
+  max-width: 42rem;          /* ~2xl */
+  margin-inline: auto;
+  padding: 2.5rem 1rem;      /* py-10 px-4 */
+}
+
+/* ── Page title ───────────────────────────────────────────── */
+.profile-page__title {
+  font-family: var(--font-display, inherit);
+  font-weight: 700;
+  font-size: 1.875rem;       /* text-3xl */
+  color: #e2e8f0;            /* slate-100 */
+  margin-bottom: 2rem;       /* mb-8 */
+}
+
+/* ── Main card (uses global .card) ───────────────────────── */
+.profile-page__card {
+  padding: 2rem;             /* p-8 */
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;                 /* space-y-8 */
+}
+
+/* ── Identity row ─────────────────────────────────────────── */
+.profile-page__identity {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;              /* gap-5 */
+}
+
+/* ── Avatar circle ────────────────────────────────────────── */
+.profile-page__avatar {
+  width: 4rem;               /* w-16 */
+  height: 4rem;              /* h-16 */
+  border-radius: 9999px;
+  background: linear-gradient(to bottom right, #4fd1c5, #0d9488); /* teal-400 → teal-600 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #040d1a;            /* navy-950 */
+  font-size: 1.5rem;         /* text-2xl */
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Name / email / badge column ─────────────────────────── */
+.profile-page__identity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.profile-page__name {
+  font-weight: 600;
+  font-size: 1.125rem;       /* text-lg */
+  color: #e2e8f0;            /* slate-100 */
+  margin: 0;
+}
+
+.profile-page__email {
+  font-size: 0.875rem;       /* text-sm */
+  color: #94a3b8;            /* slate-400 */
+  margin: 0;
+}
+
+/* ── Role badge ───────────────────────────────────────────── */
+.profile-page__role-badge {
+  display: inline-block;
+  margin-top: 0.25rem;
+  padding: 0.125rem 0.5rem;  /* py-0.5 px-2 */
+  border-radius: 9999px;
+  background-color: rgba(20, 184, 166, 0.15);  /* teal-500/15 */
+  color: #4fd1c5;            /* teal-400 */
+  font-size: 0.75rem;        /* text-xs */
+  font-weight: 500;
+  border: 1px solid rgba(20, 184, 166, 0.2);   /* teal-500/20 */
+}
+
+/* ── Edit form ────────────────────────────────────────────── */
+.profile-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;              /* space-y-5 */
+}
+
+/* ── Action buttons row ───────────────────────────────────── */
+.profile-page__actions {
+  display: flex;
+  gap: 0.75rem;              /* gap-3 */
+  padding-top: 0.5rem;       /* pt-2 */
+}
+
+.profile-page__actions > * {
+  flex: 1;                   /* flex-1 on each button */
+}
+
+/* ── Read-only meta grid ──────────────────────────────────── */
+.profile-page__meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;                 /* gap-4 */
+  font-size: 0.875rem;       /* text-sm */
+}
+
+.profile-page__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;             /* mt-0.5 equivalent */
+}
+
+.profile-page__meta-label {
+  color: #64748b;            /* slate-500 */
+  margin: 0;
+}
+
+.profile-page__meta-value {
+  color: #e2e8f0;            /* slate-200 */
+  margin: 0;
+}
+
+/* ── Status variants ──────────────────────────────────────── */
+.profile-page__status--active {
+  color: #4ade80;            /* green-400 */
+  font-weight: 600;
+}
+
+.profile-page__status--inactive {
+  color: #f87171;            /* red-400 */
+  font-weight: 600;
+}
+
+/* ── Optional label hint (optional text) ─────────────────── */
+.profile-page__optional {
+  color: #475569;            /* slate-600 */
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (min-width: 640px) {  /* sm */
+  .profile-page {
+    padding-inline: 1.5rem;  /* px-6 */
+  }
+}
+
+@media (min-width: 1024px) { /* lg */
+  .profile-page {
+    padding-inline: 2rem;    /* px-8 */
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-page__card {
+    padding: 1.25rem;
+  }
+
+  .profile-page__title {
+    font-size: 1.5rem;
+  }
+
+  .profile-page__identity {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-page__meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-page__actions {
+    flex-direction: column;
+  }
+}

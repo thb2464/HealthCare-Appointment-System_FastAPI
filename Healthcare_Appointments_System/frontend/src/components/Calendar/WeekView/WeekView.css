@@ -1,0 +1,131 @@
+/* ============================================================
+   WeekView — BEM component styles
+   Global utilities kept in JSX: glass, btn-ghost
+   ============================================================ */
+
+/* Root container ------------------------------------------- */
+.week-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 */
+}
+
+/* Navigation bar ------------------------------------------- */
+.week-view__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.week-view__nav-btn {
+  /* btn-ghost handles colours; only geometry lives here */
+  padding: 0.5rem;       /* p-2 */
+  border-radius: 0.5rem; /* rounded-lg */
+}
+
+.week-view__nav-btn svg {
+  display: block;
+  width: 1rem;  /* w-4 */
+  height: 1rem; /* h-4 */
+}
+
+/* Week label ----------------------------------------------- */
+.week-view__week-label {
+  font-family: var(--font-display, inherit);
+  font-weight: 600;
+  color: rgb(226 232 240); /* slate-200 */
+}
+
+/* 7-column day grid ---------------------------------------- */
+.week-view__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.5rem; /* gap-2 */
+}
+
+/* Individual day column ------------------------------------ */
+.week-view__col {
+  min-height: 100px;
+  border-radius: 0.75rem; /* rounded-xl */
+  padding: 0.5rem;        /* p-2 */
+}
+
+/*
+ * Normal columns receive the "glass" global utility in JSX.
+ * The --today modifier replaces glass with a teal tint.
+ */
+.week-view__col--today {
+  border: 1px solid rgb(20 184 166 / 0.4);  /* teal-500/40 */
+  background-color: rgb(20 184 166 / 0.05); /* teal-500/5  */
+}
+
+/* Column header (abbreviated day name + date number) ------- */
+.week-view__col-header {
+  font-size: 0.75rem;    /* text-xs */
+  font-weight: 600;      /* font-semibold */
+  margin-bottom: 0.5rem; /* mb-2 */
+  color: rgb(100 116 139); /* slate-500 */
+}
+
+.week-view__col-header--today {
+  color: rgb(45 212 191); /* teal-400 */
+}
+
+/* Events list inside a column ------------------------------ */
+.week-view__events {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem; /* space-y-1 */
+}
+
+/* Single appointment chip ---------------------------------- */
+.week-view__event {
+  font-size: 0.625rem;       /* text-[10px] */
+  border-radius: 0.375rem;   /* rounded-md */
+  padding: 0.25rem 0.375rem; /* py-1 px-1.5 */
+  background-color: rgb(20 184 166 / 0.15); /* bg-teal-500/15 */
+  border: 1px solid rgb(20 184 166 / 0.20); /* border-teal-500/20 */
+  color: rgb(94 234 212);    /* text-teal-300 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Empty-day placeholder ------------------------------------ */
+.week-view__empty {
+  font-size: 0.625rem; /* text-[10px] */
+  color: rgb(51 65 85); /* text-slate-700 */
+}
+
+/* ============================================================
+   Responsive breakpoints
+   ============================================================ */
+
+/* Tablet / large-phone: collapse to 4 columns */
+@media (max-width: 768px) {
+  .week-view__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Small phone: 2 columns */
+@media (max-width: 480px) {
+  .week-view__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .week-view__col {
+    min-height: 80px;
+  }
+
+  .week-view__week-label {
+    font-size: 0.8rem;
+  }
+}
+
+/* Very small phone: single column */
+@media (max-width: 360px) {
+  .week-view__grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}

@@ -29,7 +29,13 @@
       "mcp__serena__replace_content",
       "Bash(../venv/Scripts/python.exe -m alembic revision --autogenerate -m \"add_arrived_status_receptionist_role_waitlist_table\")",
       "Bash(../venv/Scripts/python.exe -m alembic upgrade head)",
-      "Bash(../venv/Scripts/python.exe -c \"from app.main import app; print\\('OK — app loaded'\\)\")"
+      "Bash(../venv/Scripts/python.exe -c \"from app.main import app; print\\('OK — app loaded'\\)\")",
+      "Bash(docker compose:*)",
+      "Bash(rm components/DoctorCard.jsx components/Navbar.jsx components/AppointmentCard.jsx)",
+      "Bash(rm components/ui/Button.jsx components/ui/Modal.jsx components/ui/Toast.jsx components/ui/Badge.jsx)",
+      "Bash(rm components/Calendar/SlotPicker.jsx components/Calendar/WeekView.jsx)",
+      "Bash(rm components/forms/BookingForm.jsx components/forms/RegisterForm.jsx components/forms/LoginForm.jsx)",
+      "Bash(rm pages/LandingPage.jsx pages/ProfilePage.jsx pages/patient/SearchPage.jsx pages/patient/BookingPage.jsx pages/patient/DoctorProfilePage.jsx pages/patient/PatientDashboard.jsx pages/doctor/DoctorDashboard.jsx pages/doctor/AvailabilitySettings.jsx pages/auth/LoginPage.jsx pages/auth/RegisterPage.jsx pages/admin/AdminDashboard.jsx)"
     ]
   },
   "enabledMcpjsonServers": [

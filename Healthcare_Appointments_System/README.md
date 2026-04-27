@@ -31,30 +31,102 @@ In **production** (Docker) a single container at port `8000` serves everything.
 
 ```
 /  (project root)
-├── backend/            FastAPI application
-│   └── app/
-│       ├── main.py         # App factory + SPA static file serving
-│       ├── config.py       # pydantic-settings (.env loading)
-│       ├── database.py     # Async SQLAlchemy engine & session
-│       ├── dependencies.py # get_db, JWT auth guards
-│       ├── models/         # SQLAlchemy ORM models
-│       ├── schemas/        # Pydantic v2 schemas
-│       ├── routers/        # Route handlers + inlined business logic
-│       │   ├── auth.py
-│       │   ├── users.py
-│       │   ├── doctors.py      # includes availability helpers
-│       │   ├── appointments.py # includes booking helpers
-│       │   ├── reviews.py
-│       │   └── admin.py
-│       ├── utils/          # security.py (JWT/bcrypt), email.py
-│       └── static/         # ← compiled React SPA (git-ignored)
-├── frontend/           React + Vite application
-│   └── src/            (standard Vite/React layout)
-├── alembic/            DB migration scripts
-├── Dockerfile          Multi-stage: Node build → Python runtime
-├── docker-compose.yml  app + postgres (2 services)
-├── requirements.txt    Python dependencies
-└── .env.example        Environment variable template
+├── backend/
+│   ├── app/
+│   │   ├── main.py             # App factory + SPA static file serving
+│   │   ├── config.py           # pydantic-settings (.env loading)
+│   │   ├── database.py         # Async SQLAlchemy engine & session
+│   │   ├── dependencies.py     # get_db, JWT auth guards
+│   │   ├── models/             # SQLAlchemy ORM models
+│   │   │   ├── user.py
+│   │   │   ├── doctor.py
+│   │   │   ├── appointment.py
+│   │   │   ├── availability.py
+│   │   │   ├── review.py
+│   │   │   ├── specialty.py
+│   │   │   └── waitlist.py
+│   │   ├── schemas/            # Pydantic v2 schemas
+│   │   │   ├── user.py
+│   │   │   ├── doctor.py
+│   │   │   ├── appointment.py
+│   │   │   └── review.py
+│   │   ├── routers/            # Route handlers
+│   │   │   ├── auth.py
+│   │   │   ├── users.py
+│   │   │   ├── doctors.py
+│   │   │   ├── appointments.py
+│   │   │   ├── reviews.py
+│   │   │   └── admin.py
+│   │   ├── utils/
+│   │   │   ├── security.py     # JWT / bcrypt
+│   │   │   ├── email.py        # Email notifications
+│   │   │   └── reminders.py    # Appointment reminder logic
+│   │   └── static/             # ← compiled React SPA (git-ignored)
+│   ├── alembic/                # DB migration scripts
+│   │   └── versions/
+│   ├── scripts/
+│   │   └── seed_db.py          # Database seeding script
+│   ├── tests/
+│   │   ├── conftest.py
+│   │   ├── test_auth.py
+│   │   ├── test_appointments.py
+│   │   ├── test_doctors.py
+│   │   ├── test_reviews.py
+│   │   └── test_admin.py
+│   └── seed.py
+├── frontend/
+│   └── src/
+│       ├── api/                # Axios API clients
+│       │   ├── axiosClient.js
+│       │   ├── authApi.js
+│       │   ├── appointmentApi.js
+│       │   ├── doctorApi.js
+│       │   ├── adminApi.js
+│       │   └── reviewApi.js
+│       ├── components/
+│       │   ├── AppointmentCard/
+│       │   ├── DoctorCard/
+│       │   ├── Navbar/
+│       │   ├── Calendar/
+│       │   │   ├── SlotPicker/
+│       │   │   └── WeekView/
+│       │   ├── forms/
+│       │   │   ├── BookingForm/
+│       │   │   ├── LoginForm/
+│       │   │   └── RegisterForm/
+│       │   └── ui/             # Reusable UI primitives
+│       │       ├── Badge/
+│       │       ├── Button/
+│       │       ├── Modal/
+│       │       └── Toast/
+│       ├── context/
+│       │   └── AuthContext.jsx
+│       ├── hooks/
+│       │   ├── useAuth.js
+│       │   └── useAppointments.js
+│       ├── pages/
+│       │   ├── LandingPage/
+│       │   ├── ProfilePage/
+│       │   ├── auth/
+│       │   │   ├── LoginPage/
+│       │   │   └── RegisterPage/
+│       │   ├── patient/
+│       │   │   ├── PatientDashboard/
+│       │   │   ├── SearchPage/
+│       │   │   ├── DoctorProfilePage/
+│       │   │   ├── BookingPage/
+│       │   │   └── CheckoutPage/
+│       │   ├── doctor/
+│       │   │   ├── DoctorDashboard/
+│       │   │   └── AvailabilitySettings/
+│       │   └── admin/
+│       │       └── AdminDashboard/
+│       └── utils/
+│           └── dateHelpers.js
+├── Dockerfile              # Multi-stage: Node build → Python runtime
+├── docker-compose.yml      # app + postgres (2 services)
+├── requirements.txt        # Python dependencies
+└── .env.example            # Environment variable template
 ```
 
 ---

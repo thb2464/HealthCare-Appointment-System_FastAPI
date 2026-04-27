@@ -1,0 +1,126 @@
+/* ─── Modal ─────────────────────────────────────────────────── */
+
+/* Root container — full-screen centering layer */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem; /* p-4 */
+}
+
+/* ── Overlay (backdrop) ─────────────────────────────────────── */
+.modal__overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgb(2 6 23 / 0.8); /* bg-navy-950/80 */
+  backdrop-filter: blur(4px);           /* backdrop-blur-sm */
+  /* animate-fade-in is applied as a global utility class in JSX */
+}
+
+/* ── Panel ──────────────────────────────────────────────────── */
+.modal__panel {
+  position: relative;
+  width: 100%;
+  max-height: calc(100dvh - 2rem);
+  display: flex;
+  flex-direction: column;
+  /* card + animate-scale-in applied as global utility classes in JSX */
+}
+
+/* Size modifiers — constrain max-width */
+.modal__panel--sm {
+  max-width: 24rem;  /* max-w-sm  → 384 px */
+}
+.modal__panel--md {
+  max-width: 32rem;  /* max-w-lg  → 512 px */
+}
+.modal__panel--lg {
+  max-width: 42rem;  /* max-w-2xl → 672 px */
+}
+.modal__panel--xl {
+  max-width: 56rem;  /* max-w-4xl → 896 px */
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;                                        /* p-6 */
+  border-bottom: 1px solid rgb(255 255 255 / 0.06);      /* border-white/[0.06] */
+  flex-shrink: 0;
+}
+
+/* ── Title ──────────────────────────────────────────────────── */
+.modal__title {
+  font-size: 1.125rem; /* text-lg */
+  /* section-title applied as a global utility class in JSX */
+}
+
+/* ── Close button ───────────────────────────────────────────── */
+.modal__close-btn {
+  width: 2rem;           /* w-8 */
+  height: 2rem;          /* h-8 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem; /* rounded-lg */
+  border: none;
+  background: transparent;
+  color: rgb(148 163 184);  /* text-slate-400 */
+  cursor: pointer;
+  transition: color 150ms ease, background-color 150ms ease; /* transition-colors */
+}
+
+.modal__close-btn:hover {
+  color: rgb(226 232 240);                  /* hover:text-slate-200 */
+  background-color: rgb(255 255 255 / 0.06); /* hover:bg-white/[0.06] */
+}
+
+/* ── Close icon ─────────────────────────────────────────────── */
+.modal__close-icon {
+  width: 1rem;   /* w-4 */
+  height: 1rem;  /* h-4 */
+  display: block;
+  flex-shrink: 0;
+}
+
+/* ── Body ───────────────────────────────────────────────────── */
+.modal__body {
+  padding: 1.5rem; /* p-6 */
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Responsive overrides ───────────────────────────────────── */
+
+/* Compact padding on small devices */
+@media (max-width: 480px) {
+  .modal {
+    padding: 0.5rem;
+    align-items: flex-end;   /* sheet slides up from bottom on mobile */
+  }
+
+  .modal__panel {
+    max-height: calc(100dvh - 1rem);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .modal__header,
+  .modal__body {
+    padding: 1rem;
+  }
+
+  /* All size variants go full-width on very small screens */
+  .modal__panel--sm,
+  .modal__panel--md,
+  .modal__panel--lg,
+  .modal__panel--xl {
+    max-width: 100%;
+  }
+}

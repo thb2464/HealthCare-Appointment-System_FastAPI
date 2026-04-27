@@ -1,0 +1,84 @@
+/* RegisterPage.css */
+
+/* ── Outer centering wrapper ──────────────────────────────── */
+.register-page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;        /* py-16 px-4 */
+}
+
+/* ── Inner column (max-w-sm) ──────────────────────────────── */
+.register-page__inner {
+  width: 100%;
+  max-width: 24rem;          /* max-w-sm */
+}
+
+/* ── Logo / header block ──────────────────────────────────── */
+.register-page__header {
+  text-align: center;
+  margin-bottom: 2.5rem;     /* mb-10 */
+}
+
+/* ── Icon wrapper ─────────────────────────────────────────── */
+.register-page__icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;             /* w-14 */
+  height: 3.5rem;            /* h-14 */
+  border-radius: 1rem;       /* rounded-2xl */
+  background-color: rgba(20, 184, 166, 0.1);   /* teal-500/10 */
+  border: 1px solid rgba(20, 184, 166, 0.2);   /* teal-500/20 */
+  margin-bottom: 1.25rem;    /* mb-5 */
+}
+
+/* ── SVG icon ─────────────────────────────────────────────── */
+.register-page__icon {
+  width: 1.75rem;            /* w-7 */
+  height: 1.75rem;           /* h-7 */
+  color: #4fd1c5;            /* teal-400 */
+}
+
+/* ── Page title ───────────────────────────────────────────── */
+.register-page__title {
+  font-family: var(--font-display, inherit);
+  font-weight: 700;
+  font-size: 1.5rem;         /* text-2xl */
+  color: #e2e8f0;            /* slate-100 */
+  margin: 0;
+}
+
+/* ── Subtitle ─────────────────────────────────────────────── */
+.register-page__subtitle {
+  color: #64748b;            /* slate-500 */
+  font-size: 0.875rem;       /* text-sm */
+  margin: 0.25rem 0 0;       /* mt-1 */
+}
+
+/* ── Card (uses global .card + .animate-slide-up) ────────── */
+.register-page__card {
+  padding: 2rem;             /* p-8 */
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 400px) {
+  .register-page {
+    padding: 2rem 0.75rem;
+  }
+
+  .register-page__card {
+    padding: 1.25rem;
+  }
+
+  .register-page__title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .register-page {
+    padding: 4rem 1.5rem;
+  }
+}

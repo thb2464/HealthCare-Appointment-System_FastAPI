@@ -1,20 +1,22 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import ToastProvider from "./components/ui/Toast";
-import Navbar from "./components/Navbar";
+import ToastProvider from "./components/ui/Toast/Toast";
+import Navbar from "./components/Navbar/Navbar";
 
 // Pages
-import LandingPage from "./pages/LandingPage";
-import LoginPage from "./pages/auth/LoginPage";
-import RegisterPage from "./pages/auth/RegisterPage";
-import SearchPage from "./pages/patient/SearchPage";
-import DoctorProfilePage from "./pages/patient/DoctorProfilePage";
-import BookingPage from "./pages/patient/BookingPage";
-import PatientDashboard from "./pages/patient/PatientDashboard";
-import DoctorDashboard from "./pages/doctor/DoctorDashboard";
-import AvailabilitySettings from "./pages/doctor/AvailabilitySettings";
-import AdminDashboard from "./pages/admin/AdminDashboard";
+import LandingPage from "./pages/LandingPage/LandingPage";
+import LoginPage from "./pages/auth/LoginPage/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage/RegisterPage";
+import SearchPage from "./pages/patient/SearchPage/SearchPage";
+import DoctorProfilePage from "./pages/patient/DoctorProfilePage/DoctorProfilePage";
+import BookingPage from "./pages/patient/BookingPage/BookingPage";
+import CheckoutPage from "./pages/patient/CheckoutPage/CheckoutPage";
+import PatientDashboard from "./pages/patient/PatientDashboard/PatientDashboard";
+import DoctorDashboard from "./pages/doctor/DoctorDashboard/DoctorDashboard";
+import AvailabilitySettings from "./pages/doctor/AvailabilitySettings/AvailabilitySettings";
+import AdminDashboard from "./pages/admin/AdminDashboard/AdminDashboard";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 
 function NotFound() {
   return (
@@ -45,6 +47,7 @@ export default function App() {
 
                 {/* Patient */}
                 <Route path="/doctors/:id/book" element={<BookingPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/dashboard" element={<PatientDashboard />} />
 
                 {/* Doctor */}
@@ -53,6 +56,9 @@ export default function App() {
 
                 {/* Admin */}
                 <Route path="/admin" element={<AdminDashboard />} />
+
+                {/* Profile */}
+                <Route path="/profile" element={<ProfilePage />} />
 
                 {/* Fallback */}
                 <Route path="*" element={<NotFound />} />

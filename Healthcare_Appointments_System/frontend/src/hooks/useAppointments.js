@@ -22,8 +22,8 @@ export function useAppointments(params = {}) {
 
   useEffect(() => { fetch(); }, [fetch]);
 
-  const cancel = async (id) => {
-    await cancelAppointment(id);
+  const cancel = async (id, cancellationReason) => {
+    await cancelAppointment(id, cancellationReason);
     await fetch();
   };
 
@@ -32,8 +32,8 @@ export function useAppointments(params = {}) {
     await fetch();
   };
 
-  const complete = async (id) => {
-    await updateAppointment(id, { status: "completed" });
+  const complete = async (id, notes) => {
+    await updateAppointment(id, { status: "completed", notes: notes || undefined });
     await fetch();
   };
 

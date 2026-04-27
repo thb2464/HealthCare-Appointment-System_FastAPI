@@ -17,10 +17,19 @@ class AppointmentCreate(BaseModel):
 class AppointmentStatusUpdate(BaseModel):
     status: AppointmentStatus
     notes: str | None = Field(default=None, max_length=2000)
+    cancellation_reason: str | None = Field(default=None, max_length=500)
 
 
 class AppointmentReschedule(BaseModel):
     scheduled_at: datetime = Field(..., description="New ISO-8601 UTC datetime")
+
+
+class AppointmentNoShowRequest(BaseModel):
+    cancellation_reason: str | None = Field(default=None, max_length=500)
+
+
+class AppointmentCancelRequest(BaseModel):
+    cancellation_reason: str | None = Field(default=None, max_length=500)
 
 
 # ── Response schemas ───────────────────────────────────────────────────────────
@@ -33,6 +42,10 @@ class AppointmentResponse(BaseModel):
     status: AppointmentStatus
     reason: str | None = None
     notes: str | None = None
+    cancellation_reason: str | None = None
+    deposit_paid: bool = False
+    reschedule_count: int = 0
+    reschedule_fee_applied: bool = False
     created_at: datetime
     updated_at: datetime
     patient: UserPublic
@@ -48,6 +61,16 @@ class AppointmentListResponse(BaseModel):
     status: AppointmentStatus
     reason: str | None = None
     notes: str | None = None
+    cancellation_reason: str | None = None
+    deposit_paid: bool = False
+    reschedule_count: int = 0
+    reschedule_fee_applied: bool = False
     created_at: datetime
     patient: UserPublic
     doctor: DoctorListItem
+
+
+class CheckinTokenResponse(BaseModel):
+    token: str
+    expires_at: datetime
+    checkin_url: str

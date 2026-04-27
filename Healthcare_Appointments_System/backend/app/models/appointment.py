@@ -1,6 +1,6 @@
 import enum
 
-from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, UniqueConstraint, func
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -13,6 +13,7 @@ class AppointmentStatus(str, enum.Enum):
     COMPLETED = "COMPLETED"
     CANCELLED = "CANCELLED"
     RESCHEDULED = "RESCHEDULED"
+    NOSHOW = "NOSHOW"
 
 
 class Appointment(Base):
@@ -41,6 +42,13 @@ class Appointment(Base):
     )
     reason: Mapped[str | None] = mapped_column(String(500), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Cancellation / no-show
+    cancellation_reason: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    # Payment tracking
+    deposit_paid: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    # Reschedule tracking
+    reschedule_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    reschedule_fee_applied: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

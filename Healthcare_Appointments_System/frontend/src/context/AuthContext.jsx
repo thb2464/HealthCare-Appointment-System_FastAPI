@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
     if (!token) { setLoading(false); return; }
     try {
       const { data } = await getMe();
-      setUser(data);
+      setUser({ ...data, role: data.role?.toLowerCase() });
     } catch {
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
@@ -26,7 +26,7 @@ export function AuthProvider({ children }) {
   const loginUser = (tokens, userData) => {
     localStorage.setItem("access_token", tokens.access_token);
     localStorage.setItem("refresh_token", tokens.refresh_token);
-    setUser(userData);
+    setUser(userData ? { ...userData, role: userData.role?.toLowerCase() } : null);
   };
 
   const logoutUser = () => {
