@@ -51,7 +51,7 @@
   background: linear-gradient(
     to right,
     transparent,
-    rgba(45, 212, 191, 0.5),
+    rgba(16, 185, 129, 0.5),
     transparent
   );
 }
@@ -72,14 +72,14 @@
   border-radius: 1rem;
   background: linear-gradient(
     to bottom right,
-    rgba(20, 184, 166, 0.2),
-    #0c1f3f
+    rgba(5, 150, 105, 0.2),
+    #ffffff
   );
-  border: 1px solid rgba(20, 184, 166, 0.25);
+  border: 1px solid rgba(5, 150, 105, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-accent-light, #2dd4bf);
+  color: var(--color-accent-light, #10b981);
   font-weight: 700;
   font-size: 1.5rem;
   flex-shrink: 0;
@@ -104,7 +104,7 @@
   font-weight: 700;
   font-size: 1.875rem;   /* text-3xl */
   line-height: 1.2;
-  color: #e2e8f0;        /* slate-100 */
+  color: #1e293b;        /* slate-800 */
   margin: 0;
 }
 
@@ -113,9 +113,9 @@
   margin-top: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-accent-light, #2dd4bf);
-  background: rgba(20, 184, 166, 0.1);
-  border: 1px solid rgba(20, 184, 166, 0.2);
+  color: var(--color-accent-light, #10b981);
+  background: rgba(5, 150, 105, 0.1);
+  border: 1px solid rgba(5, 150, 105, 0.2);
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
 }
@@ -126,7 +126,7 @@
   gap: 1.25rem;
   margin-top: 1rem;
   font-size: 0.875rem;
-  color: #64748b;         /* slate-400 */
+  color: #94a3b8;         /* slate-400 */
 }
 
 .doctor-profile__meta-item {
@@ -155,16 +155,16 @@
 }
 
 .doctor-profile__star--empty {
-  color: #334155;   /* slate-700 */
+  color: #cbd5e1;   /* slate-300 */
 }
 
 .doctor-profile__rating-value {
-  color: #cbd5e1;   /* slate-300 */
+  color: #334155;   /* slate-700 */
   font-weight: 500;
 }
 
 .doctor-profile__rating-count {
-  color: #475569;   /* slate-500 */
+  color: #94a3b8;   /* slate-400 */
 }
 
 /* ----------------------------------------------------------
@@ -177,7 +177,7 @@
 
 .doctor-profile__fee-label {
   font-size: 0.75rem;
-  color: #475569;           /* slate-500 */
+  color: #94a3b8;           /* slate-400 */
   text-transform: uppercase;
   letter-spacing: 0.075em;
   margin-bottom: 0.25rem;
@@ -186,7 +186,7 @@
 .doctor-profile__fee-amount {
   font-weight: 700;
   font-size: 1.875rem;
-  color: var(--color-accent-light, #2dd4bf);
+  color: var(--color-accent-light, #10b981);
   margin: 0;
 }
 
@@ -216,7 +216,7 @@
 .doctor-profile__section-title {
   font-weight: 600;
   font-size: 1.125rem;   /* text-lg */
-  color: #e2e8f0;
+  color: #1e293b;
   margin: 0 0 0.75rem;
 }
 
@@ -224,7 +224,7 @@
    About / bio
    ---------------------------------------------------------- */
 .doctor-profile__about {
-  color: #64748b;
+  color: #94a3b8;
   line-height: 1.65;
   font-size: 0.875rem;
   margin: 0;
@@ -237,12 +237,12 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 0.75rem;
-  background: rgba(20, 184, 166, 0.1);
-  border: 1px solid rgba(20, 184, 166, 0.2);
+  background: rgba(5, 150, 105, 0.1);
+  border: 1px solid rgba(5, 150, 105, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-accent-light, #2dd4bf);
+  color: var(--color-accent-light, #10b981);
   flex-shrink: 0;
 }
 
@@ -253,13 +253,13 @@
 
 .doctor-profile__address-label {
   font-size: 0.75rem;
-  color: #475569;
+  color: #94a3b8;
   margin: 0 0 0.25rem;
 }
 
 .doctor-profile__address-text {
   font-size: 0.875rem;
-  color: #cbd5e1;
+  color: #334155;
   margin: 0;
 }
 
@@ -269,7 +269,7 @@
 .doctor-profile__reviews-title {
   font-weight: 600;
   font-size: 1.125rem;
-  color: #e2e8f0;
+  color: #1e293b;
   margin: 0 0 1rem;
   display: flex;
   align-items: baseline;
@@ -277,7 +277,7 @@
 }
 
 .doctor-profile__reviews-count {
-  color: #475569;
+  color: #94a3b8;
   font-weight: 400;
   font-size: 0.875rem;
 }
@@ -290,7 +290,7 @@
 
 .doctor-profile__review-card {
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .doctor-profile__review-card:last-child {
@@ -308,7 +308,7 @@
 .doctor-profile__review-name {
   font-weight: 500;
   font-size: 0.875rem;
-  color: #cbd5e1;   /* slate-300 */
+  color: #334155;   /* slate-700 */
 }
 
 .doctor-profile__review-stars {
@@ -319,19 +319,19 @@
 
 .doctor-profile__review-text {
   font-size: 0.875rem;
-  color: #64748b;
+  color: #94a3b8;
   margin: 0;
 }
 
 .doctor-profile__review-date {
   font-size: 0.75rem;
-  color: #334155;   /* slate-600 */
+  color: #cbd5e1;   /* slate-300 */
   margin-top: 0.25rem;
 }
 
 .doctor-profile__no-reviews {
   font-size: 0.875rem;
-  color: #475569;
+  color: #94a3b8;
   margin: 0;
 }
 
@@ -352,7 +352,7 @@
 .doctor-profile__book-card-title {
   font-weight: 600;
   font-size: 1.125rem;
-  color: #e2e8f0;
+  color: #1e293b;
   margin: 0 0 1rem;
 }
 
@@ -372,13 +372,13 @@
 
 .doctor-profile__signin-hint {
   font-size: 0.875rem;
-  color: #64748b;
+  color: #94a3b8;
   margin: 0 0 0.5rem;
 }
 
 .doctor-profile__role-hint {
   font-size: 0.875rem;
-  color: #475569;
+  color: #94a3b8;
   margin: 0;
 }
 

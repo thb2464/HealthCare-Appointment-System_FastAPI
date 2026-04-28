@@ -14,6 +14,8 @@ export default function AppointmentCard({ appointment, actions, role }) {
     deposit_paid,
     reschedule_count,
     reschedule_fee_applied,
+    proposed_new_time,
+    reschedule_requested_by,
     doctor,
     patient,
   } = appointment;
@@ -69,6 +71,16 @@ export default function AppointmentCard({ appointment, actions, role }) {
           <span className="appt-card__time-end">→ {formatTime(end_at)}</span>
         )}
       </div>
+
+      {/* Proposed reschedule time */}
+      {status === "RESCHEDULE_REQUESTED" && proposed_new_time && (
+        <div className="appt-card__proposed-time">
+          <span className="appt-card__proposed-time-label">
+            {reschedule_requested_by === "patient" ? "Bệnh nhân" : "Bác sĩ"} đề xuất đổi sang:
+          </span>
+          <strong>{formatDateTime(proposed_new_time)}</strong>
+        </div>
+      )}
 
       {/* Reason */}
       {reason && (

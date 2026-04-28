@@ -1,122 +1,339 @@
-/* BookingPage.css — BEM styles for BookingPage */
+/* BookingPage.css — Redesigned two-column booking layout */
 
 /* ─── Page wrapper ─────────────────────────────────── */
-.booking-page {
-  max-width: 42rem;       /* max-w-2xl */
+.bp {
+  max-width: 72rem;
   margin-inline: auto;
-  padding: 2.5rem 1rem;   /* py-10 px-4 */
+  padding: 2rem 1rem;
 }
 
-/* ─── Loading skeleton ─────────────────────────────── */
-.booking-page__loading {
-  max-width: 42rem;       /* max-w-2xl */
+/* ─── Loading ──────────────────────────────────────── */
+.bp__loading {
+  max-width: 72rem;
   margin-inline: auto;
-  padding: 3rem 1rem;     /* py-12 px-4 */
+  padding: 3rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;              /* space-y-4 */
+  gap: 1rem;
+}
+.bp__skeleton-lg { height: 20rem; border-radius: 1rem; }
+.bp__skeleton-sm { height: 12rem; border-radius: 1rem; }
+
+/* ─── Top bar (back + title) ──────────────────────── */
+.bp__top {
+  margin-bottom: 1.5rem;
 }
 
-.booking-page__loading .skeleton-title {
-  height: 3rem;           /* h-12 */
-  width: 12rem;           /* w-48 */
-  border-radius: 0.75rem; /* rounded-xl */
-}
-
-.booking-page__loading .skeleton-body {
-  height: 16rem;          /* h-64 */
-  border-radius: 1rem;    /* rounded-2xl */
-}
-
-/* ─── Back button ──────────────────────────────────── */
-/*
- * .booking-page__back-btn inherits the global .btn-ghost utility class.
- * We add layout-specific properties here.
- */
-.booking-page__back-btn {
+.bp__back {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;            /* gap-2 */
-  margin-bottom: 1.5rem;  /* mb-6 */
-  font-size: 0.875rem;    /* text-sm */
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  margin-bottom: 0.75rem;
 }
+.bp__back svg { width: 0.875rem; height: 0.875rem; }
 
-.booking-page__back-btn svg {
-  width: 1rem;            /* w-4 */
-  height: 1rem;           /* h-4 */
-  flex-shrink: 0;
-}
-
-/* ─── Header block ─────────────────────────────────── */
-.booking-page__header {
-  margin-bottom: 1.5rem;  /* mb-6 */
-}
-
-.booking-page__title {
+.bp__title {
   font-family: var(--font-display, inherit);
   font-weight: 700;
-  font-size: 1.875rem;    /* text-3xl */
-  color: #f1f5f9;         /* text-slate-100 */
+  font-size: 1.75rem;
+  color: #0f172a;
   margin: 0;
   line-height: 1.2;
 }
 
-.booking-page__subtitle {
-  color: #94a3b8;         /* text-slate-400 */
-  font-size: 0.875rem;    /* text-sm */
-  margin: 0.25rem 0 0;   /* mt-1 */
+.bp__subtitle {
+  color: #94a3b8;
+  font-size: 0.875rem;
+  margin: 0.25rem 0 0;
 }
 
-/* ─── Form card ────────────────────────────────────── */
-/*
- * .booking-page__card inherits the global .card utility class.
- * Padding is specified here so it doesn't bleed into the shared .card base.
- */
-.booking-page__card {
-  padding: 1.75rem;       /* p-7 */
+/* ─── 2-column grid ────────────────────────────────── */
+.bp__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
 }
+
+/* ═══════════════════════════════════════════════════
+   LEFT — Calendar + Slots
+   ═══════════════════════════════════════════════════ */
+.bp__calendar {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Month nav */
+.bp__cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bp__cal-nav-btn { padding: 0.375rem; border-radius: 0.5rem; }
+.bp__cal-nav-btn svg { width: 1rem; height: 1rem; display: block; }
+.bp__cal-month {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Day-of-week header */
+.bp__cal-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  text-align: center;
+}
+.bp__cal-dow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #94a3b8;
+  padding-block: 0.25rem;
+}
+
+/* Calendar grid */
+.bp__cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+}
+
+.bp__cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #334155;
+  transition: background-color 0.15s, color 0.15s;
+}
+.bp__cal-day:not(:disabled):hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: #1e293b;
+}
+.bp__cal-day--past { opacity: 0.3; cursor: not-allowed; }
+.bp__cal-day--active {
+  background-color: #059669;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
+}
+.bp__cal-day--today {
+  border: 1px solid rgba(5, 150, 105, 0.5);
+  color: #059669;
+}
+
+/* ─── Slots area (inside calendar card) ────────────── */
+.bp__slots-area {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.75rem;
+  min-height: 6rem;
+}
+
+.bp__slots-hint,
+.bp__slots-empty {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.8125rem;
+  padding: 1.5rem 0;
+  margin: 0;
+}
+
+.bp__slots-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: capitalize;
+  margin: 0 0 0.5rem;
+  font-weight: 500;
+}
+
+.bp__slots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.375rem;
+  max-height: 14rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.bp__slot-skeleton {
+  height: 2.25rem;
+  border-radius: 0.625rem;
+}
+
+.bp__slot {
+  padding: 0.5rem 0.375rem;
+  border-radius: 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: all 0.15s;
+  color: #334155;
+}
+.bp__slot:hover { color: #059669; }
+.bp__slot--selected {
+  background-color: #059669;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════
+   RIGHT — Sidebar (doctor, reason, action)
+   ═══════════════════════════════════════════════════ */
+.bp__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Doctor mini-card */
+.bp__doctor {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem;
+}
+.bp__doctor-avatar {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.625rem;
+  background: linear-gradient(135deg, rgba(5,150,105,0.2), #f8fafb);
+  border: 1px solid rgba(5,150,105,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(16,185,129,0.87);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+.bp__doctor-info { display: flex; flex-direction: column; gap: 0.0625rem; }
+.bp__doctor-name { font-weight: 600; color: #0f172a; margin: 0; font-size: 0.9375rem; }
+.bp__doctor-specialty { font-size: 0.8125rem; color: rgba(16,185,129,0.8); margin: 0; }
+.bp__doctor-fee { font-size: 0.8125rem; color: #334155; font-weight: 500; margin: 0.125rem 0 0; }
+
+/* Reason card */
+.bp__reason {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+.bp__reason-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #64748b;
+}
+.bp__reason-opt { color: #94a3b8; }
+.bp__reason-count {
+  font-size: 0.6875rem;
+  color: #94a3b8;
+  text-align: right;
+}
+
+/* Action card */
+.bp__action {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.bp__action-hint {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.8125rem;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+/* Summary block */
+.bp__summary {
+  background: rgba(5,150,105,0.05);
+  border: 1px solid rgba(5,150,105,0.15);
+  border-radius: 0.625rem;
+  padding: 0.875rem 1rem;
+  text-align: center;
+}
+.bp__summary-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  font-weight: 500;
+  margin: 0 0 0.375rem;
+}
+.bp__summary-time {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #059669;
+  margin: 0;
+  line-height: 1.2;
+}
+.bp__summary-date {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0.125rem 0 0;
+  text-transform: capitalize;
+}
+.bp__summary-doctor {
+  font-size: 0.8125rem;
+  color: #334155;
+  font-weight: 500;
+  margin: 0.25rem 0 0;
+}
+
+.bp__submit-btn { width: 100%; }
 
 /* ═══════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════ */
 
-/* ── Tablet / small screens (≥ 640 px) ─────────────── */
+/* Tablet — keep single col but wider slots */
 @media (min-width: 640px) {
-  .booking-page {
-    padding-inline: 1.5rem; /* sm:px-6 */
-  }
+  .bp { padding-inline: 1.5rem; }
+  .bp__slots-grid { grid-template-columns: repeat(4, 1fr); }
+}
 
-  .booking-page__loading {
-    padding-inline: 1.5rem;
+/* Desktop — 2 columns */
+@media (min-width: 768px) {
+  .bp__grid {
+    grid-template-columns: 1fr 20rem;
+  }
+  .bp__sidebar {
+    position: sticky;
+    top: 1.5rem;
+    align-self: start;
   }
 }
 
-/* ── Desktop (≥ 1024 px) ────────────────────────────── */
 @media (min-width: 1024px) {
-  .booking-page {
-    padding-inline: 2rem;
+  .bp { padding-inline: 2rem; }
+  .bp__grid {
+    grid-template-columns: 1fr 22rem;
+    gap: 1.5rem;
   }
-
-  .booking-page__loading {
-    padding-inline: 2rem;
-  }
-
-  .booking-page__card {
-    padding: 2rem;         /* slightly more breathing room on large screens */
-  }
+  .bp__slots-grid { grid-template-columns: repeat(5, 1fr); }
+  .bp__calendar { padding: 1.5rem; }
 }
 
-/* ── Mobile (≤ 640 px) — explicit overrides ─────────── */
-@media (max-width: 640px) {
-  .booking-page__title {
-    font-size: 1.5rem;    /* scale down on very small screens */
-  }
+@media (min-width: 1280px) {
+  .bp__slots-grid { grid-template-columns: repeat(6, 1fr); }
+}
 
-  .booking-page__card {
-    padding: 1.25rem;     /* reduce card padding on small screens */
-  }
-
-  .booking-page__loading .skeleton-title {
-    width: 8rem;
-  }
+/* Mobile small */
+@media (max-width: 479px) {
+  .bp__title { font-size: 1.375rem; }
+  .bp__slots-grid { grid-template-columns: repeat(3, 1fr); }
+  .bp__cal-day { font-size: 0.75rem; }
 }

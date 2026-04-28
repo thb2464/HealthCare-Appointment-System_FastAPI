@@ -12,6 +12,7 @@ from app.schemas.appointment import AppointmentListResponse, AppointmentStatusUp
 from app.schemas.doctor import DoctorResponse, DoctorProfileUpdate
 from app.models.waitlist import WaitlistEntry  # noqa: F401
 from app.utils.security import hash_password
+from app.routers.appointments import _validate_status_transition
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
@@ -124,6 +125,7 @@ async def update_appointment_status(
     appt = result.scalar_one_or_none()
     if not appt:
         raise HTTPException(status_code=404, detail="Appointment not found")
+    _validate_status_transition(appt.status, payload.status, UserRole.ADMIN)
     appt.status = payload.status
     if payload.notes is not None:
         appt.notes = payload.notes

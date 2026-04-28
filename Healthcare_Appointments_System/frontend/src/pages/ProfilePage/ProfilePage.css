@@ -12,7 +12,7 @@
   font-family: var(--font-display, inherit);
   font-weight: 700;
   font-size: 1.875rem;       /* text-3xl */
-  color: #e2e8f0;            /* slate-100 */
+  color: #1e293b;            /* slate-800 */
   margin-bottom: 2rem;       /* mb-8 */
 }
 
@@ -36,11 +36,11 @@
   width: 4rem;               /* w-16 */
   height: 4rem;              /* h-16 */
   border-radius: 9999px;
-  background: linear-gradient(to bottom right, #4fd1c5, #0d9488); /* teal-400 → teal-600 */
+  background: linear-gradient(to bottom right, #10b981, #047857); /* emerald-500 → emerald-700 */
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #040d1a;            /* navy-950 */
+  color: #ffffff;            /* white */
   font-size: 1.5rem;         /* text-2xl */
   font-weight: 700;
   flex-shrink: 0;
@@ -56,13 +56,13 @@
 .profile-page__name {
   font-weight: 600;
   font-size: 1.125rem;       /* text-lg */
-  color: #e2e8f0;            /* slate-100 */
+  color: #1e293b;            /* slate-800 */
   margin: 0;
 }
 
 .profile-page__email {
   font-size: 0.875rem;       /* text-sm */
-  color: #94a3b8;            /* slate-400 */
+  color: #64748b;            /* slate-500 */
   margin: 0;
 }
 
@@ -72,11 +72,11 @@
   margin-top: 0.25rem;
   padding: 0.125rem 0.5rem;  /* py-0.5 px-2 */
   border-radius: 9999px;
-  background-color: rgba(20, 184, 166, 0.15);  /* teal-500/15 */
-  color: #4fd1c5;            /* teal-400 */
+  background-color: rgba(5, 150, 105, 0.15);  /* emerald-600/15 */
+  color: #059669;            /* emerald-600 */
   font-size: 0.75rem;        /* text-xs */
   font-weight: 500;
-  border: 1px solid rgba(20, 184, 166, 0.2);   /* teal-500/20 */
+  border: 1px solid rgba(5, 150, 105, 0.2);   /* emerald-600/20 */
 }
 
 /* ── Edit form ────────────────────────────────────────────── */
@@ -112,29 +112,29 @@
 }
 
 .profile-page__meta-label {
-  color: #64748b;            /* slate-500 */
+  color: #94a3b8;            /* slate-400 */
   margin: 0;
 }
 
 .profile-page__meta-value {
-  color: #e2e8f0;            /* slate-200 */
+  color: #1e293b;            /* slate-800 */
   margin: 0;
 }
 
 /* ── Status variants ──────────────────────────────────────── */
 .profile-page__status--active {
-  color: #4ade80;            /* green-400 */
+  color: #16a34a;            /* green-600 */
   font-weight: 600;
 }
 
 .profile-page__status--inactive {
-  color: #f87171;            /* red-400 */
+  color: #dc2626;            /* red-600 */
   font-weight: 600;
 }
 
 /* ── Optional label hint (optional text) ─────────────────── */
 .profile-page__optional {
-  color: #475569;            /* slate-600 */
+  color: #94a3b8;            /* slate-400 */
 }
 
 /* ── Responsive ───────────────────────────────────────────── */

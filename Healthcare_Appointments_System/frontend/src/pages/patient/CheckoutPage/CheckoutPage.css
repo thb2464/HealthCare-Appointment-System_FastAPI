@@ -29,13 +29,13 @@
 .checkout-page__title {
   font-weight: 700;
   font-size: 1.75rem;
-  color: #f1f5f9;
+  color: #0f172a;
   margin: 0;
   line-height: 1.2;
 }
 
 .checkout-page__subtitle {
-  color: #94a3b8;
+  color: #64748b;
   font-size: 0.875rem;
   margin: 0.25rem 0 0;
 }
@@ -62,34 +62,34 @@
   border-radius: 0.75rem;
   background: linear-gradient(
     to bottom right,
-    rgba(20, 184, 166, 0.2),
-    #0f2044
+    rgba(5, 150, 105, 0.2),
+    #f8fafb
   );
-  border: 1px solid rgba(20, 184, 166, 0.2);
+  border: 1px solid rgba(5, 150, 105, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(94, 234, 212, 0.87);
+  color: rgba(16, 185, 129, 0.87);
   font-weight: 700;
   font-size: 1.125rem;
 }
 
 .checkout-page__doctor-name {
   font-weight: 600;
-  color: #f1f5f9;
+  color: #0f172a;
   margin: 0;
 }
 
 .checkout-page__doctor-specialty {
   font-size: 0.875rem;
-  color: rgba(45, 212, 191, 0.8);
+  color: rgba(16, 185, 129, 0.8);
   margin: 0.125rem 0 0;
 }
 
 /* ── Divider ──────────────────────────────────────────── */
 .checkout-page__divider {
   border: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid #e2e8f0;
   margin: 0;
 }
 
@@ -115,34 +115,34 @@
 
 .checkout-page__detail-label {
   font-size: 0.8125rem;
-  color: #64748b;
+  color: #94a3b8;
   flex-shrink: 0;
 }
 
 .checkout-page__detail-value {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #e2e8f0;
+  color: #1e293b;
   text-align: right;
 }
 
 .checkout-page__detail-value--accent {
-  color: #2dd4bf;
+  color: #059669;
 }
 
 .checkout-page__detail-reason {
   text-align: left;
   font-size: 0.875rem;
-  color: #94a3b8;
+  color: #64748b;
   font-weight: 400;
 }
 
 /* ── Notice ───────────────────────────────────────────── */
 .checkout-page__notice {
   font-size: 0.8125rem;
-  color: #64748b;
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid #e2e8f0;
   border-radius: 0.75rem;
   padding: 0.875rem 1rem;
   margin: 0;
@@ -150,7 +150,7 @@
 }
 
 .checkout-page__notice strong {
-  color: #94a3b8;
+  color: #64748b;
 }
 
 /* ── VNPay badge ──────────────────────────────────────── */
@@ -160,18 +160,18 @@
   justify-content: center;
   gap: 0.4rem;
   font-size: 0.8125rem;
-  color: #64748b;
+  color: #94a3b8;
 }
 
 .checkout-page__lock-icon {
   width: 0.875rem;
   height: 0.875rem;
-  color: #2dd4bf;
+  color: #059669;
   flex-shrink: 0;
 }
 
 .checkout-page__vnpay-badge strong {
-  color: #2dd4bf;
+  color: #059669;
 }
 
 /* ── Actions ──────────────────────────────────────────── */

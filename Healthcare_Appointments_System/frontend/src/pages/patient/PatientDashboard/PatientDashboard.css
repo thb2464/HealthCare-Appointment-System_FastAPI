@@ -20,19 +20,19 @@
   font-weight: 700;
   font-size: 1.875rem;       /* text-3xl */
   line-height: 1.2;
-  color: #e2e8f0;            /* slate-100 */
+  color: #1e293b;            /* slate-800 */
   margin: 0;
 }
 
 .patient-dash__subtitle {
-  color: #64748b;            /* slate-400 */
+  color: #94a3b8;            /* slate-400 */
   font-size: 0.875rem;       /* text-sm */
   margin-top: 0.25rem;
   margin-bottom: 0;
 }
 
 .patient-dash__subtitle-name {
-  color: #2dd4bf;            /* teal-400 */
+  color: #059669;            /* emerald-600 */
 }
 
 /* ─── Stats grid ──────────────────────────────────────────── */
@@ -49,14 +49,14 @@
   line-height: 1;
 }
 
-.patient-dash__stat-value--total     { color: #e2e8f0; }   /* slate-100 */
-.patient-dash__stat-value--upcoming  { color: #2dd4bf; }   /* teal-400  */
-.patient-dash__stat-value--completed { color: #4ade80; }   /* green-400 */
-.patient-dash__stat-value--cancelled { color: #64748b; }   /* slate-500 */
+.patient-dash__stat-value--total     { color: #1e293b; }   /* slate-800 */
+.patient-dash__stat-value--upcoming  { color: #059669; }   /* emerald-600 */
+.patient-dash__stat-value--completed { color: #16a34a; }   /* green-600 */
+.patient-dash__stat-value--cancelled { color: #94a3b8; }   /* slate-400 */
 
 .patient-dash__stat-label {
   font-size: 0.75rem;        /* text-xs */
-  color: #64748b;            /* slate-500 */
+  color: #94a3b8;            /* slate-400 */
 }
 
 /* ─── Controls row (tabs + sort) ─────────────────────────── */
@@ -92,25 +92,24 @@
   cursor: pointer;
   border: 1px solid transparent;
   transition: all 0.2s;
-  /* inherits glass + glass-hover via class */
-  color: #94a3b8;            /* slate-400 */
-  background-color: rgba(255, 255, 255, 0.04);
+  color: #64748b;            /* slate-500 */
+  background-color: rgba(0, 0, 0, 0.02);
   backdrop-filter: blur(4px);
 }
 
 .patient-dash__tab:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .patient-dash__tab--active {
-  background-color: rgba(20, 184, 166, 0.15);  /* teal-500/15 */
-  color: #2dd4bf;                               /* teal-400   */
-  border-color: rgba(20, 184, 166, 0.3);        /* teal-500/30 */
+  background-color: rgba(5, 150, 105, 0.15);  /* emerald-600/15 */
+  color: #059669;                               /* emerald-600   */
+  border-color: rgba(5, 150, 105, 0.3);        /* emerald-600/30 */
 }
 
 .patient-dash__tab--active:hover {
-  background-color: rgba(20, 184, 166, 0.2);
+  background-color: rgba(5, 150, 105, 0.2);
 }
 
 /* ─── Loading skeletons ───────────────────────────────────── */
@@ -138,13 +137,13 @@
 }
 
 .patient-dash__empty-title {
-  color: #94a3b8;            /* slate-400 */
+  color: #64748b;            /* slate-500 */
   font-weight: 500;
   margin: 0;
 }
 
 .patient-dash__empty-hint {
-  color: #64748b;            /* slate-500 */
+  color: #94a3b8;            /* slate-400 */
   font-size: 0.875rem;
   margin-top: 0.25rem;
   margin-bottom: 1.5rem;
@@ -170,22 +169,22 @@
 
 /* Reschedule — btn-secondary style */
 .patient-dash__action-btn--reschedule {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: rgba(0, 0, 0, 0.02);
   backdrop-filter: blur(4px);
-  border-color: rgba(255, 255, 255, 0.08);
-  color: #e2e8f0;
+  border-color: rgba(0, 0, 0, 0.06);
+  color: #1e293b;
 }
 
 .patient-dash__action-btn--reschedule:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 /* Cancel — btn-danger style */
 .patient-dash__action-btn--cancel {
   background-color: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.2);
-  color: #f87171;            /* red-400 */
+  color: #dc2626;            /* red-600 */
 }
 
 .patient-dash__action-btn--cancel:hover {
@@ -196,7 +195,7 @@
 /* Review — btn-ghost + amber accent */
 .patient-dash__action-btn--review {
   background-color: transparent;
-  color: #fbbf24;            /* amber-400 */
+  color: #d97706;            /* amber-600 */
   border: none;
   padding-inline: 1rem;
   padding-block: 0.5rem;
@@ -204,19 +203,19 @@
 }
 
 .patient-dash__action-btn--review:hover {
-  background-color: rgba(251, 191, 36, 0.1);  /* amber-400/10 */
+  background-color: rgba(217, 119, 6, 0.1);  /* amber-600/10 */
 }
 
 /* Payment — btn-info style */
 .patient-dash__action-btn--payment {
-  background-color: rgba(6, 182, 212, 0.1);   /* cyan-500/10 */
-  border-color: rgba(6, 182, 212, 0.2);
-  color: #06b6d4;            /* cyan-400 */
+  background-color: rgba(8, 145, 178, 0.1);   /* cyan-600/10 */
+  border-color: rgba(8, 145, 178, 0.2);
+  color: #0891b2;            /* cyan-600 */
 }
 
 .patient-dash__action-btn--payment:hover {
-  background-color: rgba(6, 182, 212, 0.2);
-  border-color: rgba(6, 182, 212, 0.4);
+  background-color: rgba(8, 145, 178, 0.2);
+  border-color: rgba(8, 145, 178, 0.4);
 }
 
 .patient-dash__action-btn--payment:disabled {
@@ -233,7 +232,7 @@
 
 .patient-dash__modal-warn {
   font-size: 0.875rem;
-  color: #94a3b8;            /* slate-400 */
+  color: #64748b;            /* slate-500 */
   margin: 0;
 }
 
@@ -242,7 +241,7 @@
 }
 
 .patient-dash__modal-reason-label .patient-dash__optional {
-  color: #475569;            /* slate-600 */
+  color: #94a3b8;            /* slate-400 */
 }
 
 .patient-dash__modal-reason {
@@ -285,7 +284,7 @@
   padding: 0;
   line-height: 1;
   transition: transform 0.15s;
-  color: #334155;            /* slate-700 (inactive) */
+  color: #cbd5e1;            /* slate-300 (inactive) */
 }
 
 .patient-dash__review-star:hover {
@@ -293,7 +292,7 @@
 }
 
 .patient-dash__review-star--active {
-  color: #fbbf24;            /* amber-400 */
+  color: #d97706;            /* amber-600 */
 }
 
 .patient-dash__review-textarea {
@@ -319,8 +318,8 @@
 
 .patient-dash__detail-reschedule-info {
   padding: 0.75rem 1rem;
-  background-color: rgba(20, 184, 166, 0.05);
-  border: 1px solid rgba(20, 184, 166, 0.15);
+  background-color: rgba(5, 150, 105, 0.05);
+  border: 1px solid rgba(5, 150, 105, 0.15);
   border-radius: 0.75rem;
 }
 
@@ -340,13 +339,13 @@
 .patient-dash__detail-value {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #e2e8f0;
+  color: #1e293b;
   margin-top: 0.25rem;
 }
 
 .patient-dash__detail-sub {
   font-size: 0.875rem;
-  color: #94a3b8;
+  color: #64748b;
   margin-top: 0.25rem;
 }
 
@@ -377,6 +376,24 @@
 }
 
 /* xs / very-small screens */
+/* ─── Pagination ─────────────────────────────────────────── */
+.patient-dash__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding-top: 1.25rem;
+}
+
+.patient-dash__page-label {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.patient-dash__page-btn {
+  min-width: 5rem;
+}
+
 @media (max-width: 479px) {
   .patient-dash__header {
     flex-direction: column;
@@ -394,5 +411,14 @@
   .patient-dash__modal-actions,
   .patient-dash__reschedule-section {
     flex-direction: column;
+  }
+
+  .patient-dash__pagination {
+    gap: 0.5rem;
+  }
+
+  .patient-dash__page-btn {
+    flex: 1;
+    justify-content: center;
   }
 }

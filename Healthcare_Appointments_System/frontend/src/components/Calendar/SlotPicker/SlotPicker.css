@@ -29,7 +29,7 @@
 .slot-picker__week-label {
   font-size: 0.875rem; /* text-sm */
   font-weight: 500;    /* font-medium */
-  color: #cbd5e1;      /* text-slate-300 */
+  color: #334155;      /* slate-700 (was slate-300) */
 }
 
 /* ── Month calendar header (day-of-week labels) ───────── */
@@ -43,7 +43,7 @@
 .slot-picker__cal-dow {
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #64748b;
+  color: #94a3b8;
   padding-block: 0.25rem;
 }
 
@@ -66,13 +66,13 @@
   cursor: pointer;
   background: none;
   border: none;
-  color: #cbd5e1;
+  color: #334155;
   transition: background-color 0.15s, color 0.15s;
 }
 
 .slot-picker__cal-day:not(:disabled):hover {
-  background-color: rgba(255, 255, 255, 0.06);
-  color: #e2e8f0;
+  background-color: rgba(0, 0, 0, 0.04);
+  color: #1e293b;
 }
 
 /* past / disabled */
@@ -83,22 +83,22 @@
 
 /* selected date */
 .slot-picker__cal-day--active {
-  background-color: #14b8a6;
-  color: #020617;
+  background-color: #059669;
+  color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 0 10px rgba(20, 184, 166, 0.35);
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
 }
 
 /* today (not active) */
 .slot-picker__cal-day--today {
-  border: 1px solid rgba(20, 184, 166, 0.5);
-  color: #2dd4bf;
+  border: 1px solid rgba(5, 150, 105, 0.5);
+  color: #10b981;
 }
 
 /* ── Slots section label ─────────────────────────────── */
 .slot-picker__slots-label {
   font-size: 0.8125rem;
-  color: #94a3b8;
+  color: #64748b;
   margin: 0;
 }
 
@@ -109,6 +109,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* grid-cols-3 (mobile) */
   gap: 0.5rem;                           /* gap-2 */
+  min-height: 5rem;                      /* match slots min-height */
 }
 
 .slot-picker__loading .skeleton {
@@ -121,6 +122,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* grid-cols-3 (mobile) */
   gap: 0.5rem;                           /* gap-2 */
+  min-height: 5rem;                      /* prevent modal resize on load */
   max-height: 16rem;                     /* max-h-64 */
   overflow-y: auto;
   padding-right: 0.25rem;               /* pr-1 */
@@ -139,31 +141,32 @@
 }
 
 .slot-picker__slot:hover {
-  color: #2dd4bf; /* hover:text-teal-400 */
+  color: #10b981; /* hover:text-emerald-500 */
 }
 
 /* Slot — selected modifier */
 .slot-picker__slot--selected {
-  background-color: #14b8a6;                    /* bg-teal-500 */
-  color: #020617;                               /* text-navy-950 */
-  box-shadow: 0 0 12px rgba(20, 184, 166, 0.4); /* shadow-glow-sm */
+  background-color: #059669;                    /* bg-emerald-600 */
+  color: #ffffff;                               /* text-white */
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
 }
 
 /* ── Empty state ─────────────────────────────────────── */
 .slot-picker__empty {
   text-align: center;  /* text-center */
   padding: 2rem 0;     /* py-8 */
-  color: #64748b;      /* text-slate-500 */
+  color: #94a3b8;      /* slate-400 (was slate-500) */
   font-size: 0.875rem; /* text-sm */
+  min-height: 5rem;    /* match slots min-height */
 }
 
 /* ── Summary bar ─────────────────────────────────────── */
 .slot-picker__summary {
   font-size: 0.875rem;                        /* text-sm */
   text-align: center;                         /* text-center */
-  color: #2dd4bf;                             /* text-teal-400 */
-  background-color: rgba(20, 184, 166, 0.1); /* bg-teal-500/10 */
-  border: 1px solid rgba(20, 184, 166, 0.2); /* border border-teal-500/20 */
+  color: #10b981;                             /* emerald-500 */
+  background-color: rgba(5, 150, 105, 0.1);  /* bg-emerald-600/10 */
+  border: 1px solid rgba(5, 150, 105, 0.2);  /* border emerald-600/20 */
   border-radius: 0.75rem;                     /* rounded-xl */
   padding: 0.625rem 1rem;                     /* py-2.5 px-4 */
 }

@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
     extend: {
@@ -10,38 +9,27 @@ export default {
       },
       colors: {
         navy: {
-          950: "#040d1a",
-          900: "#071428",
-          800: "#0c1f3f",
-          700: "#102856",
-          600: "#163470",
+          950: "#ffffff",
+          900: "#f8fafb",
+          800: "#ffffff",
+          700: "#f1f5f9",
+          600: "#e2e8f0",
         },
         teal: {
-          400: "#2dd4bf",
-          500: "#14b8a6",
-          600: "#0d9488",
+          300: "#6ee7b7",
+          400: "#10b981",
+          500: "#059669",
+          600: "#047857",
         },
         slate: {
-          850: "#131f30",
+          850: "#f1f5f9",
         },
       },
-      backgroundImage: {
-        "grid-pattern":
-          "linear-gradient(rgba(45,212,191,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(45,212,191,0.04) 1px, transparent 1px)",
-        "radial-glow":
-          "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(20,184,166,0.15), transparent)",
-        "card-gradient":
-          "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)",
-      },
-      backgroundSize: {
-        grid: "40px 40px",
-      },
       boxShadow: {
-        glow: "0 0 30px rgba(20,184,166,0.2)",
-        "glow-sm": "0 0 15px rgba(20,184,166,0.15)",
-        card: "0 4px 24px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.05) inset",
-        "card-hover":
-          "0 8px 40px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.08) inset",
+        glow: "0 4px 16px rgba(5,150,105,0.12)",
+        "glow-sm": "0 2px 8px rgba(5,150,105,0.10)",
+        card: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+        "card-hover": "0 4px 12px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)",
       },
       animation: {
         "fade-in": "fadeIn 0.4s ease forwards",

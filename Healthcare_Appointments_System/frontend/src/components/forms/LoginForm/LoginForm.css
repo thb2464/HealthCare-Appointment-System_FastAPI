@@ -40,13 +40,13 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #64748b; /* slate-500 */
+  color: #94a3b8; /* slate-400 (was slate-500) */
   transition: color 0.2s ease;
   line-height: 0; /* collapse extra inline height around SVG */
 }
 
 .login-form__eye-btn:hover {
-  color: #cbd5e1; /* slate-300 */
+  color: #334155; /* slate-700 (was slate-300) */
 }
 
 /* ── Eye icon SVG ──────────────────────────────────────────── */
@@ -60,18 +60,18 @@
 .login-form__footer {
   text-align: center;
   font-size: 0.875rem; /* text-sm */
-  color: #64748b;       /* slate-500 */
+  color: #94a3b8;       /* slate-400 (was slate-500) */
 }
 
 .login-form__footer a {
-  color: #2dd4bf;       /* teal-400 */
+  color: #10b981;       /* emerald-500 (was teal-400) */
   font-weight: 500;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .login-form__footer a:hover {
-  color: #5eead4; /* teal-300 */
+  color: #059669; /* emerald-600 (was teal-300) */
 }
 
 /* ── Responsive tweaks ─────────────────────────────────────── */

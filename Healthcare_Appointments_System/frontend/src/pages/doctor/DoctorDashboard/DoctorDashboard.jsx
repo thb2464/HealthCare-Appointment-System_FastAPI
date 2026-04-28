@@ -9,13 +9,14 @@ import WeekView from "../../../components/Calendar/WeekView/WeekView";
 import SlotPicker from "../../../components/Calendar/SlotPicker/SlotPicker";
 import Modal from "../../../components/ui/Modal/Modal";
 import Button from "../../../components/ui/Button/Button";
-import { updateAppointment, rescheduleAppointment, markNoShow } from "../../../api/appointmentApi";
+import { updateAppointment, rescheduleAppointment, markNoShow, acceptReschedule, declineReschedule } from "../../../api/appointmentApi";
 import { getMyDoctorProfile, updateMyDoctorProfile, getSpecialties } from "../../../api/doctorApi";
 
 const STATUS_TABS = [
   { value: "", label: "Tất cả" },
   { value: "PENDING", label: "Chờ xác nhận" },
   { value: "CONFIRMED", label: "Đã xác nhận" },
+  { value: "RESCHEDULE_REQUESTED", label: "Yêu cầu đổi lịch" },
   { value: "ARRIVED", label: "Đã đến" },
   { value: "COMPLETED", label: "Hoàn thành" },
 ];
@@ -29,6 +30,7 @@ const STAT_MODIFIER = {
   "Tổng": "total",
   "Chờ xác nhận": "pending",
   "Đã xác nhận": "confirmed",
+  "Yêu cầu đổi lịch": "reschedule-requested",
   "Đã đến": "arrived",
   "Hoàn thành": "completed",
 };
@@ -149,8 +151,60 @@ export default function DoctorDashboard() {
     }
   };
 
+  const handleAcceptReschedule = async (appt) => {
+    try {
+      await acceptReschedule(appt.id);
+      toast("Đã chấp nhận đổi lịch!", "success");
+      refetch();
+    } catch (e) {
+      toast(e.response?.data?.detail || "Thao tác thất bại", "error");
+    }
+  };
+
+  const handleDeclineReschedule = async (appt) => {
+    try {
+      await declineReschedule(appt.id);
+      toast("Đã từ chối yêu cầu đổi lịch", "info");
+      refetch();
+    } catch (e) {
+      toast(e.response?.data?.detail || "Thao tác thất bại", "error");
+    }
+  };
+
   const actions = (appt) => {
     const btns = [];
+    if (appt.status === "RESCHEDULE_REQUESTED") {
+      // Patient requested → doctor decides
+      if (appt.reschedule_requested_by === "patient") {
+        btns.push(
+          <button
+            key="accept-reschedule"
+            onClick={() => handleAcceptReschedule(appt)}
+            className="btn-primary doctor-dash__appt-btn"
+          >
+            Chấp nhận đổi lịch
+          </button>
+        );
+        btns.push(
+          <button
+            key="decline-reschedule"
+            onClick={() => handleDeclineReschedule(appt)}
+            className="btn-danger doctor-dash__appt-btn"
+          >
+            Từ chối
+          </button>
+        );
+      }
+      btns.push(
+        <button
+          key="cancel-reschedule"
+          onClick={() => handleStatus(appt, "cancelled")}
+          className="btn-ghost doctor-dash__appt-btn doctor-dash__appt-btn--noshow"
+        >
+          Hủy lịch hẹn
+        </button>
+      );
+    }
     if (appt.status === "PENDING") {
       btns.push(
         <button
@@ -227,14 +281,16 @@ export default function DoctorDashboard() {
 
   const pending = appointments.filter((a) => a.status === "PENDING").length;
   const confirmed = appointments.filter((a) => a.status === "CONFIRMED").length;
+  const rescheduleRequested = appointments.filter((a) => a.status === "RESCHEDULE_REQUESTED").length;
   const arrived = appointments.filter((a) => a.status === "ARRIVED").length;
 
   const statItems = [
-    { label: "Tổng",           value: appointments.length },
-    { label: "Chờ xác nhận",   value: pending },
-    { label: "Đã xác nhận",    value: confirmed },
-    { label: "Đã đến",         value: arrived },
-    { label: "Hoàn thành",     value: appointments.filter((a) => a.status === "COMPLETED").length },
+    { label: "Tổng",              value: appointments.length },
+    { label: "Chờ xác nhận",      value: pending },
+    { label: "Đã xác nhận",       value: confirmed },
+    { label: "Yêu cầu đổi lịch", value: rescheduleRequested },
+    { label: "Đã đến",            value: arrived },
+    { label: "Hoàn thành",        value: appointments.filter((a) => a.status === "COMPLETED").length },
   ];
 
   return (

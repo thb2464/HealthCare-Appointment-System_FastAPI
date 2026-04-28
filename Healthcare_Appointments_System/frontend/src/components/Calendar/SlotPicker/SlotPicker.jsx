@@ -7,20 +7,21 @@ const MONTH_NAMES = [
   "Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6",
   "Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12",
 ];
-const DAY_ABBR = ["CN","T2","T3","T4","T5","T6","T7"];
+const DAY_ABBR = ["T2","T3","T4","T5","T6","T7","CN"];
 
 function buildCalendarDays(year, month) {
-  // Returns array of Date or null (for padding)
+  // Returns array of Date or null (for padding), week starts on Monday
   const firstDay = new Date(year, month, 1);
   const lastDay  = new Date(year, month + 1, 0);
-  const startDow = firstDay.getDay(); // 0=Sun
+  const dow = firstDay.getDay(); // 0=Sun
+  const startDow = dow === 0 ? 6 : dow - 1; // convert to Mon=0
   const days = [];
   for (let i = 0; i < startDow; i++) days.push(null);
   for (let d = 1; d <= lastDay.getDate(); d++) days.push(new Date(year, month, d));
   return days;
 }
 
-export default function SlotPicker({ doctorId, onSelect }) {
+export default function SlotPicker({ doctorId, onSelect, compact = false }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -144,14 +145,16 @@ export default function SlotPicker({ doctorId, onSelect }) {
       {/* Time slots */}
       {activeDate && (
         <>
-          <p className="slot-picker__slots-label">
-            Giờ khám có sẵn cho{" "}
-            <strong>
-              {new Date(activeDate + "T00:00:00").toLocaleDateString("vi-VN", {
-                weekday: "long", month: "long", day: "numeric",
-              })}
-            </strong>
-          </p>
+          {!compact && (
+            <p className="slot-picker__slots-label">
+              Giờ khám có sẵn cho{" "}
+              <strong>
+                {new Date(activeDate + "T00:00:00").toLocaleDateString("vi-VN", {
+                  weekday: "long", month: "long", day: "numeric",
+                })}
+              </strong>
+            </p>
+          )}
           {loading ? (
             <div className="slot-picker__loading">
               {[...Array(8)].map((_, i) => <div key={i} className="skeleton" />)}
@@ -179,7 +182,7 @@ export default function SlotPicker({ doctorId, onSelect }) {
         </>
       )}
 
-      {selected && (
+      {selected && !compact && (
         <p className="slot-picker__summary">
           Đã chọn: <strong>{formatTime(selected)}</strong> ngày{" "}
           <strong>

@@ -23,14 +23,14 @@
   border-radius: 1rem; /* rounded-2xl */
   background: linear-gradient(
     to bottom right,
-    rgba(20, 184, 166, 0.2),   /* teal-500/20 */
-    #0c1f3f                     /* navy-700 approx */
+    rgba(5, 150, 105, 0.2),   /* emerald-600/20 */
+    #ffffff                    /* white */
   );
-  border: 1px solid rgba(20, 184, 166, 0.2);
+  border: 1px solid rgba(5, 150, 105, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2dd4bf;              /* teal-400 */
+  color: #10b981;              /* emerald-500 (was teal-400) */
   font-weight: 700;
   font-size: 1.125rem;         /* text-lg */
   flex-shrink: 0;
@@ -39,7 +39,7 @@
 }
 
 .doctor-card:hover .doctor-card__avatar {
-  border-color: rgba(20, 184, 166, 0.4);
+  border-color: rgba(5, 150, 105, 0.4);
 }
 
 .doctor-card__avatar img {
@@ -58,7 +58,7 @@
 /* ─── Doctor name ────────────────────────────────────────────────────────────── */
 .doctor-card__name {
   font-weight: 600;
-  color: #f1f5f9;      /* slate-100 */
+  color: #0f172a;      /* slate-900 (was slate-100) */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -76,8 +76,8 @@
   margin-top: 0.25rem;                          /* mt-1 */
   font-size: 0.75rem;                           /* text-xs */
   font-weight: 500;
-  color: rgba(45, 212, 191, 0.8);              /* teal-400/80 */
-  background-color: rgba(20, 184, 166, 0.1);   /* teal-500/10 */
+  color: rgba(16, 185, 129, 0.8);              /* emerald-500/80 */
+  background-color: rgba(5, 150, 105, 0.1);    /* emerald-600/10 */
   padding: 0.125rem 0.5rem;                     /* py-0.5 px-2 */
   border-radius: 9999px;                        /* rounded-full */
 }
@@ -108,27 +108,27 @@
 }
 
 .doctor-card__star--filled {
-  color: #fbbf24;      /* amber-400 */
+  color: #d97706;      /* amber-600 (was amber-400) */
 }
 
 .doctor-card__star--empty {
-  color: #475569;      /* slate-600 */
+  color: #94a3b8;      /* slate-400 (was slate-600) */
 }
 
 .doctor-card__rating-value {
   font-size: 0.75rem;  /* text-xs */
-  color: #94a3b8;      /* slate-400 */
+  color: #64748b;      /* slate-500 (was slate-400) */
 }
 
 /* ─── Experience line ────────────────────────────────────────────────────────── */
 .doctor-card__experience {
   font-size: 0.75rem;  /* text-xs */
-  color: #94a3b8;      /* slate-400 */
+  color: #64748b;      /* slate-500 (was slate-400) */
   margin: 0;
 }
 
 .doctor-card__experience-value {
-  color: #cbd5e1;      /* slate-300 */
+  color: #334155;      /* slate-700 (was slate-300) */
   font-weight: 500;
 }
 
@@ -138,7 +138,7 @@
   align-items: center;
   gap: 0.25rem;        /* gap-1 */
   font-size: 0.75rem;  /* text-xs */
-  color: #64748b;      /* slate-500 */
+  color: #94a3b8;      /* slate-400 (was slate-500) */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -157,7 +157,7 @@
   align-items: center;
   justify-content: space-between;
   padding-top: 0.75rem;                         /* pt-3 */
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 /* ─── Fee ────────────────────────────────────────────────────────────────────── */
@@ -169,18 +169,18 @@
 .doctor-card__fee-amount {
   font-size: 1.125rem;  /* text-lg */
   font-weight: 700;
-  color: #f1f5f9;       /* slate-100 */
+  color: #0f172a;       /* slate-900 (was slate-100) */
 }
 
 .doctor-card__fee-label {
   font-size: 0.75rem;   /* text-xs */
-  color: #64748b;       /* slate-500 */
+  color: #94a3b8;       /* slate-400 (was slate-500) */
   margin-left: 0.25rem; /* ml-1 */
 }
 
 .doctor-card__fee--unlisted {
   font-size: 0.75rem;
-  color: #64748b;       /* slate-500 */
+  color: #94a3b8;       /* slate-400 (was slate-500) */
 }
 
 /* ─── CTA ────────────────────────────────────────────────────────────────────── */

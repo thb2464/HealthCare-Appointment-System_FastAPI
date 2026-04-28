@@ -29,8 +29,8 @@
   width: 3.5rem;             /* w-14 */
   height: 3.5rem;            /* h-14 */
   border-radius: 1rem;       /* rounded-2xl */
-  background-color: rgba(20, 184, 166, 0.1);   /* teal-500/10 */
-  border: 1px solid rgba(20, 184, 166, 0.2);   /* teal-500/20 */
+  background-color: rgba(5, 150, 105, 0.1);   /* emerald-600/10 */
+  border: 1px solid rgba(5, 150, 105, 0.2);   /* emerald-600/20 */
   margin-bottom: 1.25rem;    /* mb-5 */
 }
 
@@ -38,7 +38,7 @@
 .login-page__icon {
   width: 1.75rem;            /* w-7 */
   height: 1.75rem;           /* h-7 */
-  color: #4fd1c5;            /* teal-400 */
+  color: #059669;            /* emerald-600 */
 }
 
 /* ── Page title ───────────────────────────────────────────── */
@@ -46,13 +46,13 @@
   font-family: var(--font-display, inherit);
   font-weight: 700;
   font-size: 1.5rem;         /* text-2xl */
-  color: #e2e8f0;            /* slate-100 */
+  color: #1e293b;            /* slate-800 */
   margin: 0;
 }
 
 /* ── Subtitle ─────────────────────────────────────────────── */
 .login-page__subtitle {
-  color: #64748b;            /* slate-500 */
+  color: #94a3b8;            /* slate-400 */
   font-size: 0.875rem;       /* text-sm */
   margin: 0.25rem 0 0;       /* mt-1 */
 }

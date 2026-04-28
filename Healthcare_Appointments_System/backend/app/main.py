@@ -22,6 +22,9 @@ from app.routers import (
     admin_router,
     reviews_router,
     payment_router,
+    waitlist_router,
+    encounters_router,
+    insurance_router,
 )
 
 # Resolved path to the compiled React SPA (populated by `npm run build`)
@@ -91,6 +94,9 @@ app.include_router(appointments_router)
 app.include_router(reviews_router)
 app.include_router(admin_router)
 app.include_router(payment_router)
+app.include_router(waitlist_router)
+app.include_router(encounters_router)
+app.include_router(insurance_router)
 
 # ── Health check ───────────────────────────────────────────────────────────────
 @app.get("/health", tags=["Health"], summary="Health check")
@@ -115,7 +121,7 @@ if _STATIC_DIR.is_dir():
     # React Router can handle client-side navigation.
     @app.get("/{full_path:path}", include_in_schema=False)
     async def spa_fallback(full_path: str) -> FileResponse:
-        
+
         if full_path.startswith(("api/", "docs", "redoc", "openapi.json")):
             raise HTTPException(status_code=404, detail="Not found")
         return FileResponse(str(_INDEX_HTML))
