@@ -114,7 +114,7 @@ async def test_update_doctor_profile(client: AsyncClient, doctor_headers: dict):
         json={
             "bio": "Experienced cardiologist.",
             "years_experience": 10,
-            "consultation_fee": "250.00",
+            "consultation_fee": "6250000",
         },
         headers=doctor_headers,
     )

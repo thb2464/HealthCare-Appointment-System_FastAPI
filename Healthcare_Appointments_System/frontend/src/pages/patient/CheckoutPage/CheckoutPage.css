@@ -153,6 +153,27 @@
   color: #94a3b8;
 }
 
+/* ── VNPay badge ──────────────────────────────────────── */
+.checkout-page__vnpay-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.checkout-page__lock-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: #2dd4bf;
+  flex-shrink: 0;
+}
+
+.checkout-page__vnpay-badge strong {
+  color: #2dd4bf;
+}
+
 /* ── Actions ──────────────────────────────────────────── */
 .checkout-page__actions {
   display: flex;

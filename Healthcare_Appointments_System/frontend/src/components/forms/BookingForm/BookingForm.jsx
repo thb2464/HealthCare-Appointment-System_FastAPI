@@ -15,7 +15,7 @@ export default function BookingForm({ doctor }) {
   const [reason, setReason] = useState("");
 
   const handleCheckout = () => {
-    if (!selectedSlot) { toast("Please select a date and time slot", "error"); return; }
+    if (!selectedSlot) { toast("Vui lòng chọn ngày và giờ khám", "error"); return; }
     if (!user) { navigate("/login"); return; }
 
     navigate("/checkout", {
@@ -42,9 +42,9 @@ export default function BookingForm({ doctor }) {
           )}
           {doctor?.consultation_fee && (
             <p className="booking-form__doctor-fee">
-              Fee:{" "}
+              Phí khám:{" "}
               <span className="booking-form__doctor-fee-value">
-                ${Number(doctor.consultation_fee).toFixed(0)}
+                {Number(doctor.consultation_fee).toLocaleString("vi-VN")} ₫
               </span>
             </p>
           )}
@@ -53,7 +53,7 @@ export default function BookingForm({ doctor }) {
 
       {/* Slot picker */}
       <div className="booking-form__slot-section">
-        <label className="label booking-form__slot-label">Select date &amp; time</label>
+        <label className="label booking-form__slot-label">Chọn ngày &amp; giờ</label>
         <div className="card booking-form__slot-card">
           <SlotPicker doctorId={doctor?.id} onSelect={setSelectedSlot} />
         </div>
@@ -62,12 +62,12 @@ export default function BookingForm({ doctor }) {
       {/* Reason */}
       <div className="booking-form__reason-section">
         <label className="label booking-form__reason-label">
-          Reason for visit <span className="booking-form__reason-optional">(optional)</span>
+          Lý do khám <span className="booking-form__reason-optional">(không bắt buộc)</span>
         </label>
         <textarea
           className="input resize-none"
           rows={3}
-          placeholder="Briefly describe your symptoms or reason…"
+          placeholder="Mô tả ngắn gọn triệu chứng hoặc lý do khám…"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           maxLength={500}
@@ -78,16 +78,16 @@ export default function BookingForm({ doctor }) {
       {/* Summary */}
       {selectedSlot && (
         <div className="booking-form__summary">
-          <p className="booking-form__summary-label">Booking summary</p>
+          <p className="booking-form__summary-label">Tóm tắt lịch hẹn</p>
           <p className="booking-form__summary-text">
             <span className="booking-form__summary-text--accent">{formatDateTime(selectedSlot)}</span>
-            {" "}with <span className="booking-form__summary-text--bold">Dr. {doctor?.user?.full_name}</span>
+            {" "}với <span className="booking-form__summary-text--bold">BS. {doctor?.user?.full_name}</span>
           </p>
         </div>
       )}
 
       <Button onClick={handleCheckout} className="booking-form__submit">
-        Check out
+        Thanh toán
       </Button>
 
     </div>

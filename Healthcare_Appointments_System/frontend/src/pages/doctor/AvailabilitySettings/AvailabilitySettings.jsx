@@ -6,8 +6,8 @@ import { useToast } from "../../../components/ui/Toast/Toast";
 import { getDoctorAvailability, setMyAvailability, getMyDoctorProfile } from "../../../api/doctorApi";
 import Button from "../../../components/ui/Button/Button";
 
-const DAY_FULL = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const DAY_SHORT = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+const DAY_FULL = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
+const DAY_SHORT = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 
 function emptySlot(day_of_week) {
   return { day_of_week, start_time: "09:00:00", end_time: "17:00:00", slot_duration_minutes: 30, is_active: true };
@@ -58,7 +58,7 @@ export default function AvailabilitySettings() {
       // Validate: start < end for each slot
       for (const s of slots) {
         if (s.start_time >= s.end_time) {
-          toast(`Day ${DAY_FULL[s.day_of_week]}: end time must be after start time`, "error");
+          toast(`${DAY_FULL[s.day_of_week]}: giờ kết thúc phải sau giờ bắt đầu`, "error");
           setSaving(false);
           return;
         }
@@ -71,9 +71,9 @@ export default function AvailabilitySettings() {
         is_active,
       }));
       await setMyAvailability(payload);
-      toast("Availability saved!", "success");
+      toast("Đã lưu lịch làm việc!", "success");
     } catch (e) {
-      toast(e.response?.data?.detail || "Failed to save", "error");
+      toast(e.response?.data?.detail || "Lưu thất bại", "error");
     } finally {
       setSaving(false);
     }
@@ -94,14 +94,14 @@ export default function AvailabilitySettings() {
       {/* Header */}
       <div className="avail-page__header">
         <div className="avail-page__titles">
-          <h1 className="avail-page__title">Availability Settings</h1>
+          <h1 className="avail-page__title">Thiết lập lịch làm việc</h1>
           <p className="avail-page__subtitle">
-            Set your weekly schedule. Patients can only book within these windows.
+            Cài đặt lịch trình hàng tuần. Bệnh nhân chỉ có thể đặt lịch trong các khung giờ này.
           </p>
         </div>
         <div className="avail-page__top-save">
           <Button loading={saving} onClick={handleSave}>
-            Save changes
+            Lưu thay đổi
           </Button>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function AvailabilitySettings() {
                   </span>
                   {isActive && (
                     <span className="avail-page__day-count">
-                      {daySlots.length} window{daySlots.length > 1 ? "s" : ""}
+                      {daySlots.length} khung giờ
                     </span>
                   )}
                 </div>
@@ -145,7 +145,7 @@ export default function AvailabilitySettings() {
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                   </svg>
-                  Add window
+                  Thêm khung giờ
                 </button>
               </div>
 
@@ -156,7 +156,7 @@ export default function AvailabilitySettings() {
                     <div key={slot._idx} className="glass avail-page__window">
                       {/* From */}
                       <div className="avail-page__field">
-                        <label className="avail-page__field-label avail-page__field-label--from">From</label>
+                        <label className="avail-page__field-label avail-page__field-label--from">Từ</label>
                         <input
                           type="time"
                           className="input avail-page__time-input"
@@ -166,7 +166,7 @@ export default function AvailabilitySettings() {
                       </div>
                       {/* To */}
                       <div className="avail-page__field">
-                        <label className="avail-page__field-label avail-page__field-label--to">To</label>
+                        <label className="avail-page__field-label avail-page__field-label--to">Đến</label>
                         <input
                           type="time"
                           className="input avail-page__time-input"
@@ -176,14 +176,14 @@ export default function AvailabilitySettings() {
                       </div>
                       {/* Slot duration */}
                       <div className="avail-page__field">
-                        <label className="avail-page__field-label">Slot</label>
+                        <label className="avail-page__field-label">Thời lượng</label>
                         <select
                           className="input avail-page__duration-select"
                           value={slot.slot_duration_minutes}
                           onChange={(e) => updateSlot(slot._idx, "slot_duration_minutes", e.target.value)}
                         >
                           {[10, 15, 20, 30, 45, 60, 90, 120].map((m) => (
-                            <option key={m} value={m}>{m} min</option>
+                            <option key={m} value={m}>{m} phút</option>
                           ))}
                         </select>
                       </div>
@@ -219,7 +219,7 @@ export default function AvailabilitySettings() {
               )}
 
               {daySlots.length === 0 && (
-                <div className="avail-page__empty-day">Not available on {dayName}</div>
+                <div className="avail-page__empty-day">Không làm việc vào {dayName}</div>
               )}
             </div>
           );
@@ -229,7 +229,7 @@ export default function AvailabilitySettings() {
       {/* Sticky footer */}
       <div className="avail-page__sticky-footer">
         <Button loading={saving} onClick={handleSave} size="lg" className="shadow-glow">
-          Save availability
+          Lưu lịch làm việc
         </Button>
       </div>
     </div>

@@ -4,10 +4,10 @@ import { getDoctorSlots } from "../../../api/doctorApi";
 import { formatTime, toDateParam } from "../../../utils/dateHelpers";
 
 const MONTH_NAMES = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
+  "Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6",
+  "Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12",
 ];
-const DAY_ABBR = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+const DAY_ABBR = ["CN","T2","T3","T4","T5","T6","T7"];
 
 function buildCalendarDays(year, month) {
   // Returns array of Date or null (for padding)
@@ -145,9 +145,9 @@ export default function SlotPicker({ doctorId, onSelect }) {
       {activeDate && (
         <>
           <p className="slot-picker__slots-label">
-            Available times for{" "}
+            Giờ khám có sẵn cho{" "}
             <strong>
-              {new Date(activeDate + "T00:00:00").toLocaleDateString("en-US", {
+              {new Date(activeDate + "T00:00:00").toLocaleDateString("vi-VN", {
                 weekday: "long", month: "long", day: "numeric",
               })}
             </strong>
@@ -157,7 +157,7 @@ export default function SlotPicker({ doctorId, onSelect }) {
               {[...Array(8)].map((_, i) => <div key={i} className="skeleton" />)}
             </div>
           ) : slots.length === 0 ? (
-            <div className="slot-picker__empty">No available slots on this day</div>
+            <div className="slot-picker__empty">Không có khung giờ trống trong ngày này</div>
           ) : (
             <div className="slot-picker__slots scrollbar-thin">
               {slots.map((slot) => (
@@ -181,9 +181,9 @@ export default function SlotPicker({ doctorId, onSelect }) {
 
       {selected && (
         <p className="slot-picker__summary">
-          Selected: <strong>{formatTime(selected)}</strong> on{" "}
+          Đã chọn: <strong>{formatTime(selected)}</strong> ngày{" "}
           <strong>
-            {new Date(activeDate + "T00:00:00").toLocaleDateString("en-US", {
+            {new Date(activeDate + "T00:00:00").toLocaleDateString("vi-VN", {
               weekday: "long", month: "long", day: "numeric",
             })}
           </strong>

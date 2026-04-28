@@ -13,24 +13,24 @@ import { updateAppointment, rescheduleAppointment, markNoShow } from "../../../a
 import { getMyDoctorProfile, updateMyDoctorProfile, getSpecialties } from "../../../api/doctorApi";
 
 const STATUS_TABS = [
-  { value: "", label: "All" },
-  { value: "PENDING", label: "Pending" },
-  { value: "CONFIRMED", label: "Confirmed" },
-  { value: "ARRIVED", label: "Arrived" },
-  { value: "COMPLETED", label: "Completed" },
+  { value: "", label: "Tất cả" },
+  { value: "PENDING", label: "Chờ xác nhận" },
+  { value: "CONFIRMED", label: "Đã xác nhận" },
+  { value: "ARRIVED", label: "Đã đến" },
+  { value: "COMPLETED", label: "Hoàn thành" },
 ];
 
 const SORT_OPTIONS = [
-  { value: "newest", label: "Newest first" },
-  { value: "oldest", label: "Oldest first" },
+  { value: "newest", label: "Mới nhất" },
+  { value: "oldest", label: "Cũ nhất" },
 ];
 
 const STAT_MODIFIER = {
-  Total: "total",
-  Pending: "pending",
-  Confirmed: "confirmed",
-  Arrived: "arrived",
-  Completed: "completed",
+  "Tổng": "total",
+  "Chờ xác nhận": "pending",
+  "Đã xác nhận": "confirmed",
+  "Đã đến": "arrived",
+  "Hoàn thành": "completed",
 };
 
 export default function DoctorDashboard() {
@@ -99,7 +99,7 @@ export default function DoctorDashboard() {
       setNoteTarget(null);
       refetch();
     } catch (e) {
-      toast(e.response?.data?.detail || "Action failed", "error");
+      toast(e.response?.data?.detail || "Thao tác thất bại", "error");
     }
   };
 
@@ -107,26 +107,26 @@ export default function DoctorDashboard() {
     setNoshowLoading(true);
     try {
       await markNoShow(noshowTarget.id, noshowReason || undefined);
-      toast("Appointment marked as no-show", "info");
+      toast("Đã đánh dấu vắng mặt", "info");
       setNoshowTarget(null);
       refetch();
     } catch (e) {
-      toast(e.response?.data?.detail || "Action failed", "error");
+      toast(e.response?.data?.detail || "Thao tác thất bại", "error");
     } finally {
       setNoshowLoading(false);
     }
   };
 
   const handleReschedule = async () => {
-    if (!newSlot) { toast("Please select a new slot", "error"); return; }
+    if (!newSlot) { toast("Vui lòng chọn khung giờ mới", "error"); return; }
     setRLoading(true);
     try {
       await rescheduleAppointment(rescheduleTarget.id, newSlot);
-      toast("Appointment rescheduled!", "success");
+      toast("Đã đổi lịch hẹn!", "success");
       setRescheduleTarget(null);
       refetch();
     } catch (e) {
-      toast(e.response?.data?.detail || "Failed to reschedule", "error");
+      toast(e.response?.data?.detail || "Đổi lịch thất bại", "error");
     } finally {
       setRLoading(false);
     }
@@ -140,10 +140,10 @@ export default function DoctorDashboard() {
       if (payload.years_experience === "") delete payload.years_experience;
       if (payload.consultation_fee === "") delete payload.consultation_fee;
       await updateMyDoctorProfile(payload);
-      toast("Profile updated!", "success");
+      toast("Cập nhật hồ sơ thành công!", "success");
       setProfileOpen(false);
     } catch (e) {
-      toast(e.response?.data?.detail || "Update failed", "error");
+      toast(e.response?.data?.detail || "Cập nhật thất bại", "error");
     } finally {
       setProfileLoading(false);
     }
@@ -158,7 +158,7 @@ export default function DoctorDashboard() {
           onClick={() => handleStatus(appt, "confirmed")}
           className="btn-primary doctor-dash__appt-btn"
         >
-          Confirm
+          Xác nhận
         </button>
       );
     }
@@ -169,7 +169,7 @@ export default function DoctorDashboard() {
           onClick={() => { setNoteTarget({ appt, action: "completed" }); setNotes(""); }}
           className="btn-primary doctor-dash__appt-btn"
         >
-          Mark Complete
+          Hoàn thành
         </button>
       );
       btns.push(
@@ -178,7 +178,7 @@ export default function DoctorDashboard() {
           onClick={() => { setRescheduleTarget(appt); setNewSlot(null); }}
           className="btn-secondary doctor-dash__appt-btn"
         >
-          Reschedule
+          Đổi lịch
         </button>
       );
       btns.push(
@@ -187,7 +187,7 @@ export default function DoctorDashboard() {
           onClick={() => { setNoshowTarget(appt); setNoshowReason(""); }}
           className="btn-ghost doctor-dash__appt-btn doctor-dash__appt-btn--noshow"
         >
-          No-Show
+          Vắng mặt
         </button>
       );
     }
@@ -198,7 +198,7 @@ export default function DoctorDashboard() {
           onClick={() => { setNoteTarget({ appt, action: "completed" }); setNotes(""); }}
           className="btn-primary doctor-dash__appt-btn"
         >
-          Mark Complete
+          Hoàn thành
         </button>
       );
       btns.push(
@@ -207,7 +207,7 @@ export default function DoctorDashboard() {
           onClick={() => { setNoshowTarget(appt); setNoshowReason(""); }}
           className="btn-ghost doctor-dash__appt-btn doctor-dash__appt-btn--noshow"
         >
-          No-Show
+          Vắng mặt
         </button>
       );
     }
@@ -218,7 +218,7 @@ export default function DoctorDashboard() {
           onClick={() => handleStatus(appt, "cancelled")}
           className="btn-danger doctor-dash__appt-btn"
         >
-          Cancel
+          Hủy
         </button>
       );
     }
@@ -230,11 +230,11 @@ export default function DoctorDashboard() {
   const arrived = appointments.filter((a) => a.status === "ARRIVED").length;
 
   const statItems = [
-    { label: "Total",     value: appointments.length },
-    { label: "Pending",   value: pending },
-    { label: "Confirmed", value: confirmed },
-    { label: "Arrived",   value: arrived },
-    { label: "Completed", value: appointments.filter((a) => a.status === "COMPLETED").length },
+    { label: "Tổng",           value: appointments.length },
+    { label: "Chờ xác nhận",   value: pending },
+    { label: "Đã xác nhận",    value: confirmed },
+    { label: "Đã đến",         value: arrived },
+    { label: "Hoàn thành",     value: appointments.filter((a) => a.status === "COMPLETED").length },
   ];
 
   return (
@@ -242,7 +242,7 @@ export default function DoctorDashboard() {
       {/* Header */}
       <div className="doctor-dash__header animate-fade-in">
         <div>
-          <h1 className="doctor-dash__title">Doctor Dashboard</h1>
+          <h1 className="doctor-dash__title">Bảng điều khiển bác sĩ</h1>
           <p className="doctor-dash__subtitle">
             Dr. <span className="doctor-dash__subtitle-name">{user.full_name}</span>
           </p>
@@ -265,7 +265,7 @@ export default function DoctorDashboard() {
                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
               />
             </svg>
-            Edit Profile
+            Sửa hồ sơ
           </button>
           <Link to="/doctor/availability" className="btn-primary doctor-dash__action-btn">
             <svg
@@ -281,7 +281,7 @@ export default function DoctorDashboard() {
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            Availability
+            Lịch làm việc
           </Link>
         </div>
       </div>
@@ -328,17 +328,17 @@ export default function DoctorDashboard() {
             ))}
           </select>
           <div className="doctor-dash__view-toggle glass">
-            {["list", "calendar"].map((v) => (
+            {[{ key: "list", label: "danh sách" }, { key: "calendar", label: "lịch" }].map((v) => (
               <button
-                key={v}
-                onClick={() => setView(v)}
+                key={v.key}
+                onClick={() => setView(v.key)}
                 className={
-                  view === v
+                  view === v.key
                     ? "doctor-dash__view-btn doctor-dash__view-btn--active"
                     : "doctor-dash__view-btn"
                 }
               >
-                {v}
+                {v.label}
               </button>
             ))}
           </div>
@@ -359,10 +359,10 @@ export default function DoctorDashboard() {
       ) : appointments.length === 0 ? (
         <div className="card doctor-dash__empty">
           <div className="doctor-dash__empty-icon">🩺</div>
-          <p className="doctor-dash__empty-title">No appointments yet</p>
-          <p className="doctor-dash__empty-hint">Set your availability to start receiving bookings</p>
+          <p className="doctor-dash__empty-title">Chưa có lịch hẹn</p>
+          <p className="doctor-dash__empty-hint">Thiết lập lịch làm việc để bắt đầu nhận đặt lịch</p>
           <Link to="/doctor/availability" className="btn-primary doctor-dash__empty-link">
-            Set availability
+            Thiết lập lịch
           </Link>
         </div>
       ) : (
@@ -374,27 +374,27 @@ export default function DoctorDashboard() {
       )}
 
       {/* Notes / complete modal */}
-      <Modal open={!!noteTarget} onClose={() => setNoteTarget(null)} title="Add Notes">
+      <Modal open={!!noteTarget} onClose={() => setNoteTarget(null)} title="Thêm ghi chú">
         <div className="doctor-dash__modal-body">
           <p className="doctor-dash__modal-warn">
-            Mark appointment as <strong>completed</strong> and optionally add clinical notes.
+            Đánh dấu lịch hẹn <strong>hoàn thành</strong> và thêm ghi chú lâm sàng (không bắt buộc).
           </p>
           <div className="doctor-dash__profile-field">
             <label className="label">
-              Clinical notes <span className="doctor-dash__modal-reason">(optional)</span>
+              Ghi chú lâm sàng <span className="doctor-dash__modal-reason">(không bắt buộc)</span>
             </label>
             <textarea
               className="input"
               style={{ resize: "none" }}
               rows={4}
-              placeholder="Diagnosis, treatment notes…"
+              placeholder="Chẩn đoán, ghi chú điều trị…"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               maxLength={2000}
             />
           </div>
           <div className="doctor-dash__modal-actions">
-            <Button variant="secondary" onClick={() => setNoteTarget(null)}>Cancel</Button>
+            <Button variant="secondary" onClick={() => setNoteTarget(null)}>Hủy</Button>
             <Button
               loading={actionLoading}
               onClick={async () => {
@@ -403,7 +403,7 @@ export default function DoctorDashboard() {
                 setActionLoading(false);
               }}
             >
-              Mark Complete
+              Hoàn thành
             </Button>
           </div>
         </div>
@@ -413,55 +413,55 @@ export default function DoctorDashboard() {
       <Modal
         open={!!rescheduleTarget}
         onClose={() => setRescheduleTarget(null)}
-        title="Reschedule Appointment"
+        title="Đổi lịch hẹn"
         size="lg"
       >
         <SlotPicker doctorId={rescheduleTarget?.doctor?.id} onSelect={setNewSlot} />
         <div className="doctor-dash__modal-reschedule-actions">
           <Button variant="secondary" onClick={() => setRescheduleTarget(null)}>
-            Cancel
+            Hủy
           </Button>
           <Button loading={rLoading} disabled={!newSlot} onClick={handleReschedule}>
-            Confirm Reschedule
+            Xác nhận đổi lịch
           </Button>
         </div>
       </Modal>
 
       {/* No-show modal */}
-      <Modal open={!!noshowTarget} onClose={() => setNoshowTarget(null)} title="Mark as No-Show">
+      <Modal open={!!noshowTarget} onClose={() => setNoshowTarget(null)} title="Đánh dấu vắng mặt">
         <div className="doctor-dash__modal-body">
           <p className="doctor-dash__modal-warn">
-            Record that the patient did not attend this appointment. A notification will be sent.
+            Ghi nhận bệnh nhân không đến khám. Thông báo sẽ được gửi đi.
           </p>
           <div className="doctor-dash__profile-field">
             <label className="label">
-              Reason <span className="doctor-dash__modal-reason">(optional)</span>
+              Lý do <span className="doctor-dash__modal-reason">(không bắt buộc)</span>
             </label>
             <textarea
               className="input"
               style={{ resize: "none" }}
               rows={3}
-              placeholder="Add notes about the no-show…"
+              placeholder="Thêm ghi chú về lần vắng mặt…"
               value={noshowReason}
               onChange={(e) => setNoshowReason(e.target.value)}
               maxLength={500}
             />
           </div>
           <div className="doctor-dash__modal-actions">
-            <Button variant="secondary" onClick={() => setNoshowTarget(null)}>Cancel</Button>
+            <Button variant="secondary" onClick={() => setNoshowTarget(null)}>Hủy</Button>
             <Button variant="danger" loading={noshowLoading} onClick={handleNoShow}>
-              Confirm No-Show
+              Xác nhận vắng mặt
             </Button>
           </div>
         </div>
       </Modal>
 
       {/* Profile edit modal */}
-      <Modal open={profileOpen} onClose={() => setProfileOpen(false)} title="Edit Profile" size="lg">
+      <Modal open={profileOpen} onClose={() => setProfileOpen(false)} title="Sửa hồ sơ" size="lg">
         <div className="doctor-dash__profile-form">
           <div className="doctor-dash__profile-grid">
             <div className="doctor-dash__profile-field">
-              <label className="label">Bio</label>
+              <label className="label">Tiểu sử</label>
               <textarea
                 className="input"
                 style={{ resize: "none" }}
@@ -472,20 +472,20 @@ export default function DoctorDashboard() {
             </div>
             <div className="doctor-dash__profile-form">
               <div className="doctor-dash__profile-field">
-                <label className="label">Specialty</label>
+                <label className="label">Chuyên khoa</label>
                 <select
                   className="input"
                   value={profileForm.specialty_id}
                   onChange={(e) => setProfileForm((f) => ({ ...f, specialty_id: e.target.value }))}
                 >
-                  <option value="">Not specified</option>
+                  <option value="">Chưa chỉ định</option>
                   {specialties.map((s) => (
                     <option key={s.id} value={s.id}>{s.name}</option>
                   ))}
                 </select>
               </div>
               <div className="doctor-dash__profile-field">
-                <label className="label">Years experience</label>
+                <label className="label">Số năm kinh nghiệm</label>
                 <input
                   type="number"
                   min="0"
@@ -499,7 +499,7 @@ export default function DoctorDashboard() {
           </div>
           <div className="doctor-dash__profile-grid">
             <div className="doctor-dash__profile-field">
-              <label className="label">Clinic address</label>
+              <label className="label">Địa chỉ phòng khám</label>
               <input
                 className="input"
                 value={profileForm.clinic_address}
@@ -507,18 +507,18 @@ export default function DoctorDashboard() {
               />
             </div>
             <div className="doctor-dash__profile-field">
-              <label className="label">Consultation fee ($)</label>
+              <label className="label">Consultation fee (₫)</label>
               <input
                 type="number"
                 min="0"
-                step="0.01"
+                step="1000"
                 className="input"
                 value={profileForm.consultation_fee}
                 onChange={(e) => setProfileForm((f) => ({ ...f, consultation_fee: e.target.value }))}
               />
             </div>
             <div className="doctor-dash__profile-field">
-              <label className="label">License number</label>
+              <label className="label">Số giấy phép</label>
               <input
                 className="input"
                 value={profileForm.license_number}
@@ -527,8 +527,8 @@ export default function DoctorDashboard() {
             </div>
           </div>
           <div className="doctor-dash__profile-actions">
-            <Button variant="secondary" onClick={() => setProfileOpen(false)}>Cancel</Button>
-            <Button loading={profileLoading} onClick={handleProfileSave}>Save Changes</Button>
+            <Button variant="secondary" onClick={() => setProfileOpen(false)}>Hủy</Button>
+            <Button loading={profileLoading} onClick={handleProfileSave}>Lưu thay đổi</Button>
           </div>
         </div>
       </Modal>

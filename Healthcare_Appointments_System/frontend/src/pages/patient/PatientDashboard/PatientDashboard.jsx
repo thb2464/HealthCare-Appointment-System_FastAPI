@@ -1,6 +1,6 @@
 import "./PatientDashboard.css";
-import { useState, useMemo } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { createReview } from "../../../api/reviewApi";
 import AppointmentCard from "../../../components/AppointmentCard/AppointmentCard";
 import SlotPicker from "../../../components/Calendar/SlotPicker/SlotPicker";
@@ -12,22 +12,35 @@ import { useAppointments } from "../../../hooks/useAppointments";
 import { useAuth } from "../../../hooks/useAuth";
 
 const STATUS_TABS = [
-  { value: "", label: "All" },
-  { value: "PENDING", label: "Pending" },
-  { value: "CONFIRMED", label: "Confirmed" },
-  { value: "RESCHEDULED", label: "Rescheduled" },
-  { value: "COMPLETED", label: "Completed" },
-  { value: "CANCELLED", label: "Cancelled" },
+  { value: "", label: "Tất cả" },
+  { value: "PENDING", label: "Chờ xác nhận" },
+  { value: "CONFIRMED", label: "Đã xác nhận" },
+  { value: "RESCHEDULED", label: "Đã đổi lịch" },
+  { value: "COMPLETED", label: "Hoàn thành" },
+  { value: "CANCELLED", label: "Đã hủy" },
 ];
 
 const SORT_OPTIONS = [
-  { value: "newest", label: "Newest first" },
-  { value: "oldest", label: "Oldest first" },
+  { value: "newest", label: "Mới nhất" },
+  { value: "oldest", label: "Cũ nhất" },
 ];
 
 export default function PatientDashboard() {
   const { user, loading: authLoading } = useAuth();
   const toast = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Show payment result toast when redirected back from VNPay
+  useEffect(() => {
+    const payment = searchParams.get("payment");
+    if (payment === "success") {
+      toast("Thanh toán thành công! Lịch hẹn đã được xác nhận.", "success");
+      setSearchParams({}, { replace: true });
+    } else if (payment === "failed") {
+      toast("Thanh toán chưa hoàn tất. Lịch hẹn vẫn đang chờ xử lý.", "error");
+      setSearchParams({}, { replace: true });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const [statusFilter, setStatusFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
   const params = useMemo(() => statusFilter ? { status: statusFilter } : {}, [statusFilter]);
@@ -69,40 +82,40 @@ export default function PatientDashboard() {
     setCancelLoading(true);
     try {
       await cancel(cancelTarget.id, cancelReason || undefined);
-      toast("Appointment cancelled", "info");
+      toast("Đã hủy lịch hẹn", "info");
       setCancelTarget(null);
     } catch (e) {
-      toast(e.response?.data?.detail || "Failed to cancel", "error");
+      toast(e.response?.data?.detail || "Hủy thất bại", "error");
     } finally {
       setCancelLoading(false);
     }
   };
 
   const handleReschedule = async () => {
-    if (!newSlot) { toast("Please select a new slot", "error"); return; }
+    if (!newSlot) { toast("Vui lòng chọn khung giờ mới", "error"); return; }
     setRLoading(true);
     try {
       await reschedule(rescheduleTarget.id, newSlot);
-      toast("Appointment rescheduled!", "success");
+      toast("Đã đổi lịch hẹn!", "success");
       setRescheduleTarget(null);
     } catch (e) {
-      toast(e.response?.data?.detail || "Failed to reschedule", "error");
+      toast(e.response?.data?.detail || "Đổi lịch thất bại", "error");
     } finally {
       setRLoading(false);
     }
   };
 
   const handleDetailReschedule = async () => {
-    if (!detailSlot) { toast("Please select a new slot", "error"); return; }
+    if (!detailSlot) { toast("Vui lòng chọn khung giờ mới", "error"); return; }
     setDetailRLoading(true);
     try {
       await reschedule(detailAppt.id, detailSlot);
-      toast("Appointment rescheduled!", "success");
+      toast("Đã đổi lịch hẹn!", "success");
       setDetailAppt(null);
       setDetailView("info");
       setDetailSlot(null);
     } catch (e) {
-      toast(e.response?.data?.detail || "Failed to reschedule", "error");
+      toast(e.response?.data?.detail || "Đổi lịch thất bại", "error");
     } finally {
       setDetailRLoading(false);
     }
@@ -112,11 +125,11 @@ export default function PatientDashboard() {
     setRevLoading(true);
     try {
       await createReview({ appointment_id: reviewTarget.id, ...reviewForm });
-      toast("Review submitted!", "success");
+      toast("Đã gửi đánh giá!", "success");
       setReviewTarget(null);
       refetch();
     } catch (e) {
-      toast(e.response?.data?.detail || "Failed to submit review", "error");
+      toast(e.response?.data?.detail || "Gửi đánh giá thất bại", "error");
     } finally {
       setRevLoading(false);
     }
@@ -132,7 +145,7 @@ export default function PatientDashboard() {
           onClick={(e) => { e.stopPropagation(); setRescheduleTarget(appt); setNewSlot(null); }}
           className="patient-dash__action-btn patient-dash__action-btn--reschedule btn-secondary"
         >
-          Reschedule
+          Đổi lịch
         </button>
       );
       btns.push(
@@ -141,7 +154,7 @@ export default function PatientDashboard() {
           onClick={(e) => { e.stopPropagation(); setCancelTarget(appt); setCancelReason(""); }}
           className="patient-dash__action-btn patient-dash__action-btn--cancel btn-danger"
         >
-          Cancel
+          Hủy
         </button>
       );
     }
@@ -152,7 +165,7 @@ export default function PatientDashboard() {
           onClick={(e) => { e.stopPropagation(); setReviewTarget(appt); setReviewForm({ rating: 5, comment: "" }); }}
           className="patient-dash__action-btn patient-dash__action-btn--review btn-ghost"
         >
-          ★ Leave review
+          ★ Đánh giá
         </button>
       );
     }
@@ -163,10 +176,10 @@ export default function PatientDashboard() {
   const filtered = appointments;
 
   const statRows = [
-    { label: "Total",     value: appointments.length,                                          modifier: "total"     },
-    { label: "Upcoming",  value: upcoming.length,                                               modifier: "upcoming"  },
-    { label: "Completed", value: appointments.filter((a) => a.status === "COMPLETED").length,   modifier: "completed" },
-    { label: "Cancelled", value: appointments.filter((a) => a.status === "CANCELLED").length,   modifier: "cancelled" },
+    { label: "Tổng",       value: appointments.length,                                          modifier: "total"     },
+    { label: "Sắp tới",   value: upcoming.length,                                               modifier: "upcoming"  },
+    { label: "Hoàn thành", value: appointments.filter((a) => a.status === "COMPLETED").length,   modifier: "completed" },
+    { label: "Đã hủy",    value: appointments.filter((a) => a.status === "CANCELLED").length,   modifier: "cancelled" },
   ];
 
   return (
@@ -174,9 +187,9 @@ export default function PatientDashboard() {
       {/* Header */}
       <div className="patient-dash__header animate-fade-in">
         <div>
-          <h1 className="patient-dash__title">My Appointments</h1>
+          <h1 className="patient-dash__title">Lịch hẹn của tôi</h1>
           <p className="patient-dash__subtitle">
-            Welcome back,{" "}
+            Chào mừng trở lại,{" "}
             <span className="patient-dash__subtitle-name">{user.full_name}</span>
           </p>
         </div>
@@ -184,7 +197,7 @@ export default function PatientDashboard() {
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
-          Book new
+          Đặt lịch mới
         </Link>
       </div>
 
@@ -239,9 +252,9 @@ export default function PatientDashboard() {
       ) : filtered.length === 0 ? (
         <div className="patient-dash__empty card">
           <span className="patient-dash__empty-icon">📅</span>
-          <p className="patient-dash__empty-title">No appointments found</p>
-          <p className="patient-dash__empty-hint">Book your first appointment with a doctor</p>
-          <Link to="/search" className="btn-primary inline-flex">Find a doctor</Link>
+          <p className="patient-dash__empty-title">Không tìm thấy lịch hẹn</p>
+          <p className="patient-dash__empty-hint">Đặt lịch hẹn đầu tiên với bác sĩ</p>
+          <Link to="/search" className="btn-primary inline-flex">Tìm bác sĩ</Link>
         </div>
       ) : (
         <div className="patient-dash__list">
@@ -257,37 +270,37 @@ export default function PatientDashboard() {
       <Modal
         open={!!rescheduleTarget}
         onClose={() => setRescheduleTarget(null)}
-        title="Reschedule Appointment"
+        title="Đổi lịch hẹn"
         size="lg"
       >
         <SlotPicker doctorId={rescheduleTarget?.doctor?.id} onSelect={setNewSlot} />
         <div className="patient-dash__reschedule-section">
           <Button variant="secondary" onClick={() => setRescheduleTarget(null)}>
-            Cancel
+            Hủy
           </Button>
           <Button loading={rLoading} disabled={!newSlot} onClick={handleReschedule}>
-            Confirm Reschedule
+            Xác nhận đổi lịch
           </Button>
         </div>
       </Modal>
 
       {/* Cancel modal */}
-      <Modal open={!!cancelTarget} onClose={() => setCancelTarget(null)} title="Cancel Appointment">
+      <Modal open={!!cancelTarget} onClose={() => setCancelTarget(null)} title="Hủy lịch hẹn">
         <div className="patient-dash__modal-body">
           <p className="patient-dash__modal-warn">
-            Are you sure you want to cancel this appointment?
+            Bạn có chắc chắn muốn hủy lịch hẹn này?
           </p>
           <div>
             <label className="label">
-              Reason{" "}
+              Lý do{" "}
               <span className="patient-dash__optional">
-                (optional)
+                (không bắt buộc)
               </span>
             </label>
             <textarea
               className="patient-dash__modal-reason input"
               rows={3}
-              placeholder="Let us know why you're cancelling…"
+              placeholder="Cho chúng tôi biết lý do hủy…"
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
               maxLength={500}
@@ -295,20 +308,20 @@ export default function PatientDashboard() {
           </div>
           <div className="patient-dash__modal-actions">
             <Button variant="secondary" onClick={() => setCancelTarget(null)}>
-              Keep appointment
+              Giữ lịch hẹn
             </Button>
             <Button variant="danger" loading={cancelLoading} onClick={handleCancel}>
-              Confirm cancellation
+              Xác nhận hủy
             </Button>
           </div>
         </div>
       </Modal>
 
       {/* Review modal */}
-      <Modal open={!!reviewTarget} onClose={() => setReviewTarget(null)} title="Leave a Review">
+      <Modal open={!!reviewTarget} onClose={() => setReviewTarget(null)} title="Viết đánh giá">
         <div className="patient-dash__modal-body">
           <div>
-            <label className="label">Rating</label>
+            <label className="label">Điểm đánh giá</label>
             <div className="patient-dash__review-stars">
               {[1, 2, 3, 4, 5].map((n) => (
                 <button
@@ -326,15 +339,15 @@ export default function PatientDashboard() {
           </div>
           <div>
             <label className="label">
-              Comment{" "}
+              Nhận xét{" "}
               <span className="patient-dash__optional">
-                (optional)
+                (không bắt buộc)
               </span>
             </label>
             <textarea
               className="patient-dash__review-textarea input"
               rows={4}
-              placeholder="Share your experience…"
+              placeholder="Chia sẻ trải nghiệm của bạn…"
               value={reviewForm.comment}
               onChange={(e) => setReviewForm((f) => ({ ...f, comment: e.target.value }))}
               maxLength={1000}
@@ -342,10 +355,10 @@ export default function PatientDashboard() {
           </div>
           <div className="patient-dash__modal-actions">
             <Button variant="secondary" onClick={() => setReviewTarget(null)}>
-              Cancel
+              Hủy
             </Button>
             <Button loading={revLoading} onClick={handleReview}>
-              Submit Review
+              Gửi đánh giá
             </Button>
           </div>
         </div>
@@ -355,40 +368,40 @@ export default function PatientDashboard() {
       <Modal
         open={!!detailAppt}
         onClose={() => { setDetailAppt(null); setDetailView("info"); setDetailSlot(null); }}
-        title={detailView === "reschedule" ? "Pick a new date & time" : "Appointment Details"}
+        title={detailView === "reschedule" ? "Chọn ngày & giờ mới" : "Chi tiết lịch hẹn"}
         size="lg"
       >
         {detailAppt && detailView === "info" && (
           <div className="patient-dash__detail-body">
             <div className="patient-dash__detail-grid">
               <div>
-                <p className="label">Doctor</p>
-                <p className="patient-dash__detail-value">Dr. {detailAppt.doctor?.user?.full_name}</p>
+                <p className="label">Bác sĩ</p>
+                <p className="patient-dash__detail-value">BS. {detailAppt.doctor?.user?.full_name}</p>
                 {detailAppt.doctor?.specialty && <p className="patient-dash__detail-sub">{detailAppt.doctor.specialty.name}</p>}
               </div>
               <div>
-                <p className="label">Date &amp; Time</p>
+                <p className="label">Ngày &amp; Giờ</p>
                 <p className="patient-dash__detail-value">{new Date(detailAppt.scheduled_at).toLocaleString()}</p>
               </div>
               <div>
-                <p className="label">Status</p>
+                <p className="label">Trạng thái</p>
                 <Badge status={detailAppt.status} />
               </div>
               {detailAppt.reason && (
                 <div>
-                  <p className="label">Reason</p>
+                  <p className="label">Lý do</p>
                   <p className="patient-dash__detail-sub">{detailAppt.reason}</p>
                 </div>
               )}
               {detailAppt.cancellation_reason && (
                 <div>
-                  <p className="label">Cancellation reason</p>
+                  <p className="label">Lý do hủy</p>
                   <p className="patient-dash__detail-sub">{detailAppt.cancellation_reason}</p>
                 </div>
               )}
               {detailAppt.reschedule_count > 0 && (
                 <div>
-                  <p className="label">Reschedules</p>
+                  <p className="label">Số lần đổi lịch</p>
                   <p className="patient-dash__detail-value">×{detailAppt.reschedule_count}</p>
                 </div>
               )}
@@ -400,7 +413,7 @@ export default function PatientDashboard() {
                     variant="secondary"
                     onClick={() => { setDetailView("reschedule"); setDetailSlot(null); }}
                   >
-                    Reschedule
+                    Đổi lịch
                   </Button>
                   <Button
                     variant="danger"
@@ -411,11 +424,11 @@ export default function PatientDashboard() {
                       setDetailView("info");
                     }}
                   >
-                    Cancel
+                    Hủy
                   </Button>
                 </>
               )}
-              <Button variant="secondary" onClick={() => { setDetailAppt(null); setDetailView("info"); }}>Close</Button>
+              <Button variant="secondary" onClick={() => { setDetailAppt(null); setDetailView("info"); }}>Đóng</Button>
             </div>
           </div>
         )}
@@ -424,16 +437,16 @@ export default function PatientDashboard() {
           <div className="patient-dash__detail-reschedule">
             <div className="patient-dash__detail-reschedule-info">
               <p className="patient-dash__detail-sub">
-                Current: <strong>{new Date(detailAppt.scheduled_at).toLocaleString()}</strong> with Dr. {detailAppt.doctor?.user?.full_name}
+                Hiện tại: <strong>{new Date(detailAppt.scheduled_at).toLocaleString()}</strong> với BS. {detailAppt.doctor?.user?.full_name}
               </p>
             </div>
             <SlotPicker doctorId={detailAppt.doctor?.id} onSelect={setDetailSlot} />
             <div className="patient-dash__reschedule-section">
               <Button variant="secondary" onClick={() => { setDetailView("info"); setDetailSlot(null); }}>
-                Back
+                Quay lại
               </Button>
               <Button loading={detailRLoading} disabled={!detailSlot} onClick={handleDetailReschedule}>
-                Confirm Reschedule
+                Xác nhận đổi lịch
               </Button>
             </div>
           </div>

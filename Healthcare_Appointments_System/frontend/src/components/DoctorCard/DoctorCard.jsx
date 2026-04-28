@@ -66,7 +66,7 @@ export default function DoctorCard({ doctor }) {
         )}
         {years_experience != null && (
           <p className="doctor-card__experience">
-            <span className="doctor-card__experience-value">{years_experience}</span> yrs experience
+            <span className="doctor-card__experience-value">{years_experience}</span> năm kinh nghiệm
           </p>
         )}
         {clinic_address && (
@@ -90,14 +90,14 @@ export default function DoctorCard({ doctor }) {
       <div className="doctor-card__footer">
         {consultation_fee != null ? (
           <div className="doctor-card__fee">
-            <span className="doctor-card__fee-amount">${Number(consultation_fee).toFixed(0)}</span>
-            <span className="doctor-card__fee-label">/ visit</span>
+            <span className="doctor-card__fee-amount">{Number(consultation_fee).toLocaleString("vi-VN")} ₫</span>
+            <span className="doctor-card__fee-label">/ lượt khám</span>
           </div>
         ) : (
-          <span className="doctor-card__fee--unlisted">Fee not listed</span>
+          <span className="doctor-card__fee--unlisted">Chưa niêm yết phí</span>
         )}
         <span className="doctor-card__cta">
-          Book now
+          Đặt lịch
           <svg
             className="doctor-card__cta-icon"
             fill="none"

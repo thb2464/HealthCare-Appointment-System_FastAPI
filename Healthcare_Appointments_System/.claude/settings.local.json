@@ -35,7 +35,9 @@
       "Bash(rm components/ui/Button.jsx components/ui/Modal.jsx components/ui/Toast.jsx components/ui/Badge.jsx)",
       "Bash(rm components/Calendar/SlotPicker.jsx components/Calendar/WeekView.jsx)",
       "Bash(rm components/forms/BookingForm.jsx components/forms/RegisterForm.jsx components/forms/LoginForm.jsx)",
-      "Bash(rm pages/LandingPage.jsx pages/ProfilePage.jsx pages/patient/SearchPage.jsx pages/patient/BookingPage.jsx pages/patient/DoctorProfilePage.jsx pages/patient/PatientDashboard.jsx pages/doctor/DoctorDashboard.jsx pages/doctor/AvailabilitySettings.jsx pages/auth/LoginPage.jsx pages/auth/RegisterPage.jsx pages/admin/AdminDashboard.jsx)"
+      "Bash(rm pages/LandingPage.jsx pages/ProfilePage.jsx pages/patient/SearchPage.jsx pages/patient/BookingPage.jsx pages/patient/DoctorProfilePage.jsx pages/patient/PatientDashboard.jsx pages/doctor/DoctorDashboard.jsx pages/doctor/AvailabilitySettings.jsx pages/auth/LoginPage.jsx pages/auth/RegisterPage.jsx pages/admin/AdminDashboard.jsx)",
+      "mcp__serena__replace_symbol_body",
+      "Bash(python3:*)"
     ]
   },
   "enabledMcpjsonServers": [

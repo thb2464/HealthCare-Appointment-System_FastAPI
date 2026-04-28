@@ -46,6 +46,7 @@ class Appointment(Base):
     cancellation_reason: Mapped[str | None] = mapped_column(String(500), nullable=True)
     # Payment tracking
     deposit_paid: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    vnpay_txn_ref: Mapped[str | None] = mapped_column(String(100), nullable=True, index=True)
     # Reschedule tracking
     reschedule_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     reschedule_fee_applied: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

@@ -25,11 +25,11 @@ export default function LoginForm() {
       const { getMe } = await import("../../../api/authApi");
       const { data: user } = await getMe();
       loginUser(tokens, user);
-      toast("Welcome back, " + user.full_name + "!", "success");
+      toast("Chào mừng trở lại, " + user.full_name + "!", "success");
       const destinations = { patient: "/dashboard", doctor: "/doctor/dashboard", admin: "/admin" };
       navigate(destinations[user.role?.toLowerCase()] || "/");
     } catch (err) {
-      toast(err.response?.data?.detail || "Login failed", "error");
+      toast(err.response?.data?.detail || "Đăng nhập thất bại", "error");
     } finally {
       setLoading(false);
     }
@@ -38,7 +38,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={submit} className="login-form">
       <div className="login-form__field">
-        <label className="label">Email address</label>
+        <label className="label">Địa chỉ email</label>
         <input
           name="email"
           type="email"
@@ -52,7 +52,7 @@ export default function LoginForm() {
       </div>
 
       <div className="login-form__field">
-        <label className="label">Password</label>
+        <label className="label">Mật khẩu</label>
         <div className="login-form__password-wrap">
           <input
             name="password"
@@ -84,12 +84,12 @@ export default function LoginForm() {
       </div>
 
       <Button type="submit" loading={loading} className="w-full">
-        Sign in
+        Đăng nhập
       </Button>
 
       <p className="login-form__footer">
-        No account?{" "}
-        <Link to="/register">Create one</Link>
+        Chưa có tài khoản?{" "}
+        <Link to="/register">Tạo tài khoản</Link>
       </p>
     </form>
   );

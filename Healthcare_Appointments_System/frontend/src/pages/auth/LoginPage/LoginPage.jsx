@@ -23,8 +23,8 @@ export default function LoginPage() {
               <path d="M16 8v16M8 16h16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </div>
-          <h1 className="login-page__title">Welcome back</h1>
-          <p className="login-page__subtitle">Sign in to your MediCare account</p>
+          <h1 className="login-page__title">Chào mừng trở lại</h1>
+          <p className="login-page__subtitle">Đăng nhập vào tài khoản MediCare của bạn</p>
         </div>
 
         <div className="card login-page__card animate-slide-up">

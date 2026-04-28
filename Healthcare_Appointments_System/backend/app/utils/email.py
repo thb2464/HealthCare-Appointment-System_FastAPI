@@ -88,7 +88,7 @@ async def send_appointment_reminder(
         body=(
             f"Dear {patient_name},\n\n"
             f"This is a reminder that your appointment with Dr. {doctor_name} "
-            f"is scheduled for {scheduled_at} (UTC).\n\n"
+            f"is scheduled for {scheduled_at} (UTC+7).\n\n"
             "— MediCare Team"
         ),
     )
@@ -186,7 +186,7 @@ async def send_appointment_reminder(
         body=(
             f"Dear {patient_name},\n\n"
             f"This is a reminder that your appointment with Dr. {doctor_name} "
-            f"is scheduled for {scheduled_at} (UTC), approximately {hours_before} hour(s) from now.\n\n"
+            f"is scheduled for {scheduled_at} (UTC+7), approximately {hours_before} hour(s) from now.\n\n"
             "Please arrive on time. You can manage your appointment via your patient dashboard.\n\n"
             "— MediCare Team"
         ),

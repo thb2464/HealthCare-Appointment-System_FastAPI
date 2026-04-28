@@ -66,11 +66,11 @@ async def seed() -> None:
 
             # ── Doctor users ──────────────────────────────────────────────────
             doc_users_data = [
-                dict(email="dr.sarah.chen@medicare.com",   full_name="Dr. Sarah Chen",   specialty=cardiology,  bio="Board-certified cardiologist with 12 years of experience in interventional cardiology.",       fee=150.00, exp=12),
-                dict(email="dr.james.patel@medicare.com",  full_name="Dr. James Patel",  specialty=neurology,   bio="Specialist in neurodegenerative diseases and stroke management.",                             fee=180.00, exp=15),
-                dict(email="dr.emily.nguyen@medicare.com", full_name="Dr. Emily Nguyen", specialty=dermatology, bio="Expert in cosmetic and medical dermatology, including acne, eczema, and skin cancer.",       fee=120.00, exp=8),
-                dict(email="dr.michael.kim@medicare.com",  full_name="Dr. Michael Kim",  specialty=orthopedics, bio="Orthopedic surgeon specialising in sports injuries and joint replacement.",                  fee=200.00, exp=18),
-                dict(email="dr.lisa.wang@medicare.com",    full_name="Dr. Lisa Wang",    specialty=pediatrics,  bio="Dedicated pediatrician focused on child wellness, vaccinations, and developmental health.",  fee=100.00, exp=10),
+                dict(email="dr.sarah.chen@medicare.com",   full_name="Dr. Sarah Chen",   specialty=cardiology,  bio="Board-certified cardiologist with 12 years of experience in interventional cardiology.",       fee=375000, exp=12),
+                dict(email="dr.james.patel@medicare.com",  full_name="Dr. James Patel",  specialty=neurology,   bio="Specialist in neurodegenerative diseases and stroke management.",                             fee=450000, exp=15),
+                dict(email="dr.emily.nguyen@medicare.com", full_name="Dr. Emily Nguyen", specialty=dermatology, bio="Expert in cosmetic and medical dermatology, including acne, eczema, and skin cancer.",       fee=300000, exp=8),
+                dict(email="dr.michael.kim@medicare.com",  full_name="Dr. Michael Kim",  specialty=orthopedics, bio="Orthopedic surgeon specialising in sports injuries and joint replacement.",                  fee=500000, exp=18),
+                dict(email="dr.lisa.wang@medicare.com",    full_name="Dr. Lisa Wang",    specialty=pediatrics,  bio="Dedicated pediatrician focused on child wellness, vaccinations, and developmental health.",  fee=250000, exp=10),
             ]
 
             doctors: list[Doctor] = []

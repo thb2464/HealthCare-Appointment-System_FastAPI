@@ -39,5 +39,11 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
 
+    # ── VNPay ──────────────────────────────────────────────────────────────
+    VNPAY_TMN_CODE: str = ""          # Merchant terminal code from VNPay portal
+    VNPAY_HASH_SECRET: str = ""       # Hash secret key from VNPay portal
+    VNPAY_URL: str = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+    VNPAY_RETURN_URL: str = "http://localhost:8000/api/payment/vnpay/return"
+
 
 settings = Settings()

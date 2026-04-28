@@ -120,7 +120,7 @@ export default function DoctorProfilePage() {
                     {Number(avg_rating).toFixed(1)}
                   </span>
                   <span className="doctor-profile__rating-count">
-                    ({reviews.length} reviews)
+                    ({reviews.length} đánh giá)
                   </span>
                 </span>
               )}
@@ -129,7 +129,7 @@ export default function DoctorProfilePage() {
                   <strong className="doctor-profile__rating-value">
                     {years_experience}
                   </strong>{" "}
-                  yrs experience
+                  năm kinh nghiệm
                 </span>
               )}
             </div>
@@ -138,9 +138,9 @@ export default function DoctorProfilePage() {
           {/* Consultation fee */}
           {consultation_fee != null && (
             <div className="doctor-profile__fee">
-              <p className="doctor-profile__fee-label">Consultation fee</p>
+              <p className="doctor-profile__fee-label">Phí khám</p>
               <p className="doctor-profile__fee-amount">
-                ${Number(consultation_fee).toFixed(0)}
+                {Number(consultation_fee).toLocaleString("vi-VN")} ₫
               </p>
             </div>
           )}
@@ -156,7 +156,7 @@ export default function DoctorProfilePage() {
           {/* Bio */}
           {bio && (
             <div className="doctor-profile__section card">
-              <h2 className="doctor-profile__section-title">About</h2>
+              <h2 className="doctor-profile__section-title">Giới thiệu</h2>
               <p className="doctor-profile__about">{bio}</p>
             </div>
           )}
@@ -185,7 +185,7 @@ export default function DoctorProfilePage() {
                 </svg>
               </div>
               <div>
-                <p className="doctor-profile__address-label">Clinic address</p>
+                <p className="doctor-profile__address-label">Địa chỉ phòng khám</p>
                 <p className="doctor-profile__address-text">{clinic_address}</p>
               </div>
             </div>
@@ -194,7 +194,7 @@ export default function DoctorProfilePage() {
           {/* Reviews */}
           <div className="doctor-profile__section card">
             <h2 className="doctor-profile__reviews-title">
-              Patient Reviews
+              Đánh giá từ bệnh nhân
               {reviews.length > 0 && (
                 <span className="doctor-profile__reviews-count">
                   ({reviews.length})
@@ -203,7 +203,7 @@ export default function DoctorProfilePage() {
             </h2>
 
             {reviews.length === 0 ? (
-              <p className="doctor-profile__no-reviews">No reviews yet.</p>
+              <p className="doctor-profile__no-reviews">Chưa có đánh giá nào.</p>
             ) : (
               <div className="doctor-profile__reviews">
                 {reviews.map((r) => (
@@ -218,7 +218,7 @@ export default function DoctorProfilePage() {
                       <p className="doctor-profile__review-text">{r.comment}</p>
                     )}
                     <p className="doctor-profile__review-date">
-                      {new Date(r.created_at).toLocaleDateString("en-US", {
+                      {new Date(r.created_at).toLocaleDateString("vi-VN", {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
@@ -235,7 +235,7 @@ export default function DoctorProfilePage() {
         <div className="doctor-profile__sidebar">
           <div className="doctor-profile__book-btn-card card">
             <h2 className="doctor-profile__book-card-title">
-              Book an appointment
+              Đặt lịch khám
             </h2>
 
             {user?.role === "patient" ? (
@@ -256,23 +256,23 @@ export default function DoctorProfilePage() {
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                Book now
+                Đặt lịch ngay
               </button>
             ) : !user ? (
               <div className="doctor-profile__signin-actions">
                 <p className="doctor-profile__signin-hint">
-                  Sign in to book an appointment
+                  Đăng nhập để đặt lịch khám
                 </p>
                 <button
                   className="doctor-profile__book-btn btn-primary"
                   onClick={() => navigate("/login")}
                 >
-                  Sign in
+                  Đăng nhập
                 </button>
               </div>
             ) : (
               <p className="doctor-profile__role-hint">
-                Only patients can book appointments.
+                Chỉ bệnh nhân mới có thể đặt lịch khám.
               </p>
             )}
           </div>

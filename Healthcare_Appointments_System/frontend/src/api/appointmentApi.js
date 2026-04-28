@@ -41,3 +41,11 @@ export const markNoShow = (id, cancellationReason) =>
 /** GET /api/appointments/:id/checkin-token */
 export const getCheckinToken = (id) =>
   axiosClient.get(`/api/appointments/${id}/checkin-token`);
+
+/** POST /api/payment/vnpay/create — book + get VNPay redirect URL */
+export const createVNPayPayment = (data) =>
+  axiosClient.post("/api/payment/vnpay/create", data);
+
+/** POST /api/payment/vnpay/retry/:id — retry payment for an existing unpaid PENDING appointment */
+export const retryVNPayPayment = (appointmentId) =>
+  axiosClient.post(`/api/payment/vnpay/retry/${appointmentId}`);

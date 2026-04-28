@@ -17,11 +17,11 @@ import { formatDateTime, relativeTime } from "../../../utils/dateHelpers";
 
 // ── helpers ────────────────────────────────────────────────────────────────────
 const TABS = [
-  { key: "overview",     icon: "📊", label: "Overview" },
-  { key: "users",        icon: "👥", label: "Users" },
-  { key: "appointments", icon: "📅", label: "Appointments" },
-  { key: "doctors",      icon: "🩺", label: "Doctors" },
-  { key: "specialties",  icon: "🏥", label: "Specialties" },
+  { key: "overview",     icon: "📊", label: "Tổng quan" },
+  { key: "users",        icon: "👥", label: "Người dùng" },
+  { key: "appointments", icon: "📅", label: "Lịch hẹn" },
+  { key: "doctors",      icon: "🩺", label: "Bác sĩ" },
+  { key: "specialties",  icon: "🏥", label: "Chuyên khoa" },
 ];
 
 const APPT_STATUSES = ["PENDING","CONFIRMED","ARRIVED","COMPLETED","CANCELLED","RESCHEDULED","NOSHOW"];
@@ -129,7 +129,7 @@ function Skeleton({ rows = 5 }) {
 
 // ── Mini bar chart ─────────────────────────────────────────────────────────────
 function MiniBarChart({ data }) {
-  if (!data?.length) return <div className="admin-dash__no-data">No data</div>;
+  if (!data?.length) return <div className="admin-dash__no-data">Không có dữ liệu</div>;
   const max = Math.max(...data.map((d) => d.count), 1);
   return (
     <div className="admin-dash__mini-chart">
@@ -162,29 +162,29 @@ function OverviewTab({ stats }) {
 
   const appt = stats.appointments ?? {};
   const statusRows = [
-    { label: "Pending",     key: "pending",     colorKey: "pending" },
-    { label: "Confirmed",   key: "confirmed",   colorKey: "confirmed" },
-    { label: "Arrived",     key: "arrived",     colorKey: "arrived" },
-    { label: "Completed",   key: "completed",   colorKey: "completed" },
-    { label: "Cancelled",   key: "cancelled",   colorKey: "cancelled" },
-    { label: "Rescheduled", key: "rescheduled", colorKey: "rescheduled" },
-    { label: "No-Show",     key: "noshow",      colorKey: "noshow" },
+    { label: "Chờ xác nhận",  key: "pending",     colorKey: "pending" },
+    { label: "Đã xác nhận",   key: "confirmed",   colorKey: "confirmed" },
+    { label: "Đã đến",        key: "arrived",     colorKey: "arrived" },
+    { label: "Hoàn thành",    key: "completed",   colorKey: "completed" },
+    { label: "Đã hủy",        key: "cancelled",   colorKey: "cancelled" },
+    { label: "Đã đổi lịch",   key: "rescheduled", colorKey: "rescheduled" },
+    { label: "Vắng mặt",      key: "noshow",      colorKey: "noshow" },
   ];
 
   return (
     <div className="admin-dash__overview admin-dash__tab-content">
       {/* Top stats */}
       <div className="admin-dash__stats-grid">
-        <StatCard icon="👥" label="Total users"        value={stats.users?.total}    sub={`${stats.users?.patients ?? 0} patients · ${stats.users?.doctors ?? 0} doctors`} />
-        <StatCard icon="📅" label="Total appointments"  value={appt.total}            color="text-slate-100" />
-        <StatCard icon="✅" label="Completed"            value={appt.completed}        color="text-green-400" />
-        <StatCard icon="💰" label="Revenue (completed)"  value={`$${Number(stats.revenue?.total_completed ?? 0).toFixed(0)}`} sub={`Waitlist: ${stats.waitlist?.total ?? 0}`} color="text-amber-400" />
+        <StatCard icon="👥" label="Tổng người dùng"      value={stats.users?.total}    sub={`${stats.users?.patients ?? 0} bệnh nhân · ${stats.users?.doctors ?? 0} bác sĩ`} />
+        <StatCard icon="📅" label="Tổng lịch hẹn"        value={appt.total}            color="text-slate-100" />
+        <StatCard icon="✅" label="Hoàn thành"            value={appt.completed}        color="text-green-400" />
+        <StatCard icon="💰" label="Doanh thu (hoàn thành)" value={`${Number(stats.revenue?.total_completed ?? 0).toLocaleString("vi-VN")} ₫`} sub={`Chờ khám: ${stats.waitlist?.total ?? 0}`} color="text-amber-400" />
       </div>
 
       {/* Appointment breakdown + chart */}
       <div className="admin-dash__charts-row">
         <div className="card admin-dash__chart-card">
-          <h2 className="admin-dash__chart-title">Appointment Status Breakdown</h2>
+          <h2 className="admin-dash__chart-title">Phân bổ trạng thái lịch hẹn</h2>
           <div className="admin-dash__status-rows">
             {statusRows.map(({ label, key, colorKey }) => {
               const val = appt[key] ?? 0;
@@ -211,7 +211,7 @@ function OverviewTab({ stats }) {
         </div>
 
         <div className="card admin-dash__chart-card">
-          <h2 className="admin-dash__chart-title">Appointments (last 14 days)</h2>
+          <h2 className="admin-dash__chart-title">Lịch hẹn (14 ngày qua)</h2>
           <MiniBarChart data={stats.daily_appointments} />
           <div className="admin-dash__chart-dates">
             <span>{stats.daily_appointments?.at(-14)?.date ?? ""}</span>
@@ -222,10 +222,10 @@ function OverviewTab({ stats }) {
 
       {/* Quick summary */}
       <div className="admin-dash__stats-grid--4 admin-dash__stats-grid">
-        <StatCard icon="🕐" label="Pending review"    value={appt.pending}            color="text-amber-400" />
-        <StatCard icon="⏳" label="Waitlist patients"  value={stats.waitlist?.total}   color="text-violet-400" />
-        <StatCard icon="❌" label="Cancelled"           value={appt.cancelled}          color="text-red-400" />
-        <StatCard icon="🚫" label="No-Shows"            value={appt.noshow ?? 0}        color="text-orange-400" />
+        <StatCard icon="🕐" label="Chờ duyệt"          value={appt.pending}            color="text-amber-400" />
+        <StatCard icon="⏳" label="Bệnh nhân chờ"      value={stats.waitlist?.total}   color="text-violet-400" />
+        <StatCard icon="❌" label="Đã hủy"              value={appt.cancelled}          color="text-red-400" />
+        <StatCard icon="🚫" label="Vắng mặt"            value={appt.noshow ?? 0}        color="text-orange-400" />
       </div>
     </div>
   );
@@ -283,30 +283,30 @@ function UsersTab({ toast }) {
       await adminToggleUser(u.id, !u.is_active);
       setUsers((prev) => prev.map((x) => x.id === u.id ? { ...x, is_active: !x.is_active } : x));
       if (detailUser?.id === u.id) setDetailUser((d) => ({ ...d, is_active: !d.is_active }));
-      toast(`User ${!u.is_active ? "activated" : "deactivated"}`, "success");
-    } catch (e) { toast(e.response?.data?.detail || "Action failed", "error"); }
+      toast(`Tài khoản đã ${!u.is_active ? "kích hoạt" : "vô hiệu hóa"}`, "success");
+    } catch (e) { toast(e.response?.data?.detail || "Thao tác thất bại", "error"); }
   };
 
   const handleCreate = async () => {
     if (!createForm.full_name.trim() || !createForm.email.trim() || !createForm.password.trim()) {
-      toast("Full name, email and password are required", "error"); return;
+      toast("Họ tên, email và mật khẩu là bắt buộc", "error"); return;
     }
     setCreateLoading(true);
     try {
       const { data } = await adminCreateUser({ ...createForm, phone: createForm.phone || undefined });
       setUsers((prev) => [data, ...prev]);
-      toast("Account created!", "success");
+      toast("Tạo tài khoản thành công!", "success");
       setCreateOpen(false);
       setCreateForm({ full_name: "", email: "", phone: "", password: "", role: "DOCTOR" });
-    } catch (e) { toast(e.response?.data?.detail || "Failed to create", "error"); }
+    } catch (e) { toast(e.response?.data?.detail || "Tạo thất bại", "error"); }
     finally { setCreateLoading(false); }
   };
 
   const STAFF_ROLE_TABS = [
-    { value: "", label: "All Staff" },
-    { value: "DOCTOR", label: "Doctors" },
-    { value: "RECEPTIONIST", label: "Receptionists" },
-    { value: "ADMIN", label: "Admins" },
+    { value: "", label: "Tất cả nhân viên" },
+    { value: "DOCTOR", label: "Bác sĩ" },
+    { value: "RECEPTIONIST", label: "Lễ tân" },
+    { value: "ADMIN", label: "Quản trị viên" },
   ];
 
   return (
@@ -319,7 +319,7 @@ function UsersTab({ toast }) {
             onClick={() => setUserTab(t)}
             className={`admin-dash__user-tab${userTab === t ? " admin-dash__user-tab--active" : ""}`}
           >
-            {t === "patients" ? "👤 Patients" : "🩺 Staff"}
+            {t === "patients" ? "👤 Bệnh nhân" : "🩺 Nhân viên"}
           </button>
         ))}
       </div>
@@ -345,19 +345,19 @@ function UsersTab({ toast }) {
             value={activeFilter}
             onChange={(e) => setActiveFilter(e.target.value)}
           >
-            <option value="">All status</option>
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
+            <option value="">Tất cả trạng thái</option>
+            <option value="true">Hoạt động</option>
+            <option value="false">Ngừng hoạt động</option>
           </select>
         </div>
         <div className="admin-dash__filter-right">
-          <SearchBar value={search} onChange={setSearch} placeholder="Search name or email…" />
+          <SearchBar value={search} onChange={setSearch} placeholder="Tìm theo tên hoặc email…" />
           {userTab === "staff" && (
             <Button onClick={() => setCreateOpen(true)} size="sm">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
-              Add staff
+              Thêm nhân viên
             </Button>
           )}
         </div>
@@ -365,19 +365,19 @@ function UsersTab({ toast }) {
 
       {/* Table */}
       {loading ? <Skeleton /> : users.length === 0 ? (
-        <EmptyState icon="👥" title="No users found" sub="Try adjusting your filters" />
+        <EmptyState icon="👥" title="Không tìm thấy người dùng" sub="Hãy thử điều chỉnh bộ lọc" />
       ) : (
         <div className="card admin-dash__table-wrap">
           <div className="admin-dash__table-scroll">
             <table className="admin-dash__table">
               <thead>
                 <tr>
-                  <th>User</th>
-                  <th className="admin-dash__th--narrow">Role</th>
-                  <th className="admin-dash__th--narrow admin-dash__th--hide-md">Phone</th>
-                  <th className="admin-dash__th--narrow admin-dash__th--hide-sm">Joined</th>
-                  <th className="admin-dash__th--narrow">Status</th>
-                  <th className="admin-dash__th--narrow">Actions</th>
+                  <th>Người dùng</th>
+                  <th className="admin-dash__th--narrow">Vai trò</th>
+                  <th className="admin-dash__th--narrow admin-dash__th--hide-md">Điện thoại</th>
+                  <th className="admin-dash__th--narrow admin-dash__th--hide-sm">Ngày tham gia</th>
+                  <th className="admin-dash__th--narrow">Trạng thái</th>
+                  <th className="admin-dash__th--narrow">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -407,7 +407,7 @@ function UsersTab({ toast }) {
                     </td>
                     <td className="admin-dash__td">
                       <span className={u.is_active ? "admin-dash__status-active" : "admin-dash__status-inactive"}>
-                        {u.is_active ? "● Active" : "○ Inactive"}
+                        {u.is_active ? "● Hoạt động" : "○ Ngừng hoạt động"}
                       </span>
                     </td>
                     <td className="admin-dash__td admin-dash__td--right">
@@ -415,7 +415,7 @@ function UsersTab({ toast }) {
                         onClick={() => handleToggle(u)}
                         className={`admin-dash__toggle-btn ${u.is_active ? "admin-dash__toggle-btn--deactivate" : "admin-dash__toggle-btn--activate"}`}
                       >
-                        {u.is_active ? "Deactivate" : "Activate"}
+                        {u.is_active ? "Vô hiệu hóa" : "Kích hoạt"}
                       </button>
                     </td>
                   </tr>
@@ -424,7 +424,7 @@ function UsersTab({ toast }) {
             </table>
           </div>
           <div className="admin-dash__table-footer">
-            {users.length} user{users.length !== 1 ? "s" : ""} shown
+            Hiển thị {users.length} người dùng
           </div>
         </div>
       )}
@@ -436,20 +436,20 @@ function UsersTab({ toast }) {
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page === 1}
         >
-          ← Previous
+          ← Trước
         </button>
-        <span className="admin-dash__page-label">Page {page}</span>
+        <span className="admin-dash__page-label">Trang {page}</span>
         <button
           className="btn-secondary admin-dash__page-btn"
           onClick={() => setPage((p) => p + 1)}
           disabled={!hasMore}
         >
-          Next →
+          Tiếp →
         </button>
       </div>
 
       {/* User detail modal */}
-      <Modal open={!!detailUser} onClose={() => setDetailUser(null)} title="User Details">
+      <Modal open={!!detailUser} onClose={() => setDetailUser(null)} title="Chi tiết người dùng">
         {detailUser && (
           <div className="admin-dash__modal-detail">
             <div className="admin-dash__user-detail-header">
@@ -464,13 +464,13 @@ function UsersTab({ toast }) {
             <div className="divider" />
             <div className="admin-dash__detail-pairs">
               {[
-                { label: "ID",      value: `#${detailUser.id}` },
-                { label: "Role",    value: detailUser.role?.toLowerCase() },
-                { label: "Phone",   value: detailUser.phone || "—" },
-                { label: "Status",  value: detailUser.is_active ? "Active" : "Inactive",
+                { label: "ID",           value: `#${detailUser.id}` },
+                { label: "Vai trò",      value: detailUser.role?.toLowerCase() },
+                { label: "Điện thoại",   value: detailUser.phone || "—" },
+                { label: "Trạng thái",   value: detailUser.is_active ? "Hoạt động" : "Ngừng hoạt động",
                   valMod: detailUser.is_active ? "admin-dash__detail-pair-val--green" : "admin-dash__detail-pair-val--red" },
-                { label: "Joined",  value: formatDateTime(detailUser.created_at) },
-                { label: "Updated", value: formatDateTime(detailUser.updated_at) },
+                { label: "Ngày tham gia", value: formatDateTime(detailUser.created_at) },
+                { label: "Cập nhật",     value: formatDateTime(detailUser.updated_at) },
               ].map(({ label, value, valMod }) => (
                 <div key={label}>
                   <p className="admin-dash__detail-pair-key">{label}</p>
@@ -479,13 +479,13 @@ function UsersTab({ toast }) {
               ))}
             </div>
             <div className="admin-dash__modal-actions">
-              <Button variant="secondary" className="admin-dash__modal-btn" onClick={() => setDetailUser(null)}>Close</Button>
+              <Button variant="secondary" className="admin-dash__modal-btn" onClick={() => setDetailUser(null)}>Đóng</Button>
               <Button
                 variant={detailUser.is_active ? "danger" : "primary"}
                 className="admin-dash__modal-btn"
                 onClick={() => { handleToggle(detailUser); setDetailUser(null); }}
               >
-                {detailUser.is_active ? "Deactivate account" : "Activate account"}
+                {detailUser.is_active ? "Vô hiệu hóa tài khoản" : "Kích hoạt tài khoản"}
               </Button>
             </div>
           </div>
@@ -493,10 +493,10 @@ function UsersTab({ toast }) {
       </Modal>
 
       {/* Create staff modal */}
-      <Modal open={createOpen} onClose={() => setCreateOpen(false)} title="Add Doctor / Receptionist">
+      <Modal open={createOpen} onClose={() => setCreateOpen(false)} title="Thêm bác sĩ / Lễ tân">
         <div className="admin-dash__space-y-4">
           <div>
-            <label className="label">Role</label>
+            <label className="label">Vai trò</label>
             <div className="admin-dash__role-picker">
               {["DOCTOR", "RECEPTIONIST"].map((r) => (
                 <button
@@ -505,16 +505,16 @@ function UsersTab({ toast }) {
                   onClick={() => setCreateForm((f) => ({ ...f, role: r }))}
                   className={`admin-dash__role-btn ${createForm.role === r ? "admin-dash__role-btn--active" : "admin-dash__role-btn--inactive glass"}`}
                 >
-                  {r === "DOCTOR" ? "🩺 Doctor" : "🏥 Receptionist"}
+                  {r === "DOCTOR" ? "🩺 Bác sĩ" : "🏥 Lễ tân"}
                 </button>
               ))}
             </div>
           </div>
           {[
-            { name: "full_name", label: "Full name",         placeholder: "Dr. Jane Smith" },
-            { name: "email",     label: "Email",             placeholder: "doctor@clinic.com", type: "email" },
-            { name: "phone",     label: "Phone (optional)",  placeholder: "+1 555 000 0000",   type: "tel" },
-            { name: "password",  label: "Password",          placeholder: "Min 8 chars, 1 uppercase, 1 digit", type: "password" },
+            { name: "full_name", label: "Họ và tên",                placeholder: "BS. Nguyễn Văn A" },
+            { name: "email",     label: "Email",                    placeholder: "doctor@clinic.com", type: "email" },
+            { name: "phone",     label: "Điện thoại (không bắt buộc)", placeholder: "0901 234 567",   type: "tel" },
+            { name: "password",  label: "Mật khẩu",                placeholder: "Tối thiểu 8 ký tự, 1 chữ hoa, 1 số", type: "password" },
           ].map(({ name, label, placeholder, type = "text" }) => (
             <div key={name}>
               <label className="label">{label}</label>
@@ -528,8 +528,8 @@ function UsersTab({ toast }) {
             </div>
           ))}
           <div className="admin-dash__modal-actions">
-            <Button variant="secondary" className="admin-dash__modal-btn" onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button loading={createLoading} className="admin-dash__modal-btn" onClick={handleCreate}>Create account</Button>
+            <Button variant="secondary" className="admin-dash__modal-btn" onClick={() => setCreateOpen(false)}>Hủy</Button>
+            <Button loading={createLoading} className="admin-dash__modal-btn" onClick={handleCreate}>Tạo tài khoản</Button>
           </div>
         </div>
       </Modal>
@@ -575,9 +575,9 @@ function AppointmentsTab({ toast }) {
     try {
       const { data } = await adminUpdateAppointment(selected.id, { status: newStatus, notes: notes || undefined });
       setAppointments((prev) => prev.map((a) => a.id === selected.id ? data : a));
-      toast("Appointment updated", "success");
+      toast("Đã cập nhật lịch hẹn", "success");
       setSelected(null);
-    } catch (e) { toast(e.response?.data?.detail || "Failed to update", "error"); }
+    } catch (e) { toast(e.response?.data?.detail || "Cập nhật thất bại", "error"); }
     finally { setUpdateLoading(false); }
   };
 
@@ -586,7 +586,7 @@ function AppointmentsTab({ toast }) {
       {/* Controls */}
       <div className="admin-dash__filter-row">
         <div className="admin-dash__status-filter glass">
-          {[{ value: "", label: "All" }, ...APPT_STATUSES.map((s) => ({ value: s, label: s.charAt(0) + s.slice(1).toLowerCase() }))].map((f) => (
+          {[{ value: "", label: "Tất cả" }, ...APPT_STATUSES.map((s) => ({ value: s, label: { PENDING: "Chờ xác nhận", CONFIRMED: "Đã xác nhận", ARRIVED: "Đã đến", COMPLETED: "Hoàn thành", CANCELLED: "Đã hủy", RESCHEDULED: "Đã đổi lịch", NOSHOW: "Vắng mặt" }[s] || s }))].map((f) => (
             <button
               key={f.value}
               onClick={() => setStatusFilter(f.value)}
@@ -596,24 +596,24 @@ function AppointmentsTab({ toast }) {
             </button>
           ))}
         </div>
-        <SearchBar value={search} onChange={setSearch} placeholder="Search patient name…" />
+        <SearchBar value={search} onChange={setSearch} placeholder="Tìm theo tên bệnh nhân…" />
       </div>
 
       {/* Table */}
       {loading ? <Skeleton /> : appointments.length === 0 ? (
-        <EmptyState icon="📅" title="No appointments found" sub="Try changing your filters" />
+        <EmptyState icon="📅" title="Không tìm thấy lịch hẹn" sub="Hãy thử thay đổi bộ lọc" />
       ) : (
         <div className="card admin-dash__table-wrap">
           <div className="admin-dash__table-scroll">
             <table className="admin-dash__table">
               <thead>
                 <tr>
-                  <th>Patient</th>
-                  <th className="admin-dash__th--narrow">Doctor</th>
-                  <th className="admin-dash__th--narrow admin-dash__th--hide-md">Scheduled</th>
-                  <th className="admin-dash__th--narrow">Status</th>
-                  <th className="admin-dash__th--narrow admin-dash__th--hide-lg">Reason</th>
-                  <th className="admin-dash__th--narrow">Actions</th>
+                  <th>Bệnh nhân</th>
+                  <th className="admin-dash__th--narrow">Bác sĩ</th>
+                  <th className="admin-dash__th--narrow admin-dash__th--hide-md">Lịch hẹn</th>
+                  <th className="admin-dash__th--narrow">Trạng thái</th>
+                  <th className="admin-dash__th--narrow admin-dash__th--hide-lg">Lý do</th>
+                  <th className="admin-dash__th--narrow">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -637,7 +637,7 @@ function AppointmentsTab({ toast }) {
                       <span className="admin-dash__appt-reason">{a.reason || "—"}</span>
                     </td>
                     <td className="admin-dash__td admin-dash__td--right">
-                      <button className="admin-dash__manage-btn" onClick={() => openDetail(a)}>Manage</button>
+                      <button className="admin-dash__manage-btn" onClick={() => openDetail(a)}>Quản lý</button>
                     </td>
                   </tr>
                 ))}
@@ -645,47 +645,47 @@ function AppointmentsTab({ toast }) {
             </table>
           </div>
           <div className="admin-dash__table-footer">
-            {appointments.length} appointment{appointments.length !== 1 ? "s" : ""} shown
+            Hiển thị {appointments.length} lịch hẹn
           </div>
         </div>
       )}
 
       {/* Appointment detail / edit modal */}
-      <Modal open={!!selected} onClose={() => setSelected(null)} title="Manage Appointment" size="lg">
+      <Modal open={!!selected} onClose={() => setSelected(null)} title="Quản lý lịch hẹn" size="lg">
         {selected && (
           <div className="admin-dash__modal-detail">
             <div className="admin-dash__detail-grid">
               <div className="card admin-dash__detail-card">
-                <p className="admin-dash__detail-label">Patient</p>
+                <p className="admin-dash__detail-label">Bệnh nhân</p>
                 <p className="admin-dash__detail-value">{selected.patient?.full_name}</p>
               </div>
               <div className="card admin-dash__detail-card">
-                <p className="admin-dash__detail-label">Doctor</p>
+                <p className="admin-dash__detail-label">Bác sĩ</p>
                 <p className="admin-dash__detail-value">{selected.doctor?.user?.full_name}</p>
                 {selected.doctor?.specialty && (
                   <p className="admin-dash__detail-specialty">{selected.doctor.specialty.name}</p>
                 )}
               </div>
               <div className="card admin-dash__detail-card">
-                <p className="admin-dash__detail-label">Scheduled</p>
+                <p className="admin-dash__detail-label">Lịch hẹn</p>
                 <p className="admin-dash__detail-value">{formatDateTime(selected.scheduled_at)}</p>
               </div>
               <div className="card admin-dash__detail-card">
-                <p className="admin-dash__detail-label">Current status</p>
+                <p className="admin-dash__detail-label">Trạng thái hiện tại</p>
                 <Badge status={selected.status} />
               </div>
             </div>
 
             {selected.reason && (
               <div>
-                <p className="label">Reason</p>
+                <p className="label">Lý do</p>
                 <p className="admin-dash__reason-block">{selected.reason}</p>
               </div>
             )}
 
             {selected.cancellation_reason && (
               <div>
-                <p className="label">Cancellation reason</p>
+                <p className="label">Lý do hủy</p>
                 <p className="admin-dash__cancel-reason-block">{selected.cancellation_reason}</p>
               </div>
             )}
@@ -693,13 +693,13 @@ function AppointmentsTab({ toast }) {
             {(selected.reschedule_count > 0 || selected.deposit_paid || selected.reschedule_fee_applied) && (
               <div className="admin-dash__flags">
                 {selected.deposit_paid && (
-                  <span className="admin-dash__flag admin-dash__flag--green">Deposit paid</span>
+                  <span className="admin-dash__flag admin-dash__flag--green">Đã đặt cọc</span>
                 )}
                 {selected.reschedule_count > 0 && (
-                  <span className="admin-dash__flag admin-dash__flag--blue">Rescheduled ×{selected.reschedule_count}</span>
+                  <span className="admin-dash__flag admin-dash__flag--blue">Đã đổi lịch ×{selected.reschedule_count}</span>
                 )}
                 {selected.reschedule_fee_applied && (
-                  <span className="admin-dash__flag admin-dash__flag--amber">Reschedule fee applied</span>
+                  <span className="admin-dash__flag admin-dash__flag--amber">Đã tính phí đổi lịch</span>
                 )}
               </div>
             )}
@@ -707,7 +707,7 @@ function AppointmentsTab({ toast }) {
             <div className="divider" />
 
             <div>
-              <label className="label">Update status</label>
+              <label className="label">Cập nhật trạng thái</label>
               <div className="admin-dash__status-picker">
                 {APPT_STATUSES.map((s) => (
                   <button
@@ -715,33 +715,33 @@ function AppointmentsTab({ toast }) {
                     onClick={() => setNewStatus(s)}
                     className={`admin-dash__status-btn ${newStatus === s ? "admin-dash__status-btn--active" : "admin-dash__status-btn--inactive glass"}`}
                   >
-                    {s.charAt(0) + s.slice(1).toLowerCase()}
+                    {{ PENDING: "Chờ xác nhận", CONFIRMED: "Đã xác nhận", ARRIVED: "Đã đến", COMPLETED: "Hoàn thành", CANCELLED: "Đã hủy", RESCHEDULED: "Đã đổi lịch", NOSHOW: "Vắng mặt" }[s] || s}
                   </button>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="label">Notes (optional)</label>
+              <label className="label">Ghi chú (không bắt buộc)</label>
               <textarea
                 className="input"
                 style={{ resize: "none" }}
                 rows={3}
-                placeholder="Add clinical notes…"
+                placeholder="Thêm ghi chú lâm sàng…"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />
             </div>
 
             <div className="admin-dash__modal-actions">
-              <Button variant="secondary" className="admin-dash__modal-btn" onClick={() => setSelected(null)}>Cancel</Button>
+              <Button variant="secondary" className="admin-dash__modal-btn" onClick={() => setSelected(null)}>Hủy</Button>
               <Button
                 loading={updateLoading}
                 className="admin-dash__modal-btn"
                 onClick={handleUpdate}
                 disabled={newStatus === selected.status && notes === (selected.notes || "")}
               >
-                Save changes
+                Lưu thay đổi
               </Button>
             </div>
           </div>
@@ -801,9 +801,9 @@ function DoctorsTab({ toast }) {
       if (payload.specialty_id === "") payload.specialty_id = null;
       const { data } = await adminUpdateDoctor(editDoctor.id, payload);
       setDoctors((prev) => prev.map((d) => d.id === editDoctor.id ? data : d));
-      toast("Doctor profile updated!", "success");
+      toast("Cập nhật hồ sơ bác sĩ!", "success");
       setEditDoctor(null);
-    } catch (e) { toast(e.response?.data?.detail || "Failed to update", "error"); }
+    } catch (e) { toast(e.response?.data?.detail || "Cập nhật thất bại", "error"); }
     finally { setEditLoading(false); }
   };
 
@@ -816,10 +816,10 @@ function DoctorsTab({ toast }) {
           value={specialtyFilter}
           onChange={(e) => setSpecialtyFilter(e.target.value)}
         >
-          <option value="">All specialties</option>
+          <option value="">Tất cả chuyên khoa</option>
           {specialties.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
-        <p className="admin-dash__filter-count">{doctors.length} doctor{doctors.length !== 1 ? "s" : ""}</p>
+        <p className="admin-dash__filter-count">{doctors.length} bác sĩ</p>
       </div>
 
       {/* Cards grid */}
@@ -830,7 +830,7 @@ function DoctorsTab({ toast }) {
           ))}
         </div>
       ) : doctors.length === 0 ? (
-        <EmptyState icon="🩺" title="No doctors found" />
+        <EmptyState icon="🩺" title="Không tìm thấy bác sĩ" />
       ) : (
         <div className="admin-dash__doctors-grid">
           {doctors.map((doc) => (
@@ -849,21 +849,21 @@ function DoctorsTab({ toast }) {
               </div>
               <div className="admin-dash__doctor-stats">
                 <div className="admin-dash__doctor-stat">
-                  <p className="admin-dash__doctor-stat-key">Experience</p>
+                  <p className="admin-dash__doctor-stat-key">Kinh nghiệm</p>
                   <p className="admin-dash__doctor-stat-val">
-                    {doc.years_experience != null ? `${doc.years_experience} yrs` : "—"}
+                    {doc.years_experience != null ? `${doc.years_experience} năm` : "—"}
                   </p>
                 </div>
                 <div className="admin-dash__doctor-stat">
-                  <p className="admin-dash__doctor-stat-key">Fee</p>
+                  <p className="admin-dash__doctor-stat-key">Phí khám</p>
                   <p className="admin-dash__doctor-stat-val">
-                    {doc.consultation_fee != null ? `$${Number(doc.consultation_fee).toFixed(0)}` : "—"}
+                    {doc.consultation_fee != null ? `${Number(doc.consultation_fee).toLocaleString("vi-VN")} ₫` : "—"}
                   </p>
                 </div>
               </div>
               {doc.bio && <p className="admin-dash__doctor-bio">{doc.bio}</p>}
               <button className="btn-ghost admin-dash__doctor-edit-btn" onClick={() => openEdit(doc)}>
-                Edit Profile
+                Sửa hồ sơ
               </button>
             </div>
           ))}
@@ -876,18 +876,18 @@ function DoctorsTab({ toast }) {
           <div className="admin-dash__space-y-4">
             <div className="admin-dash__edit-grid">
               <div>
-                <label className="label">Specialty</label>
+                <label className="label">Chuyên khoa</label>
                 <select
                   className="input"
                   value={editForm.specialty_id}
                   onChange={(e) => setEditForm((f) => ({ ...f, specialty_id: e.target.value }))}
                 >
-                  <option value="">— None —</option>
+                  <option value="">— Không —</option>
                   {specialties.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="label">License number</label>
+                <label className="label">Số giấy phép</label>
                 <input
                   className="input"
                   placeholder="LIC-0001"
@@ -896,7 +896,7 @@ function DoctorsTab({ toast }) {
                 />
               </div>
               <div>
-                <label className="label">Years experience</label>
+                <label className="label">Số năm kinh nghiệm</label>
                 <input
                   className="input"
                   type="number"
@@ -908,19 +908,20 @@ function DoctorsTab({ toast }) {
                 />
               </div>
               <div>
-                <label className="label">Consultation fee ($)</label>
+                <label className="label">Consultation fee (₫)</label>
                 <input
                   className="input"
                   type="number"
                   min={0}
-                  placeholder="100"
+                  step="1000"
+                  placeholder="500000"
                   value={editForm.consultation_fee}
                   onChange={(e) => setEditForm((f) => ({ ...f, consultation_fee: e.target.value }))}
                 />
               </div>
             </div>
             <div>
-              <label className="label">Clinic address</label>
+              <label className="label">Địa chỉ phòng khám</label>
               <input
                 className="input"
                 placeholder="123 Medical Center Drive"
@@ -929,19 +930,19 @@ function DoctorsTab({ toast }) {
               />
             </div>
             <div>
-              <label className="label">Bio</label>
+              <label className="label">Tiểu sử</label>
               <textarea
                 className="input"
                 style={{ resize: "none" }}
                 rows={4}
-                placeholder="Doctor biography…"
+                placeholder="Tiểu sử bác sĩ…"
                 value={editForm.bio}
                 onChange={(e) => setEditForm((f) => ({ ...f, bio: e.target.value }))}
               />
             </div>
             <div className="admin-dash__modal-actions">
-              <Button variant="secondary" className="admin-dash__modal-btn" onClick={() => setEditDoctor(null)}>Cancel</Button>
-              <Button loading={editLoading} className="admin-dash__modal-btn" onClick={handleEdit}>Save changes</Button>
+              <Button variant="secondary" className="admin-dash__modal-btn" onClick={() => setEditDoctor(null)}>Hủy</Button>
+              <Button loading={editLoading} className="admin-dash__modal-btn" onClick={handleEdit}>Lưu thay đổi</Button>
             </div>
           </div>
         )}
@@ -966,12 +967,12 @@ function SpecialtiesTab({ toast }) {
   }, []);
 
   const handleCreate = async () => {
-    if (!form.name.trim()) { toast("Name is required", "error"); return; }
+    if (!form.name.trim()) { toast("Tên là bắt buộc", "error"); return; }
     setSaving(true);
     try {
       const { data } = await createSpecialty(form);
       setSpecialties((prev) => [...prev, data]);
-      toast("Specialty created!", "success");
+      toast("Đã tạo chuyên khoa!", "success");
       setCreateOpen(false);
       setForm({ name: "", description: "", icon: "" });
     } catch (e) { toast(e.response?.data?.detail || "Failed", "error"); }
@@ -979,11 +980,11 @@ function SpecialtiesTab({ toast }) {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this specialty? Doctors assigned to it will have their specialty cleared.")) return;
+    if (!window.confirm("Xóa chuyên khoa này? Các bác sĩ thuộc chuyên khoa sẽ bị xóa liên kết.")) return;
     try {
       await deleteSpecialty(id);
       setSpecialties((prev) => prev.filter((s) => s.id !== id));
-      toast("Specialty deleted", "info");
+      toast("Đã xóa chuyên khoa", "info");
     } catch (e) { toast(e.response?.data?.detail || "Failed", "error"); }
   };
 
@@ -994,7 +995,7 @@ function SpecialtiesTab({ toast }) {
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
-          Add specialty
+          Thêm chuyên khoa
         </Button>
       </div>
 
@@ -1005,7 +1006,7 @@ function SpecialtiesTab({ toast }) {
           ))}
         </div>
       ) : specialties.length === 0 ? (
-        <EmptyState icon="🏥" title="No specialties yet" sub="Add your first medical specialty" />
+        <EmptyState icon="🏥" title="Chưa có chuyên khoa" sub="Thêm chuyên khoa y tế đầu tiên" />
       ) : (
         <div className="admin-dash__specialties-grid">
           {specialties.map((sp) => (
@@ -1027,33 +1028,33 @@ function SpecialtiesTab({ toast }) {
         </div>
       )}
 
-      <Modal open={createOpen} onClose={() => setCreateOpen(false)} title="Add Specialty">
+      <Modal open={createOpen} onClose={() => setCreateOpen(false)} title="Thêm chuyên khoa">
         <div className="admin-dash__space-y-4">
           <div>
-            <label className="label">Name *</label>
+            <label className="label">Tên *</label>
             <input
               className="input"
-              placeholder="e.g. Cardiology"
+              placeholder="VD: Tim mạch"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             />
           </div>
           <div>
             <label className="label">
-              Description <span className="admin-dash__user-email">(optional)</span>
+              Mô tả <span className="admin-dash__user-email">(không bắt buộc)</span>
             </label>
             <textarea
               className="input"
               style={{ resize: "none" }}
               rows={3}
-              placeholder="Brief description…"
+              placeholder="Mô tả ngắn gọn…"
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
             />
           </div>
           <div>
             <label className="label">
-              Icon emoji <span className="admin-dash__user-email">(optional)</span>
+              Biểu tượng emoji <span className="admin-dash__user-email">(không bắt buộc)</span>
             </label>
             <input
               className="input"
@@ -1063,8 +1064,8 @@ function SpecialtiesTab({ toast }) {
             />
           </div>
           <div className="admin-dash__modal-actions">
-            <Button variant="secondary" className="admin-dash__modal-btn" onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button loading={saving} className="admin-dash__modal-btn" onClick={handleCreate}>Create</Button>
+            <Button variant="secondary" className="admin-dash__modal-btn" onClick={() => setCreateOpen(false)}>Hủy</Button>
+            <Button loading={saving} className="admin-dash__modal-btn" onClick={handleCreate}>Tạo</Button>
           </div>
         </div>
       </Modal>
@@ -1096,7 +1097,7 @@ export default function AdminDashboard() {
       <aside className="admin-dash__sidebar">
         <div className="admin-dash__sidebar-brand">
           <span className="admin-dash__sidebar-icon">⚕</span>
-          <span className="admin-dash__sidebar-title">Admin Panel</span>
+          <span className="admin-dash__sidebar-title">Quản trị</span>
         </div>
         <nav className="admin-dash__sidebar-nav">
           {TABS.map((t) => (
@@ -1111,15 +1112,15 @@ export default function AdminDashboard() {
           ))}
         </nav>
         <div className="admin-dash__sidebar-footer">
-          <p className="admin-dash__sidebar-footer-text">Platform Analytics</p>
+          <p className="admin-dash__sidebar-footer-text">Phân tích nền tảng</p>
         </div>
       </aside>
 
       {/* Main content */}
       <main className="admin-dash__main">
         <div className="admin-dash__main-header">
-          <h1 className="admin-dash__title">{TABS.find((t) => t.key === tab)?.label ?? "Overview"}</h1>
-          <p className="admin-dash__subtitle">Platform management &amp; analytics</p>
+          <h1 className="admin-dash__title">{TABS.find((t) => t.key === tab)?.label ?? "Tổng quan"}</h1>
+          <p className="admin-dash__subtitle">Quản lý &amp; phân tích nền tảng</p>
         </div>
         {tab === "overview"     && <OverviewTab stats={stats} />}
         {tab === "users"        && <UsersTab toast={toast} />}

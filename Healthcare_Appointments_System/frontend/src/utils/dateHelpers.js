@@ -1,48 +1,48 @@
 // Date / time helpers
 
-export const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+export const DAY_NAMES = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 export const DAY_FULL = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
+  "Thứ Hai",
+  "Thứ Ba",
+  "Thứ Tư",
+  "Thứ Năm",
+  "Thứ Sáu",
+  "Thứ Bảy",
+  "Chủ Nhật",
 ];
 
 /**
- * Format an ISO datetime string to "Jan 15, 2026 · 09:00 AM"
+ * Format an ISO datetime string to "15 thg 1, 2026 · 09:00"
  */
 export function formatDateTime(iso) {
   if (!iso) return "—";
   const d = new Date(iso);
-  return d.toLocaleDateString("en-US", {
+  return d.toLocaleDateString("vi-VN", {
     month: "short",
     day: "numeric",
     year: "numeric",
   }) +
     " · " +
-    d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+    d.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
 }
 
 /**
- * Format time only → "09:00 AM"
+ * Format time only → "09:00"
  */
 export function formatTime(iso) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleTimeString("en-US", {
+  return new Date(iso).toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
   });
 }
 
 /**
- * Format date only → "Monday, January 15"
+ * Format date only → "Thứ Hai, 15 tháng 1"
  */
 export function formatDate(iso) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-US", {
+  return new Date(iso).toLocaleDateString("vi-VN", {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -73,7 +73,7 @@ export function getWeekDays(referenceDate = new Date()) {
 }
 
 /**
- * "2 hours ago" / "in 3 days" relative time
+ * "2 giờ trước" / "sau 3 ngày" relative time
  */
 export function relativeTime(iso) {
   if (!iso) return "";
@@ -84,8 +84,8 @@ export function relativeTime(iso) {
   const days = Math.round(abs / 86400000);
   const past = diff < 0;
 
-  if (mins < 2) return "just now";
-  if (mins < 60) return past ? `${mins}m ago` : `in ${mins}m`;
-  if (hrs < 24) return past ? `${hrs}h ago` : `in ${hrs}h`;
-  return past ? `${days}d ago` : `in ${days}d`;
+  if (mins < 2) return "vừa xong";
+  if (mins < 60) return past ? `${mins} phút trước` : `sau ${mins} phút`;
+  if (hrs < 24) return past ? `${hrs} giờ trước` : `sau ${hrs} giờ`;
+  return past ? `${days} ngày trước` : `sau ${days} ngày`;
 }

@@ -22,8 +22,8 @@ export default function RegisterPage() {
               <path d="M16 8v16M8 16h16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </div>
-          <h1 className="register-page__title">Create account</h1>
-          <p className="register-page__subtitle">Join MediCare — it's free</p>
+          <h1 className="register-page__title">Tạo tài khoản</h1>
+          <p className="register-page__subtitle">Tham gia MediCare — hoàn toàn miễn phí</p>
         </div>
 
         <div className="card register-page__card animate-slide-up">

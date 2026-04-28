@@ -31,19 +31,19 @@ export default function ProfilePage() {
       });
       await reload();
       setForm(null);
-      toast("Profile updated!", "success");
+      toast("Cập nhật hồ sơ thành công!", "success");
     } catch (err) {
-      toast(err.response?.data?.detail || "Failed to update profile", "error");
+      toast(err.response?.data?.detail || "Cập nhật hồ sơ thất bại", "error");
     } finally {
       setSaving(false);
     }
   };
 
-  const roleLabel = { patient: "Patient", doctor: "Doctor", admin: "Administrator", receptionist: "Receptionist" };
+  const roleLabel = { patient: "Bệnh nhân", doctor: "Bác sĩ", admin: "Quản trị viên", receptionist: "Lễ tân" };
 
   return (
     <div className="profile-page animate-fade-in">
-      <h1 className="profile-page__title">My Profile</h1>
+      <h1 className="profile-page__title">Hồ sơ của tôi</h1>
 
       <div className="card profile-page__card">
         {/* Avatar + identity */}
@@ -65,7 +65,7 @@ export default function ProfilePage() {
         {/* Edit form */}
         <form onSubmit={submit} className="profile-page__form">
           <div>
-            <label className="label">Full name</label>
+            <label className="label">Họ và tên</label>
             <input
               name="full_name"
               required
@@ -76,7 +76,7 @@ export default function ProfilePage() {
           </div>
           <div>
             <label className="label">
-              Phone <span className="profile-page__optional">(optional)</span>
+              Số điện thoại <span className="profile-page__optional">(không bắt buộc)</span>
             </label>
             <input
               name="phone"
@@ -89,7 +89,7 @@ export default function ProfilePage() {
           </div>
           <div>
             <label className="label">
-              Avatar URL <span className="profile-page__optional">(optional)</span>
+              Ảnh đại diện URL <span className="profile-page__optional">(không bắt buộc)</span>
             </label>
             <input
               name="avatar_url"
@@ -104,11 +104,11 @@ export default function ProfilePage() {
           <div className="profile-page__actions">
             {form && (
               <Button type="button" variant="secondary" onClick={() => setForm(null)}>
-                Discard
+                Hủy thay đổi
               </Button>
             )}
             <Button type="submit" loading={saving} disabled={!form}>
-              Save changes
+              Lưu thay đổi
             </Button>
           </div>
         </form>
@@ -122,13 +122,13 @@ export default function ProfilePage() {
             <p className="profile-page__meta-value">{user.email}</p>
           </div>
           <div className="profile-page__meta-item">
-            <p className="profile-page__meta-label">Account status</p>
+            <p className="profile-page__meta-label">Trạng thái tài khoản</p>
             <p className={user.is_active ? "profile-page__status--active" : "profile-page__status--inactive"}>
-              {user.is_active ? "Active" : "Inactive"}
+              {user.is_active ? "Hoạt động" : "Ngừng hoạt động"}
             </p>
           </div>
           <div className="profile-page__meta-item">
-            <p className="profile-page__meta-label">Member since</p>
+            <p className="profile-page__meta-label">Thành viên từ</p>
             <p className="profile-page__meta-value">
               {new Date(user.created_at).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
             </p>

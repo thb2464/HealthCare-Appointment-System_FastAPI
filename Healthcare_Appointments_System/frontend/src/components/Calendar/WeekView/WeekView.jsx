@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./WeekView.css";
 import { formatTime, toDateParam } from "../../../utils/dateHelpers";
 
-const DAY_FULL = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const DAY_FULL = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
 
 function getWeekDays(anchor) {
   const d = new Date(anchor);
@@ -48,8 +48,8 @@ export default function WeekView({ appointments = [] }) {
         </button>
 
         <span className="week-view__week-label">
-          {week[0].toLocaleDateString("en-US", { month: "short", day: "numeric" })} –{" "}
-          {week[6].toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+          {week[0].toLocaleDateString("vi-VN", { month: "short", day: "numeric" })} –{" "}
+          {week[6].toLocaleDateString("vi-VN", { month: "short", day: "numeric", year: "numeric" })}
         </span>
 
         <button

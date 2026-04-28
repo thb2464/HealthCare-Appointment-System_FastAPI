@@ -34,9 +34,9 @@ export default function SearchPage() {
     <div className="search-page">
       {/* Page header */}
       <div className="search-page__header animate-fade-in">
-        <h1 className="search-page__title">Find a Doctor</h1>
+        <h1 className="search-page__title">Tìm bác sĩ</h1>
         <p className="search-page__subtitle">
-          {loading ? "Searching…" : `${doctors.length} results`}
+          {loading ? "Đang tìm kiếm…" : `${doctors.length} kết quả`}
         </p>
       </div>
 
@@ -59,7 +59,7 @@ export default function SearchPage() {
           <input
             type="text"
             className="input"
-            placeholder="Search by doctor name…"
+            placeholder="Tìm theo tên bác sĩ…"
             value={query.name}
             onChange={(e) => setQuery((q) => ({ ...q, name: e.target.value }))}
           />
@@ -73,14 +73,14 @@ export default function SearchPage() {
             setPage(1);
           }}
         >
-          <option value="">All specialties</option>
+          <option value="">Tất cả chuyên khoa</option>
           {specialties.map((s) => (
             <option key={s.id} value={s.id}>{s.name}</option>
           ))}
         </select>
 
         <button type="submit" className="search-page__submit btn-primary">
-          Search
+          Tìm kiếm
         </button>
       </form>
 
@@ -100,9 +100,9 @@ export default function SearchPage() {
         ) : doctors.length === 0 ? (
           <div className="search-page__empty">
             <div className="search-page__empty-icon">🔍</div>
-            <p className="search-page__empty-title">No doctors found</p>
+            <p className="search-page__empty-title">Không tìm thấy bác sĩ</p>
             <p className="search-page__empty-hint">
-              Try adjusting your search or specialty filter
+              Hãy thử điều chỉnh từ khóa hoặc bộ lọc chuyên khoa
             </p>
           </div>
         ) : (
@@ -120,15 +120,15 @@ export default function SearchPage() {
                 disabled={page === 1}
                 className="btn-secondary"
               >
-                ← Previous
+                ← Trước
               </button>
-              <span className="search-page__page-label">Page {page}</span>
+              <span className="search-page__page-label">Trang {page}</span>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={doctors.length < 12}
                 className="btn-secondary"
               >
-                Next →
+                Tiếp →
               </button>
             </div>
           </>

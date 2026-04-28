@@ -47,12 +47,12 @@ export default function BookingPage() {
         <svg fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
-        Back
+        Quay lại
       </button>
 
       <div className="booking-page__header">
-        <h1 className="booking-page__title">Book Appointment</h1>
-        <p className="booking-page__subtitle">Select a time that works for you</p>
+        <h1 className="booking-page__title">Đặt lịch khám</h1>
+        <p className="booking-page__subtitle">Chọn thời gian phù hợp với bạn</p>
       </div>
 
       <div className="booking-page__card card">

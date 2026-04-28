@@ -73,7 +73,7 @@ export default function AppointmentCard({ appointment, actions, role }) {
       {/* Reason */}
       {reason && (
         <p className="appt-card__reason">
-          <span className="appt-card__reason-label">Reason</span>
+          <span className="appt-card__reason-label">Lý do khám</span>
           {reason}
         </p>
       )}
@@ -81,7 +81,7 @@ export default function AppointmentCard({ appointment, actions, role }) {
       {/* Cancellation / no-show reason */}
       {cancellation_reason && ["CANCELLED", "NOSHOW"].includes(status) && (
         <p className="appt-card__cancellation">
-          <span className="appt-card__cancellation-label">Cancellation reason</span>
+          <span className="appt-card__cancellation-label">Lý do hủy</span>
           {cancellation_reason}
         </p>
       )}
@@ -91,17 +91,17 @@ export default function AppointmentCard({ appointment, actions, role }) {
         <div className="appt-card__badges">
           {deposit_paid && (
             <span className="appt-card__meta-badge appt-card__meta-badge--deposit">
-              Deposit paid
+              Đã đặt cọc
             </span>
           )}
           {reschedule_count > 0 && (
             <span className="appt-card__meta-badge appt-card__meta-badge--rescheduled">
-              Rescheduled ×{reschedule_count}
+              Đã đổi lịch ×{reschedule_count}
             </span>
           )}
           {reschedule_fee_applied && (
             <span className="appt-card__meta-badge appt-card__meta-badge--fee">
-              Reschedule fee applied
+              Đã tính phí đổi lịch
             </span>
           )}
         </div>

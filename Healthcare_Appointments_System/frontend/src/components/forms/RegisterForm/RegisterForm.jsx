@@ -33,11 +33,11 @@ export default function RegisterForm() {
       const { getMe } = await import("../../../api/authApi");
       const { data: user } = await getMe();
       loginUser(tokens, user);
-      toast("Account created! Welcome, " + user.full_name, "success");
+      toast("Tạo tài khoản thành công! Chào mừng, " + user.full_name, "success");
       const destinations = { patient: "/dashboard", doctor: "/doctor/dashboard" };
       navigate(destinations[user.role?.toLowerCase()] || "/");
     } catch (err) {
-      toast(err.response?.data?.detail || "Registration failed", "error");
+      toast(err.response?.data?.detail || "Đăng ký thất bại", "error");
     } finally {
       setLoading(false);
     }
@@ -46,19 +46,19 @@ export default function RegisterForm() {
   return (
     <form onSubmit={submit} className="register-form">
       <div className="register-form__field">
-        <label className="label">Full name</label>
+        <label className="label">Họ và tên</label>
         <input
           name="full_name"
           required
           className="input"
-          placeholder="Jane Smith"
+          placeholder="Nguyễn Văn A"
           value={form.full_name}
           onChange={handle}
         />
       </div>
 
       <div className="register-form__field">
-        <label className="label">Email address</label>
+        <label className="label">Địa chỉ email</label>
         <input
           name="email"
           type="email"
@@ -73,21 +73,21 @@ export default function RegisterForm() {
 
       <div className="register-form__field">
         <label className="label">
-          Phone{" "}
-          <span className="register-form__optional">(optional)</span>
+          Số điện thoại{" "}
+          <span className="register-form__optional">(không bắt buộc)</span>
         </label>
         <input
           name="phone"
           type="tel"
           className="input"
-          placeholder="+1 555 000 0000"
+          placeholder="0901 234 567"
           value={form.phone}
           onChange={handle}
         />
       </div>
 
       <div className="register-form__field">
-        <label className="label">Password</label>
+        <label className="label">Mật khẩu</label>
         <div className="register-form__password-wrap">
           <input
             name="password"
@@ -95,7 +95,7 @@ export default function RegisterForm() {
             required
             autoComplete="new-password"
             className="input"
-            placeholder="Min 8 chars, 1 uppercase, 1 digit"
+            placeholder="Tối thiểu 8 ký tự, 1 chữ hoa, 1 số"
             value={form.password}
             onChange={handle}
           />
@@ -111,13 +111,13 @@ export default function RegisterForm() {
           </button>
         </div>
         <p className="register-form__hint">
-          At least 8 characters, one uppercase letter, one digit
+          Tối thiểu 8 ký tự, một chữ hoa, một chữ số
         </p>
       </div>
 
       {/* Role selector */}
       <div className="register-form__field">
-        <label className="label">I am a</label>
+        <label className="label">Tôi là</label>
         <div className="register-form__role-grid">
           {["patient", "doctor"].map((r) => (
             <button
@@ -130,19 +130,19 @@ export default function RegisterForm() {
                   : "register-form__role-btn"
               }
             >
-              {r === "patient" ? "👤 Patient" : "🩺 Doctor"}
+              {r === "patient" ? "👤 Bệnh nhân" : "🩺 Bác sĩ"}
             </button>
           ))}
         </div>
       </div>
 
       <Button type="submit" loading={loading} className="w-full mt-2">
-        Create account
+        Tạo tài khoản
       </Button>
 
       <p className="register-form__footer">
-        Already have an account?{" "}
-        <Link to="/login">Sign in</Link>
+        Đã có tài khoản?{" "}
+        <Link to="/login">Đăng nhập</Link>
       </p>
     </form>
   );

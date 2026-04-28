@@ -31,17 +31,17 @@ export default function Navbar() {
   };
 
   const patientLinks = [
-    { to: "/search", label: "Find Doctors" },
-    { to: "/dashboard", label: "My Appointments" },
+    { to: "/search", label: "Tìm bác sĩ" },
+    { to: "/dashboard", label: "Lịch hẹn của tôi" },
   ];
 
   const doctorLinks = [
-    { to: "/doctor/dashboard", label: "Dashboard" },
-    { to: "/doctor/availability", label: "Availability" },
+    { to: "/doctor/dashboard", label: "Bảng điều khiển" },
+    { to: "/doctor/availability", label: "Lịch làm việc" },
   ];
 
   const adminLinks = [
-    { to: "/admin", label: "Admin Panel" },
+    { to: "/admin", label: "Quản trị" },
   ];
 
   const role = user?.role?.toLowerCase();
@@ -135,13 +135,13 @@ export default function Navbar() {
                         onClick={() => setMenuOpen(false)}
                         className="navbar__dropdown-link"
                       >
-                        My Profile
+                        Hồ sơ của tôi
                       </Link>
                       <button
                         onClick={handleLogout}
                         className="navbar__dropdown-btn"
                       >
-                        Sign out
+                        Đăng xuất
                       </button>
                     </div>
                   </div>
@@ -150,10 +150,10 @@ export default function Navbar() {
             ) : (
               <div className="navbar__guest-actions">
                 <Link to="/login" className="btn-ghost">
-                  Sign in
+                  Đăng nhập
                 </Link>
                 <Link to="/register" className="btn-primary">
-                  Get started
+                  Bắt đầu
                 </Link>
               </div>
             )}
