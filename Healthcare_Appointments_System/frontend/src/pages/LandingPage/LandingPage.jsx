@@ -152,7 +152,7 @@ export default function LandingPage() {
           <div className="landing__features-title-wrap">
             <h2 className="landing__features-title">
               Mọi thứ bạn cần,{" "}
-              <span className="text-gradient">không gì thừa</span>
+              <span className="text-gradient">đều ở đây</span>
             </h2>
             <p className="landing__features-desc">
               Nền tảng đặt lịch khám bệnh toàn diện dành cho cả bệnh nhân và bác sĩ.
