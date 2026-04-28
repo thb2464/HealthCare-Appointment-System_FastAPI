@@ -1,6 +1,6 @@
-import "./PatientDashboard.css";
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
+import { retryVNPayPayment } from "../../../api/appointmentApi";
 import { createReview } from "../../../api/reviewApi";
 import AppointmentCard from "../../../components/AppointmentCard/AppointmentCard";
 import SlotPicker from "../../../components/Calendar/SlotPicker/SlotPicker";
@@ -10,6 +10,7 @@ import Modal from "../../../components/ui/Modal/Modal";
 import { useToast } from "../../../components/ui/Toast/Toast";
 import { useAppointments } from "../../../hooks/useAppointments";
 import { useAuth } from "../../../hooks/useAuth";
+import "./PatientDashboard.css";
 
 const STATUS_TABS = [
   { value: "", label: "Tất cả" },
@@ -68,6 +69,9 @@ export default function PatientDashboard() {
   const [reviewTarget, setReviewTarget] = useState(null);
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
   const [revLoading, setRevLoading] = useState(false);
+
+  // Payment
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   // Detail modal
   const [detailAppt, setDetailAppt] = useState(null);
@@ -135,6 +139,18 @@ export default function PatientDashboard() {
     }
   };
 
+  const handlePayment = async (appointmentId) => {
+    setPaymentLoading(true);
+    try {
+      const res = await retryVNPayPayment(appointmentId);
+      window.location.href = res.data.payment_url;
+      // Note: don't set loading to false — page will redirect
+    } catch (e) {
+      toast(e.response?.data?.detail || "Thanh toán thất bại", "error");
+      setPaymentLoading(false);
+    }
+  };
+
   const actions = (appt) => {
     const btns = [];
     // Patients can only reschedule PENDING appointments (backend constraint)
@@ -155,6 +171,16 @@ export default function PatientDashboard() {
           className="patient-dash__action-btn patient-dash__action-btn--cancel btn-danger"
         >
           Hủy
+        </button>
+      );
+      btns.push(
+        <button
+          key="payment"
+          onClick={(e) => { e.stopPropagation(); handlePayment(appt.id); }}
+          disabled={paymentLoading}
+          className="patient-dash__action-btn patient-dash__action-btn--payment btn-info"
+        >
+          {paymentLoading ? "Đang xử lý..." : "Thanh toán"}
         </button>
       );
     }
