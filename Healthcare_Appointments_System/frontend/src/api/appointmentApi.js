@@ -38,6 +38,14 @@ export const markNoShow = (id, cancellationReason) =>
     cancellation_reason: cancellationReason || undefined,
   });
 
+/** PATCH /api/appointments/:id/reschedule/accept */
+export const acceptReschedule = (id) =>
+  axiosClient.patch(`/api/appointments/${id}/reschedule/accept`);
+
+/** PATCH /api/appointments/:id/reschedule/decline */
+export const declineReschedule = (id) =>
+  axiosClient.patch(`/api/appointments/${id}/reschedule/decline`);
+
 /** GET /api/appointments/:id/checkin-token */
 export const getCheckinToken = (id) =>
   axiosClient.get(`/api/appointments/${id}/checkin-token`);

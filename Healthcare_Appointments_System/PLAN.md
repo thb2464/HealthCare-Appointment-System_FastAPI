@@ -2,14 +2,16 @@
 
 ## 1. Business Concept
 
-A modern healthcare scheduling platform is no longer just a booking tool — it is a core operational strategy that optimizes patient flow and integrates deeply with clinical workflows. The system shifts the paradigm from manual phone-based scheduling to an automated, self-service model, significantly reducing administrative costs and patient wait times.
+A modern healthcare scheduling platform that connects patients with healthcare providers through an automated, self-service model. The system handles the full appointment lifecycle: discovery, booking with online payment, multi-party rescheduling negotiation, cancellation with financial penalties, QR check-in, clinical encounter management (EHR), insurance claims, and post-visit follow-up care.
 
 ### Core Value Propositions
 
-- **Patient Empowerment:** 24/7 self-service booking, automated multi-tier reminders, and fast check-ins to minimize waiting times.
-- **Provider Efficiency:** Real-time availability management and a clear daily schedule view to minimize idle time and absorb clinical variability.
-- **Smart Automation:** Automated waitlist to instantly fill slots when last-minute cancellations occur, protecting clinic revenue.
-- **Data Integrity:** Slot locking during booking confirmation prevents double-booking under concurrent load.
+- **Patient Empowerment:** 24/7 self-service booking, automated multi-tier reminders (24h & 2h), QR check-in, EHR access for prescriptions and lab results, and insurance claim submission.
+- **Provider Efficiency:** Real-time availability management, clear daily/weekly schedule views, clinical encounter recording (diagnosis, vitals, prescriptions, lab orders), and follow-up scheduling.
+- **Smart Financial Management:** VNPay payment integration with server-side slot reservation, automated penalty/refund calculation per cancellation/reschedule policies, and insurance copay calculation.
+- **Multi-party Negotiation:** Rescheduling requires both parties to agree — requests are proposed, then accepted or declined by the other party.
+- **Smart Waitlist:** When a confirmed slot is freed (cancellation, no-show, reschedule), the oldest waitlist patient is automatically notified.
+- **Data Integrity:** PostgreSQL advisory locks + unique constraints + application-level checks prevent double-booking under concurrent load.
 
 ---
 
@@ -17,38 +19,52 @@ A modern healthcare scheduling platform is no longer just a booking tool — it 
 
 | Role | Description |
 | :--- | :--- |
-| **Patient** | Searches for providers, books/reschedules/cancels slots, receives Email reminders, and leaves post-visit reviews. |
-| **Doctor / Provider** | Manages weekly availability, accesses daily schedule, confirms/completes appointments, and adds clinical notes. |
-| **Receptionist / Staff** | *(Planned)* Manages walk-ins, handles schedule overrides, and updates appointment statuses on behalf of patients. |
-| **Admin** | Manages all users and providers, oversees platform-wide analytics, manages medical specialties, and deactivates accounts. |
+| **Patient** | Searches providers, books/reschedules/cancels appointments, pays via VNPay, receives email reminders, checks in via QR, accesses EHR (prescriptions, lab results), submits insurance claims, and leaves post-visit reviews. |
+| **Doctor / Provider** | Manages weekly availability, accesses daily schedule, confirms/completes appointments, records clinical encounters (diagnosis, vitals, prescriptions, lab orders), recommends follow-ups, accepts/declines reschedule requests. |
+| **Receptionist / Staff** | Manages walk-ins, marks patient arrivals, handles schedule overrides, generates QR check-in tokens, immediate rescheduling without negotiation. |
+| **Admin** | Manages all users and providers, oversees platform analytics, manages medical specialties, processes refunds, approves/denies insurance claims, enforces state machine transitions. |
 
 ---
 
 ## 3. User Stories
 
 ### Patient
-1. As a patient, I can register and log in securely with a validated email and strong password.
-2. As a patient, I can search for doctors by specialty, location, or name to find the right provider.
-3. As a patient, I can view a doctor's full profile — bio, specialty, consultation fee, ratings, and available slots.
-4. As a patient, I can book an available appointment slot with a reason for visit.
-5. As a patient, I can view all my upcoming and past appointments in a personal dashboard.
-6. As a patient, I can reschedule or cancel an upcoming appointment before it is confirmed.
-7. As a patient, I can receive automated email confirmations and reminders before my visit.
-8. As a patient, I can leave a rating and review after a completed appointment.
+1. Register and log in securely with validated email and strong password.
+2. Search doctors by specialty, location, or name.
+3. View doctor profile — bio, specialty, consultation fee, ratings, and available slots.
+4. Book an available appointment slot with VNPay payment (15-minute server-side slot reservation).
+5. View all upcoming and past appointments in a personal dashboard with status filters.
+6. Reschedule a PENDING appointment directly; request reschedule for CONFIRMED appointments (requires doctor approval).
+7. Accept or decline reschedule requests initiated by the doctor.
+8. Cancel appointments with automated penalty/refund calculation based on timing.
+9. Receive automated email confirmations and reminders (24h, 2h before visit).
+10. Check in via QR code scan on appointment day.
+11. Access Electronic Health Records — encounter notes, prescriptions, lab results.
+12. Submit insurance claims for completed appointments.
+13. Book follow-up appointments linked to a completed visit.
+14. Leave a rating and review after a completed appointment.
+15. Join/leave a doctor waitlist for cancellation notifications.
 
 ### Doctor / Provider
-1. As a doctor, I can register, log in, and complete my provider profile (bio, specialty, fee, clinic address).
-2. As a doctor, I can set my weekly working hours and slot duration to control my availability.
-3. As a doctor, I can view my daily and weekly appointment schedule in a clear calendar view.
-4. As a doctor, I can confirm, reschedule, or cancel a patient appointment.
-5. As a doctor, I can mark an appointment as completed and add post-visit notes.
-6. As a doctor, I can view a patient's appointment history for clinical context.
+1. Register, log in, and complete provider profile (bio, specialty, fee, clinic address).
+2. Set weekly working hours and slot duration to control availability.
+3. View daily and weekly appointment schedule in list or calendar view.
+4. Confirm, reschedule, or cancel patient appointments.
+5. Initiate reschedule requests for CONFIRMED appointments (patient must accept/decline).
+6. Accept/decline patient-initiated reschedule requests.
+7. Mark appointments as completed with clinical notes and follow-up recommendations.
+8. Record clinical encounters — diagnosis, vitals (JSON), treatment notes.
+9. Add prescriptions and order lab tests within an encounter.
+10. Mark patients as no-show with automatic deposit forfeiture.
+11. Generate QR check-in tokens for upcoming appointments.
 
 ### Admin
-1. As an admin, I can manage (view, activate, deactivate) all users and providers on the platform.
-2. As an admin, I can manage medical specialties (create, delete) used for doctor categorization.
-3. As an admin, I can view platform-wide statistics — total users, appointments by status, and trends.
-4. As an admin, I can suspend any account to enforce data privacy and compliance.
+1. Manage (view, activate, deactivate) all users and providers.
+2. Manage medical specialties (create, update, delete).
+3. View platform-wide statistics — users, appointments by status, revenue, waitlist, daily trends.
+4. Update appointment status with state machine enforcement.
+5. Process pending refunds for cancelled appointments.
+6. Approve or deny insurance claims.
 
 ---
 
@@ -64,41 +80,63 @@ Search doctors (specialty / name / location)
 View doctor profile & available slots
         │
         ▼
-Select slot → [Slot Lock applied] → Confirm booking
+Select slot → [Advisory Lock + Slot Reservation] → Proceed to VNPay payment
         │
         ▼
-System creates Appointment (status: PENDING)
-Email confirmation dispatched automatically
+System creates Appointment (status: PENDING, payment_expires_at = now + 15min)
+Email "Booking Received" dispatched (pending confirmation)
         │
-   ┌────┴────┐
-   │         │
-Doctor    Patient
-confirms  can cancel / reschedule
+   ┌────┴────────────┐
+   │                  │
+VNPay payment       Payment timeout (15 min)
+succeeds             │
+   │                  ▼
+   │            Auto-cancel (slot freed)
+   ▼
+Status → CONFIRMED (deposit_paid=true, deposit_amount recorded)
+Email "Confirmed by Doctor" dispatched
+   │
+   ├── Reminders: 24h before + 2h before (with deduplication)
    │
    ▼
-Status → CONFIRMED
-Reminder email dispatched (24h before)
+Appointment day → Patient scans QR check-in
    │
    ▼
-Appointment date arrives
+Status → ARRIVED → Encounter auto-created
+Doctor records diagnosis, vitals, prescriptions, lab orders
    │
    ▼
-Doctor marks COMPLETED + adds notes
+Doctor marks COMPLETED + optional follow-up recommendation
    │
    ▼
-Patient can leave review
+Patient can: leave review, submit insurance claim, book follow-up
    │
    ▼
-[If cancelled] → Slot released → Waitlist notified automatically
+[If cancelled] → Penalty/refund calculated → Slot released → Waitlist notified
+[If no-show]   → 100% deposit forfeited → Slot released → Waitlist notified
 ```
 
 **Appointment Status Flow:**
 
 ```
-PENDING → CONFIRMED → COMPLETED
+PENDING → CONFIRMED → ARRIVED → COMPLETED
 PENDING / CONFIRMED → CANCELLED
+CONFIRMED → RESCHEDULE_REQUESTED → CONFIRMED (accepted) or revert (declined)
 CONFIRMED → RESCHEDULED → CONFIRMED
+CONFIRMED / ARRIVED → NOSHOW
+RESCHEDULED → CONFIRMED / CANCELLED
+RESCHEDULE_REQUESTED → CONFIRMED / CANCELLED / RESCHEDULED
 ```
+
+**Financial & Penalty Regulations:**
+
+| Scenario | Timeframe | Fees & Penalties |
+| :--- | :--- | :--- |
+| Reschedule (1st time) | > 48 hours | Free |
+| Reschedule (subsequent) | > 48 hours | 30% of deposit surcharge |
+| Late Reschedule | < 48 hours | 30% of deposit penalty |
+| Early Cancellation | > 48 hours | 30% fee, 70% refund (refund_status=PENDING) |
+| Late Cancel / No-Show | < 48 hours / Missed | 100% deposit forfeited, no refund |
 
 ---
 
@@ -107,34 +145,44 @@ CONFIRMED → RESCHEDULED → CONFIRMED
 ### High-Level Overview (Monolith)
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                      Client (Browser)                    │
-│              React 18 + Tailwind CSS (SPA)               │
-│  Pages: Auth · Search · Doctor Profile · Dashboards     │
-│         Booking · Availability Settings · Admin Panel   │
-└────────────────────┬────────────────────────────────────┘
-                     │ HTTP (same origin in production)
-                     │ JWT in Authorization header
-┌────────────────────▼────────────────────────────────────┐
-│            FastAPI Monolith  (single process)            │
-│  /api/*  → Routers: auth · users · doctors ·            │
-│             appointments · reviews · admin              │
-│  /assets → StaticFiles  (compiled React JS/CSS)         │
-│  /*      → SPA fallback  (index.html)                   │
-│  Middleware: CORS (dev only) · JWT auth · Role guards   │
-└────────────────────┬────────────────────────────────────┘
-                     │ SQLAlchemy 2 ORM (async)
-┌────────────────────▼────────────────────────────────────┐
-│                  PostgreSQL 15 Database                  │
-│  Tables: users · doctors · specialties · availabilities │
-│          appointments · reviews                         │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                      Client (Browser)                         │
+│             React 18 + Tailwind CSS (SPA)                     │
+│  White & Green theme · CSS custom properties                  │
+│  Pages: Auth · Search · Doctor Profile · Dashboards           │
+│    Booking (2-col layout) · Checkout · Availability Settings  │
+│    Admin Panel · Profile                                      │
+└──────────────────────┬───────────────────────────────────────┘
+                       │ HTTP (same origin in production)
+                       │ JWT in Authorization header
+┌──────────────────────▼───────────────────────────────────────┐
+│             FastAPI Monolith  (single process)                │
+│  /api/*  → Routers: auth · users · doctors · appointments ·  │
+│             reviews · admin · payment · waitlist ·            │
+│             encounters · insurance                            │
+│  /assets → StaticFiles  (compiled React JS/CSS)               │
+│  /*      → SPA fallback  (index.html)                         │
+│  Middleware: CORS (dev only) · JWT auth · Role guards         │
+│  Background: reminder_loop (24h/2h reminders + payment expiry)│
+└──────────────────────┬───────────────────────────────────────┘
+                       │ SQLAlchemy 2 ORM (async)
+┌──────────────────────▼───────────────────────────────────────┐
+│                  PostgreSQL 15 Database                        │
+│  Tables: users · doctors · specialties · availabilities       │
+│    appointments · reviews · waitlist · encounters ·           │
+│    prescriptions · lab_results · insurance_coverages ·        │
+│    insurance_claims                                           │
+│  Enums: appointmentstatus · refundstatus · claimstatus ·      │
+│    labresultstatus · userrole                                 │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 **Design decisions:**
-- No separate `services/` layer — booking logic lives in `routers/appointments.py`, availability logic in `routers/doctors.py`.
-- React SPA is compiled (`npm run build`) into `backend/app/static/` and served by FastAPI's `StaticFiles` mount + SPA fallback route.
-- Single Docker container (multi-stage build: Node → Python) + one PostgreSQL container via docker-compose.
+- No separate `services/` layer — business logic lives in router files.
+- React SPA compiled (`npm run build`) into `backend/app/static/` and served by FastAPI.
+- Single Docker container (multi-stage: Node → Python) + one PostgreSQL container.
+- Background asyncio task for reminder deduplication and payment hold expiry.
+- CSS custom properties for theming; white & emerald-green light theme.
 
 ---
 
@@ -145,32 +193,43 @@ CONFIRMED → RESCHEDULED → CONFIRMED
 ```
 backend/
 ├── app/
-│   ├── main.py                  # App factory, CORS, router registration
-│   ├── config.py                # Settings (env vars via pydantic-settings)
+│   ├── main.py                  # App factory, CORS, router registration, lifespan (reminders)
+│   ├── config.py                # Settings (env vars via pydantic-settings, VNPay config)
 │   ├── database.py              # Async SQLAlchemy engine & session factory
-│   ├── dependencies.py          # get_db, get_current_user, role guards
-│   ├── models/                  # SQLAlchemy ORM models
+│   ├── dependencies.py          # get_db, get_current_user, role guards (CurrentPatient, etc.)
+│   ├── models/
+│   │   ├── user.py              # User, UserRole enum
+│   │   ├── doctor.py            # Doctor (1:1 with User)
+│   │   ├── specialty.py         # Medical specialties
+│   │   ├── availability.py      # Weekly availability windows, DayOfWeek enum
+│   │   ├── appointment.py       # Appointment, AppointmentStatus, RefundStatus enums
+│   │   ├── review.py            # Patient reviews (1 per completed appointment)
+│   │   ├── waitlist.py          # WaitlistEntry (patient × doctor, unique)
+│   │   ├── encounter.py         # Encounter, Prescription, LabResult, LabResultStatus
+│   │   └── insurance.py         # InsuranceCoverage, InsuranceClaim, ClaimStatus
+│   ├── schemas/
 │   │   ├── user.py
-│   │   ├── doctor.py
-│   │   ├── specialty.py
-│   │   ├── availability.py
-│   │   ├── appointment.py
-│   │   └── review.py
-│   ├── schemas/                 # Pydantic request/response schemas
-│   │   ├── user.py
-│   │   ├── doctor.py
-│   │   ├── appointment.py
-│   │   └── review.py
-│   ├── routers/                 # Route handlers + inlined business logic
-│   │   ├── auth.py
-│   │   ├── users.py
-│   │   ├── doctors.py           # get_open_slots, is_slot_available helpers
-│   │   ├── appointments.py      # _book, _reschedule, _validate_status_transition helpers
-│   │   ├── reviews.py
-│   │   └── admin.py
+│   │   ├── doctor.py            # Doctor, Specialty, Availability schemas
+│   │   ├── appointment.py       # Create, StatusUpdate, Reschedule, FollowUp, Response schemas
+│   │   ├── review.py
+│   │   ├── waitlist.py          # WaitlistCreate, WaitlistResponse
+│   │   ├── encounter.py         # Encounter, Prescription, LabResult schemas
+│   │   └── insurance.py         # Coverage, Claim schemas
+│   ├── routers/
+│   │   ├── auth.py              # Register, login, refresh, me
+│   │   ├── users.py             # User profile management
+│   │   ├── doctors.py           # Doctor search, profile, availability, open slots
+│   │   ├── appointments.py      # Booking, status updates, reschedule negotiation, follow-up, check-in
+│   │   ├── reviews.py           # Create/list reviews
+│   │   ├── admin.py             # User/doctor/appointment management, stats (with state machine)
+│   │   ├── payment.py           # VNPay create/retry/return, refund processing
+│   │   ├── waitlist.py          # Join/list/leave waitlist
+│   │   ├── encounters.py        # Encounter CRUD, prescriptions, lab results
+│   │   └── insurance.py         # Coverage CRUD, claim submission/processing
 │   └── utils/
 │       ├── security.py          # JWT encode/decode, bcrypt hashing
-│       └── email.py             # Email notification helpers (confirmations, reminders)
+│       ├── email.py             # 8 email notification functions (booking, confirmed, reminder, etc.)
+│       └── reminders.py         # Background loop: 24h/2h reminders (deduplicated) + payment expiry
 ├── alembic/                     # DB migrations
 ├── tests/
 └── requirements.txt             # at project root
@@ -183,20 +242,57 @@ backend/
 | POST | `/api/auth/register` | Public | Patient or doctor registration |
 | POST | `/api/auth/login` | Public | Login → JWT access + refresh tokens |
 | POST | `/api/auth/refresh` | Public | Refresh access token |
-| GET | `/api/auth/me` | Auth | Get current user profile |
-| GET | `/api/doctors` | Public | Search/list doctors (filter by specialty, name) |
-| GET | `/api/doctors/{id}` | Public | Doctor profile + available slots |
-| GET | `/api/doctors/{id}/availability` | Public | Available time slots for booking |
-| PUT | `/api/doctors/me/availability` | Doctor | Set weekly availability |
-| POST | `/api/appointments` | Patient | Book an appointment |
-| GET | `/api/appointments` | Auth | List current user's appointments |
+| GET | `/api/auth/me` | Auth | Current user profile |
+| GET | `/api/doctors` | Public | Search/list doctors |
+| GET | `/api/doctors/{id}` | Public | Doctor profile |
+| GET | `/api/doctors/{id}/slots?date=` | Public | Available slots for a date |
+| GET | `/api/doctors/{id}/availability` | Public | Weekly availability windows |
+| PUT | `/api/doctors/me/availability` | Doctor | Replace weekly availability |
+| PATCH | `/api/doctors/me` | Doctor | Update profile |
+| POST | `/api/appointments` | Patient | Book appointment (direct, no payment) |
+| GET | `/api/appointments` | Auth | List appointments (filtered by role) |
 | GET | `/api/appointments/{id}` | Auth | Appointment detail |
-| PATCH | `/api/appointments/{id}` | Auth | Update status / reschedule |
-| DELETE | `/api/appointments/{id}` | Auth | Cancel appointment |
-| POST | `/api/reviews` | Patient | Submit review after completed appointment |
+| PATCH | `/api/appointments/{id}` | Auth | Update status/notes (with penalty on cancel/noshow) |
+| DELETE | `/api/appointments/{id}` | Auth | Cancel appointment (with penalty/refund) |
+| PATCH | `/api/appointments/{id}/reschedule` | Auth | Request or perform reschedule |
+| PATCH | `/api/appointments/{id}/reschedule/accept` | Auth | Accept reschedule request |
+| PATCH | `/api/appointments/{id}/reschedule/decline` | Auth | Decline reschedule request |
+| PATCH | `/api/appointments/{id}/arrive` | Staff | Mark patient as arrived |
+| PATCH | `/api/appointments/{id}/noshow` | Staff | Mark no-show (forfeit deposit) |
+| GET | `/api/appointments/{id}/checkin-token` | Staff | Generate QR check-in token |
+| POST | `/api/appointments/{id}/checkin` | Public | QR check-in (signed token auth) |
+| POST | `/api/appointments/{id}/follow-up` | Patient | Book a linked follow-up |
+| POST | `/api/payment/vnpay/create` | Patient | Book + get VNPay URL (15-min slot hold) |
+| POST | `/api/payment/vnpay/retry/{id}` | Patient | Retry payment for existing PENDING |
+| GET | `/api/payment/vnpay/return` | Internal | VNPay callback → confirm + redirect |
+| POST | `/api/payment/vnpay/refund/{id}` | Admin | Mark refund as completed |
+| POST | `/api/waitlist` | Patient | Join waitlist for a doctor |
+| GET | `/api/waitlist` | Patient | List own waitlist entries |
+| DELETE | `/api/waitlist/{doctor_id}` | Patient | Leave waitlist |
+| GET | `/api/encounters/{appt_id}` | Auth | View encounter record (EHR) |
+| PATCH | `/api/encounters/{appt_id}` | Doctor | Update encounter (diagnosis, vitals) |
+| POST | `/api/encounters/{appt_id}/prescriptions` | Doctor | Add prescription |
+| GET | `/api/encounters/{appt_id}/prescriptions` | Auth | List prescriptions |
+| POST | `/api/encounters/{appt_id}/lab-results` | Doctor | Order lab test |
+| PATCH | `/api/encounters/{appt_id}/lab-results/{id}` | Doctor | Update lab result |
+| GET | `/api/encounters/{appt_id}/lab-results` | Auth | List lab results |
+| POST | `/api/insurance/coverage` | Patient | Add insurance coverage |
+| GET | `/api/insurance/coverage` | Patient | List own coverages |
+| DELETE | `/api/insurance/coverage/{id}` | Patient | Remove coverage |
+| POST | `/api/insurance/claims/{appt_id}` | Patient/Admin | Submit insurance claim |
+| GET | `/api/insurance/claims` | Auth | List claims (role-filtered) |
+| PATCH | `/api/insurance/claims/{id}` | Admin | Approve/deny claim |
+| POST | `/api/reviews` | Patient | Submit review |
+| GET | `/api/reviews/doctor/{id}` | Public | List doctor reviews |
 | GET | `/api/admin/users` | Admin | List all users |
-| PATCH | `/api/admin/users/{id}` | Admin | Activate / deactivate user |
-| GET | `/api/admin/stats` | Admin | Platform-wide statistics |
+| POST | `/api/admin/users` | Admin | Create doctor/receptionist |
+| PATCH | `/api/admin/users/{id}` | Admin | Toggle active status |
+| GET | `/api/admin/appointments` | Admin | List all appointments |
+| PATCH | `/api/admin/appointments/{id}` | Admin | Update status (state machine enforced) |
+| GET | `/api/admin/doctors` | Admin | List all doctors |
+| PATCH | `/api/admin/doctors/{id}` | Admin | Update doctor profile |
+| GET | `/api/admin/stats` | Admin | Platform statistics |
+| GET/POST | `/api/specialties` | Public/Admin | List/create specialties |
 
 ---
 
@@ -204,7 +300,7 @@ backend/
 
 ```
 users
-  id, email, hashed_password, full_name, role (PATIENT/DOCTOR/ADMIN),
+  id, email, hashed_password, full_name, role (PATIENT/DOCTOR/RECEPTIONIST/ADMIN),
   phone, avatar_url, is_active, created_at, updated_at
 
 doctors  (one-to-one with users)
@@ -216,19 +312,65 @@ specialties
   id, name, description, icon
 
 availabilities
-  id, doctor_id (FK→doctors), day_of_week (0–6),
+  id, doctor_id (FK→doctors), day_of_week (0=Mon…6=Sun),
   start_time, end_time, slot_duration_minutes, is_active
 
 appointments
   id, patient_id (FK→users), doctor_id (FK→doctors),
   scheduled_at (timestamptz), end_at (timestamptz),
-  status (PENDING/CONFIRMED/COMPLETED/CANCELLED/RESCHEDULED),
-  reason, notes, created_at, updated_at
+  status (PENDING/CONFIRMED/ARRIVED/COMPLETED/CANCELLED/RESCHEDULED/NOSHOW/RESCHEDULE_REQUESTED),
+  reason, notes, cancellation_reason,
+  -- Payment / financial
+  deposit_paid, vnpay_txn_ref, deposit_amount, refund_amount, penalty_amount,
+  refund_status (NONE/PENDING/COMPLETED), payment_expires_at,
+  -- Reschedule negotiation
+  reschedule_count, reschedule_fee_applied,
+  proposed_new_time, reschedule_requested_by ('patient'/'doctor'),
+  status_before_reschedule_request,
+  -- Reminder deduplication
+  reminder_24h_sent, reminder_2h_sent,
+  -- Follow-up
+  follow_up_of (FK→appointments, self-ref), follow_up_recommended, follow_up_date,
+  -- Timestamps
+  created_at, updated_at
+  UNIQUE(doctor_id, scheduled_at)
 
 reviews
   id, appointment_id (FK→appointments, UNIQUE),
   patient_id (FK→users), doctor_id (FK→doctors),
   rating (1–5), comment, created_at
+
+waitlist
+  id, patient_id (FK→users), doctor_id (FK→doctors), created_at
+  UNIQUE(patient_id, doctor_id)
+
+encounters
+  id, appointment_id (FK→appointments, UNIQUE),
+  doctor_id (FK→doctors), patient_id (FK→users),
+  chief_complaint, diagnosis, treatment_notes,
+  vitals_json (JSON: blood_pressure, heart_rate, temperature, weight, height),
+  created_at, updated_at
+
+prescriptions
+  id, encounter_id (FK→encounters),
+  medication_name, dosage, frequency, duration, instructions,
+  created_at
+
+lab_results
+  id, encounter_id (FK→encounters),
+  test_name, result_value, unit, reference_range,
+  status (ORDERED/COMPLETED), ordered_at, completed_at
+
+insurance_coverages
+  id, patient_id (FK→users), provider_name, policy_number, group_number,
+  coverage_start, coverage_end, is_active,
+  copay_percentage (% patient pays), created_at, updated_at
+
+insurance_claims
+  id, appointment_id (FK→appointments, UNIQUE), coverage_id (FK→insurance_coverages),
+  total_amount, covered_amount, patient_responsibility,
+  status (PENDING/SUBMITTED/APPROVED/DENIED), denial_reason,
+  submitted_at, processed_at
 ```
 
 ---
@@ -241,47 +383,55 @@ reviews
 frontend/
 ├── src/
 │   ├── main.jsx
+│   ├── index.css                # White & emerald-green theme (CSS custom properties)
 │   ├── App.jsx                  # Route definitions (React Router v6)
 │   ├── api/
 │   │   ├── axiosClient.js       # Axios base instance + JWT interceptors + auto-refresh
 │   │   ├── authApi.js
 │   │   ├── doctorApi.js
-│   │   └── appointmentApi.js
+│   │   ├── appointmentApi.js    # Includes acceptReschedule, declineReschedule, follow-up
+│   │   └── reviewApi.js
 │   ├── context/
 │   │   └── AuthContext.jsx      # JWT storage, current user state
 │   ├── components/
-│   │   ├── Navbar.jsx
-│   │   ├── DoctorCard.jsx
-│   │   ├── AppointmentCard.jsx
+│   │   ├── Navbar/              # Sticky navbar with role-based links
+│   │   ├── DoctorCard/          # Doctor search result card
+│   │   ├── AppointmentCard/     # Shows proposed_new_time for RESCHEDULE_REQUESTED
 │   │   ├── Calendar/
-│   │   │   ├── WeekView.jsx
-│   │   │   └── SlotPicker.jsx
+│   │   │   ├── WeekView/        # Doctor weekly schedule view
+│   │   │   └── SlotPicker/      # Calendar + time slot grid (compact mode for modals)
 │   │   ├── forms/
-│   │   │   ├── LoginForm.jsx
-│   │   │   ├── RegisterForm.jsx
-│   │   │   └── BookingForm.jsx
-│   │   └── ui/                  # Button, Badge, Modal, Toast
+│   │   │   ├── LoginForm/
+│   │   │   ├── RegisterForm/
+│   │   │   └── BookingForm/     # Legacy wrapper (unused — BookingPage is self-contained)
+│   │   └── ui/
+│   │       ├── Button/
+│   │       ├── Badge/           # Supports RESCHEDULE_REQUESTED status
+│   │       ├── Modal/
+│   │       └── Toast/
 │   ├── pages/
-│   │   ├── LandingPage.jsx
+│   │   ├── LandingPage/         # Hero, features, specialties, CTA
+│   │   ├── ProfilePage/         # User profile edit
 │   │   ├── auth/
-│   │   │   ├── LoginPage.jsx
-│   │   │   └── RegisterPage.jsx
+│   │   │   ├── LoginPage/
+│   │   │   └── RegisterPage/
 │   │   ├── patient/
-│   │   │   ├── SearchPage.jsx
-│   │   │   ├── DoctorProfilePage.jsx
-│   │   │   ├── BookingPage.jsx
-│   │   │   └── PatientDashboard.jsx
+│   │   │   ├── SearchPage/      # Doctor search with filters
+│   │   │   ├── DoctorProfilePage/ # Doctor detail + reviews
+│   │   │   ├── BookingPage/     # Redesigned 2-column layout (calendar left, sidebar right)
+│   │   │   ├── CheckoutPage/    # VNPay payment confirmation
+│   │   │   └── PatientDashboard/ # Appointments, reschedule accept/decline, waitlist status
 │   │   ├── doctor/
-│   │   │   ├── DoctorDashboard.jsx
-│   │   │   └── AvailabilitySettings.jsx
+│   │   │   ├── DoctorDashboard/ # Schedule, confirm/complete/reschedule, accept/decline requests
+│   │   │   └── AvailabilitySettings/ # Weekly hours grid (Mon=0 convention)
 │   │   └── admin/
-│   │       └── AdminDashboard.jsx
+│   │       └── AdminDashboard/  # Stats, user/doctor management
 │   ├── hooks/
 │   │   ├── useAuth.js
 │   │   └── useAppointments.js
 │   └── utils/
-│       └── dateHelpers.js
-├── tailwind.config.js
+│       └── dateHelpers.js       # Timezone-safe toDateParam, formatDateTime, getWeekDays
+├── tailwind.config.js           # Emerald accent, light shadows, no dark mode
 ├── vite.config.js               # outDir → ../backend/app/static; /api proxy → :8000
 └── package.json
 ```
@@ -290,15 +440,25 @@ frontend/
 
 | Page | Key Features |
 | :--- | :--- |
-| Landing | Hero section, specialty highlights, CTA to register |
+| Landing | Hero section, feature cards, specialty grid, CTA, trust badges |
 | Login / Register | Role selection (Patient / Doctor), form validation, strong password rules |
-| Search Doctors | Filters (specialty, name), paginated doctor cards |
-| Doctor Profile | Bio, avg rating, reviews list, interactive slot picker |
-| Booking Confirmation | Summary card, visit reason input, confirm button |
-| Patient Dashboard | Upcoming / past appointments, cancel / reschedule actions |
-| Doctor Dashboard | Today's schedule, pending confirmation queue, complete + notes |
-| Availability Settings | Weekly hours grid + slot duration selector |
-| Admin Dashboard | Stats cards, user management table, specialty management |
+| Search Doctors | Name search + specialty filter + pagination (search input properly sized) |
+| Doctor Profile | Bio, avg rating, reviews list, booking CTA |
+| Booking (redesigned) | 2-column layout: calendar + slots on left, doctor info + reason + summary on right |
+| Checkout | VNPay payment flow, summary card |
+| Patient Dashboard | Status filter tabs (incl. RESCHEDULE_REQUESTED), reschedule negotiation (accept/decline/waiting), cancel with reason, VNPay retry, review submission |
+| Doctor Dashboard | Status filter tabs (incl. RESCHEDULE_REQUESTED), confirm/complete/reschedule/noshow actions, accept/decline reschedule requests, clinical notes modal, profile edit, list & calendar views |
+| Availability Settings | Weekly day cards (Mon–Sun), time range inputs, slot duration selector |
+| Admin Dashboard | Stats cards, user management, appointment management, specialty management |
+
+### Theme
+
+- **White & Emerald-Green** light theme via CSS custom properties
+- Backgrounds: `#ffffff` (primary), `#f8fafb` (secondary)
+- Accent: `#059669` (emerald-600), `#10b981` (emerald-500)
+- Text: `#0f172a` (headings), `#1e293b` (body), `#64748b` (muted)
+- Cards: white with `#e2e8f0` border and subtle `rgba(0,0,0,0.06)` shadow
+- No glow effects — clean, professional medical aesthetic
 
 ---
 
@@ -307,7 +467,7 @@ frontend/
 | Layer | Technology |
 | :--- | :--- |
 | Frontend framework | React 18 (Vite) |
-| Styling | Tailwind CSS 3 |
+| Styling | Tailwind CSS 3 + CSS custom properties |
 | HTTP client | Axios |
 | Routing | React Router v6 |
 | State management | React Context + custom hooks |
@@ -316,23 +476,26 @@ frontend/
 | Database | PostgreSQL 15 |
 | Authentication | JWT (python-jose) + bcrypt (passlib) |
 | Migrations | Alembic |
+| Payment | VNPay sandbox (HMAC-SHA512 signed URLs) |
 | Containerization | Docker (multi-stage) + docker-compose (2 services: app + db) |
 | Environment config | pydantic-settings (.env) |
-| Email | fastapi-mail + aiosmtplib + Jinja2 |
+| Email | fastapi-mail + aiosmtplib |
+| Background tasks | asyncio (reminder loop + payment expiry) |
 | Testing (backend) | pytest + pytest-asyncio + httpx |
 
 ---
 
 ## 10. Non-Functional Requirements
 
-- **Security:** bcrypt password hashing (min 8 chars, 1 uppercase, 1 digit); JWT short-lived access token + refresh token rotation; RBAC role guards on every protected endpoint; HTTPS in production (TLS 1.2+).
-- **Data Integrity:** Slot locking during booking prevents double-booking under concurrent requests; unique constraint on `(doctor_id, scheduled_at)`; one review per completed appointment.
-- **Availability:** System must remain operational 24/7 to support self-service booking outside clinic hours.
-- **Performance:** API responses under 2 seconds under normal load; async SQLAlchemy + asyncpg for non-blocking DB access.
-- **Validation:** Pydantic v2 schemas on backend; client-side form validation on frontend with clear error messages via Toast.
-- **Responsiveness:** Tailwind responsive utilities; mobile-first layout for patients booking on phones.
-- **Error Handling:** Consistent `{ "detail": "..." }` JSON error responses; HTTP status codes 400/401/403/404/409/422; toast notifications on frontend.
-- **Compliance:** No plaintext passwords stored; `.env` secrets excluded from version control; CORS restricted to known origins.
+- **Security:** bcrypt password hashing; JWT short-lived access + refresh token rotation; RBAC role guards on every endpoint; HMAC-SHA256 signed check-in tokens; HMAC-SHA512 VNPay signature verification; HTTPS in production.
+- **Data Integrity:** PostgreSQL advisory locks prevent concurrent double-booking; unique constraint on `(doctor_id, scheduled_at)`; one review per completed appointment; one claim per appointment; server-side slot reservation during payment.
+- **Financial Compliance:** Automated penalty/refund calculation per TASK.md rules; `refund_status` tracking; `cancellationReason` always logged for auditing.
+- **Availability:** 24/7 operation; background task loop for reminders and payment expiry.
+- **Performance:** Async SQLAlchemy + asyncpg; API responses under 2 seconds; efficient slot computation (no Slot table — computed dynamically).
+- **Deduplication:** Reminder flags (`reminder_24h_sent`, `reminder_2h_sent`) prevent duplicate emails.
+- **Validation:** Pydantic v2 schemas on backend; client-side form validation with Toast notifications.
+- **Responsiveness:** Mobile-first layout; 2-column booking page on desktop; sticky sidebar.
+- **Theming:** CSS custom properties enable easy theme switching; current theme: white & emerald-green.
 
 ---
 
@@ -340,113 +503,80 @@ frontend/
 
 ```
 /  (project root)
-├── backend/            FastAPI application (Python) — also serves compiled React SPA
+├── backend/            FastAPI application — serves API + compiled React SPA
 ├── frontend/           React + Vite application (JS/JSX)
 ├── Dockerfile          Multi-stage monolith image (Node build → Python runtime)
 ├── docker-compose.yml  2 services: app (port 8000) + postgres
 ├── .env                Environment variables (git-ignored)
 ├── .env.example        Shared environment variable template
 ├── requirements.txt    Python dependencies
+├── TASK.md             HL7 FHIR standard workflow reference
 └── PLAN.md             ← this file
 ```
 
 ---
 
-## 12. Verification & Testing Plan
+## 12. HL7 FHIR Workflow Compliance
 
-1. **Unit tests (backend):** pytest + httpx AsyncClient — cover auth flow, booking conflict detection, role guard enforcement, status transition validation.
-2. **Swagger UI:** Exercise all endpoints manually at `/docs` after spinning up docker-compose.
-3. **End-to-end patient flow:** Register → search → book → doctor confirms → patient reschedules → patient cancels → verify status transitions in DB.
-4. **End-to-end doctor flow:** Set availability → view schedule → mark appointment completed → verify review eligibility for patient.
-5. **Admin flow:** Log in as admin → list users → deactivate account → manage specialties → view stats dashboard.
-6. **Concurrency testing:** Simulate simultaneous booking requests for the same slot — verify slot locking prevents double-booking.
-7. **Email notifications:** Verify confirmation and reminder emails are dispatched at the correct appointment lifecycle events.
-8. **Frontend:** Navigate all pages in both desktop and mobile viewports; verify protected routes redirect unauthenticated users to login.
-
-# Reschedule Process:
-# Appointment Re-negotiation Process (Reschedule)
-**Compliance Standard:** HL7 FHIR Standards
-
-This automated workflow is triggered upon receiving a `Reschedule` request from either a Patient or a Provider. The system strictly executes the following four-step re-negotiation protocol:
-
----
-
-### 1. Receive & Update Status
-* **Data Logging:** Record the `proposedNewTime` within the Appointment resource.
-* **Participant State Management:**
-    * Update the requesting participant’s status to `tentative`.
-    * Set all other involved participants' statuses to `needs-action` to prompt for concurrence.
-
-### 2. Resource Management (Slot Management)
-* **Slot Release:** Immediately revert the original time slot to `FREE` status in the scheduling system.
-* **Smart Waitlist Trigger:** Automatically dispatch notifications to patients on the **Smart Waitlist** regarding the newly available opening.
-* **Concurrency Control:** Apply a **Temporary Slot Lock** to the newly selected time period to prevent race conditions or double-booking.
-
-### 3. Business Rules Validation
-* **Policy Compliance:** Evaluate the request timestamp against administrative policies (e.g., the **48-hour rule**).
-* **Financial Processing:** * Automatically calculate applicable rescheduling fees if the request violates clinic policy.
-    * Execute deposit deductions or generate billing invoices as dictated by the business logic.
-
-### 4. Finalize & Notify
-* **Agreement Verification:** Once all participants have updated their status to `accepted`.
-* **System Finalization:**
-    * Update the overall Appointment status to `booked`.
-    * Transition the new time slot status to `BUSY`.
-* **Automated Communication:** Dispatch final confirmation via **SMS or Email** containing the updated schedule details to all relevant parties.
-
----
-**FHIR Mapping Note:** - **Resources:** `Appointment`, `Slot`, `Schedule`, `Communication`.
-- **Status Codes:** Follows `AppointmentStatus` and `ParticipantStatus` value sets.
-
-
-# 13. Comprehensive Healthcare Appointment Workflow (End-to-End)
-## Modern Healthcare System (Based on HL7 FHIR Standards & Operational Governance)
-
-This document outlines the professional workflow for medical scheduling, from initial discovery to post-visit care, utilizing international data interoperability standards.
-
----
+The system implements the full HL7 FHIR-inspired appointment lifecycle defined in TASK.md:
 
 ### 1. Discovery & Proposed
-* **Search:** Patients search for doctors, specialties, or services. The system queries available time slots (Status: `FREE`) based on the practitioner's `Schedule`.
-* **Proposal & Temporary Hold:** * Once a slot is selected, an `Appointment` resource is created with a `proposed` status.
-    * **Slot Locking:** The system triggers a temporary lock on the selected slot to prevent **double-booking** while the patient completes form entry or payment.
+- Patient searches doctors/specialties, system computes available slots dynamically from `availabilities` table.
+- Appointment created as PENDING with advisory lock slot protection.
+- **Slot Locking:** PostgreSQL `pg_try_advisory_xact_lock` + unique constraint + application check (3 layers).
 
-### 2. Payment & Confirmation (Booked)
-* **Payment/Deposit:** * To ensure commitment, patients may be required to pay a deposit (e.g., 30% of the service fee).
-    * Slots are usually held for a specific window (e.g., 2 hours) awaiting payment confirmation.
-    * Integration with `Coverage` and `Claim` resources allows for real-time insurance eligibility checks.
-* **Finalization:** Upon successful payment, the appointment status transitions to `booked`, and the slot status updates to `BUSY`.
-* **Automated Reminders:** Multi-channel notifications (SMS/Email/In-app) are sent 24 hours and 2 hours prior to the appointment to minimize **no-show** rates.
+### 2. Payment & Booked
+- VNPay integration with 15-minute server-side slot reservation (`payment_expires_at`).
+- On payment success: status → CONFIRMED, `deposit_paid=true`, `deposit_amount` recorded.
+- Background task auto-cancels expired PENDING appointments.
+- Insurance copay calculation available via `InsuranceCoverage.copay_percentage`.
+- Multi-tier reminders: 24h and 2h before, with deduplication flags.
 
-### 3. Rescheduling Process
-The rescheduling flow operates as a **Re-negotiation** mechanism with strict financial rules:
-* **Negotiation Mechanism:** * The requester sends a `proposedNewTime`. 
-    * Requester status becomes `tentative`; the respondent status becomes `needs-action`. 
-    * The new time is only finalized as `booked` once all parties have `accepted`.
-* **Financial Rules (Sample):**
-    * *Over 48 hours notice:* First reschedule is free; subsequent changes may incur a processing fee.
-    * *Within 48 hours notice:* A penalty (e.g., 30% of the deposit) may be automatically applied.
-* **Slot Management:** The original slot is immediately released back to `FREE`. The **Smart Waitlist** feature then notifies queued patients of the new opening to optimize clinic revenue.
+### 3. Reschedule (Multi-party Negotiation)
+- Patient/doctor submits `proposed_new_time` → status becomes `RESCHEDULE_REQUESTED`.
+- Other party can `accept` (executes reschedule) or `decline` (reverts to previous status).
+- Admin/receptionist bypass negotiation (immediate reschedule).
+- Financial penalties: 1st free if >48h; subsequent or <48h = 30% of deposit.
+- Original slot freed → waitlist notified automatically.
 
 ### 4. Cancellation & Refund
-* **Cancellation:** If a request is `declined` or the patient cancels, the status moves to `cancelled`. If the patient fails to appear without notice, it is recorded as a `noshow`.
-* **Refund/Penalty Policy:**
-    * **Early Cancellation (>48h):** Patient incurs a small cancellation fee, and the remainder is **refunded**.
-    * **Late Cancellation/No-show (<48h):** Usually results in a 100% deposit penalty to cover operational losses.
-    * **Data Integrity:** The `cancellationReason` is always logged for financial auditing.
+- Early cancel (>48h): 30% penalty, 70% refund (`refund_status=PENDING`).
+- Late cancel (<48h): 100% deposit forfeited.
+- No-show: 100% deposit forfeited.
+- `cancellation_reason` always logged.
+- Admin can process pending refunds via `/api/payment/vnpay/refund/{id}`.
+- Freed slots trigger waitlist notification.
 
-### 5. Arrival & Clinical Encounter
-* **Check-in:** On the day of the visit, the patient scans a **QR code** at a Kiosk or Reception. The status immediately updates to `arrived`, bypassing traditional paperwork.
-* **Clinical Encounter:** * This event triggers the creation of an `Encounter` record in the HIS/EMR system.
-    * The clinician tracks vitals, orders tests, or issues prescriptions.
-    * Any additional sub-services (lab tests, imaging) require payment via the app or counter before execution.
+### 5. Arrived & Clinical Encounter
+- QR check-in via HMAC-SHA256 signed tokens (1-hour validity).
+- Manual arrival marking by receptionist/doctor/admin.
+- `Encounter` record auto-created on ARRIVED status.
+- Doctor records: chief complaint, diagnosis, treatment notes, vitals (JSON).
+- Prescriptions and lab results tracked per encounter.
+- Lab results have ORDERED → COMPLETED lifecycle.
 
-### 6. Fulfillment & Post-visit Care
-* **Completion:** Once the consultation ends, the appointment status is marked as `fulfilled`.
-* **Patient Engagement:**
-    * **Feedback:** Automated Quality of Service surveys (Rating/Review).
-    * **Patient Portal:** Patients access their **Electronic Health Records (EHR)**, including lab results, prescriptions, and vitals.
-    * **Follow-up:** The system proposes or automatically schedules follow-up appointments based on the doctor's orders.
+### 6. Fulfilled & Post-visit Care
+- Doctor marks COMPLETED with optional clinical notes and follow-up recommendation.
+- Automated emails: visit complete + review request + follow-up suggestion.
+- Patient EHR access: encounters, prescriptions, lab results via `/api/encounters/{id}`.
+- Follow-up booking linked to parent appointment via `follow_up_of` field.
+- Insurance claims submitted post-visit, processed by admin (PENDING → SUBMITTED → APPROVED/DENIED).
+- Review system: 1-5 rating + comment, auto-recalculates doctor `avg_rating`.
 
 ---
-*Technical Note: This workflow maps directly to HL7 FHIR resources including **Appointment, Slot, Patient, Coverage, and Encounter**.*
+
+## 13. Verification & Testing Plan
+
+1. **Unit tests (backend):** pytest + httpx AsyncClient — auth flow, booking conflicts, role guards, status transitions, penalty calculation.
+2. **Swagger UI:** Exercise all 50+ endpoints at `/docs`.
+3. **Patient flow:** Register → search → book with VNPay → slot held → payment → confirmed → receive reminders → QR check-in → view encounter → submit claim → book follow-up → leave review.
+4. **Reschedule negotiation:** Patient requests reschedule for CONFIRMED appointment → doctor sees RESCHEDULE_REQUESTED → accepts/declines → verify status transitions and penalty calculation.
+5. **Cancellation flow:** Cancel >48h → verify 30% penalty + 70% refund. Cancel <48h → verify 100% forfeit. No-show → verify forfeit.
+6. **Waitlist flow:** Patient joins waitlist → appointment cancelled → verify email notification → entry removed.
+7. **Encounter/EHR flow:** Appointment arrives → encounter created → doctor adds diagnosis, prescription, lab order → patient reads EHR.
+8. **Insurance flow:** Patient adds coverage → books → completes → submits claim with copay calculation → admin approves/denies.
+9. **Payment expiry:** Book via VNPay → wait >15 min → verify auto-cancel by background task.
+10. **Reminder dedup:** Confirm flags prevent duplicate 24h/2h emails across multiple poll cycles.
+11. **Concurrency:** Simultaneous booking requests for same slot → verify advisory lock prevents double-booking.
+12. **Admin state machine:** Verify admin status updates go through `_validate_status_transition()`.
+13. **Frontend:** Navigate all pages in desktop and mobile; verify white & green theme renders correctly; verify reschedule accept/decline UI in both dashboards.

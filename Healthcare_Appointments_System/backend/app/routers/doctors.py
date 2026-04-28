@@ -70,7 +70,7 @@ async def _get_booked_slots(db: AsyncSession, doctor_id: int, target_date: date)
             Appointment.doctor_id == doctor_id,
             Appointment.scheduled_at >= day_start,
             Appointment.scheduled_at <= day_end,
-            Appointment.status.notin_([AppointmentStatus.CANCELLED]),
+            Appointment.status.notin_([AppointmentStatus.CANCELLED, AppointmentStatus.NOSHOW]),
         )
     )
     return {row.replace(second=0, microsecond=0) for row in result.scalars().all()}

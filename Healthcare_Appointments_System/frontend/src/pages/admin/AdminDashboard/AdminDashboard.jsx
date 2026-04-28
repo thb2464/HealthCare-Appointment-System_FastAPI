@@ -545,6 +545,9 @@ function AppointmentsTab({ toast }) {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const PAGE_SIZE = 20;
   const [selected, setSelected] = useState(null);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [newStatus, setNewStatus] = useState("");
@@ -552,16 +555,19 @@ function AppointmentsTab({ toast }) {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const params = {};
+    const params = { page, page_size: PAGE_SIZE };
     if (statusFilter) params.status = statusFilter;
     if (search) params.search = search;
     try {
       const { data } = await adminGetAppointments(params);
-      setAppointments(data);
-    } catch { setAppointments([]); }
+      const arr = Array.isArray(data) ? data : (data.items ?? data);
+      setAppointments(arr);
+      setHasMore(arr.length === PAGE_SIZE);
+    } catch { setAppointments([]); setHasMore(false); }
     finally { setLoading(false); }
-  }, [statusFilter, search]);
+  }, [statusFilter, search, page]);
 
+  useEffect(() => { setPage(1); }, [statusFilter, search]);
   useEffect(() => { load(); }, [load]);
 
   const openDetail = (appt) => {
@@ -645,10 +651,29 @@ function AppointmentsTab({ toast }) {
             </table>
           </div>
           <div className="admin-dash__table-footer">
-            Hiển thị {appointments.length} lịch hẹn
+            Hiển thị {appointments.length} lịch hẹn · Trang {page}
           </div>
         </div>
       )}
+
+      {/* Pagination */}
+      <div className="admin-dash__pagination">
+        <button
+          className="btn-secondary admin-dash__page-btn"
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+        >
+          ← Trước
+        </button>
+        <span className="admin-dash__page-label">Trang {page}</span>
+        <button
+          className="btn-secondary admin-dash__page-btn"
+          onClick={() => setPage((p) => p + 1)}
+          disabled={!hasMore}
+        >
+          Tiếp →
+        </button>
+      </div>
 
       {/* Appointment detail / edit modal */}
       <Modal open={!!selected} onClose={() => setSelected(null)} title="Quản lý lịch hẹn" size="lg">
@@ -759,6 +784,9 @@ function DoctorsTab({ toast }) {
   const [loading, setLoading] = useState(true);
   const [specialties, setSpecialties] = useState([]);
   const [specialtyFilter, setSpecialtyFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const PAGE_SIZE = 20;
   const [editDoctor, setEditDoctor] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [editLoading, setEditLoading] = useState(false);
@@ -769,15 +797,18 @@ function DoctorsTab({ toast }) {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const params = {};
+    const params = { page, page_size: PAGE_SIZE };
     if (specialtyFilter) params.specialty_id = specialtyFilter;
     try {
       const { data } = await adminGetDoctors(params);
-      setDoctors(data);
-    } catch { setDoctors([]); }
+      const arr = Array.isArray(data) ? data : (data.items ?? data);
+      setDoctors(arr);
+      setHasMore(arr.length === PAGE_SIZE);
+    } catch { setDoctors([]); setHasMore(false); }
     finally { setLoading(false); }
-  }, [specialtyFilter]);
+  }, [specialtyFilter, page]);
 
+  useEffect(() => { setPage(1); }, [specialtyFilter]);
   useEffect(() => { load(); }, [load]);
 
   const openEdit = (doc) => {
@@ -819,7 +850,7 @@ function DoctorsTab({ toast }) {
           <option value="">Tất cả chuyên khoa</option>
           {specialties.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
-        <p className="admin-dash__filter-count">{doctors.length} bác sĩ</p>
+        <p className="admin-dash__filter-count">{doctors.length} bác sĩ · Trang {page}</p>
       </div>
 
       {/* Cards grid */}
@@ -869,6 +900,25 @@ function DoctorsTab({ toast }) {
           ))}
         </div>
       )}
+
+      {/* Pagination */}
+      <div className="admin-dash__pagination">
+        <button
+          className="btn-secondary admin-dash__page-btn"
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+        >
+          ← Trước
+        </button>
+        <span className="admin-dash__page-label">Trang {page}</span>
+        <button
+          className="btn-secondary admin-dash__page-btn"
+          onClick={() => setPage((p) => p + 1)}
+          disabled={!hasMore}
+        >
+          Tiếp →
+        </button>
+      </div>
 
       {/* Edit doctor modal */}
       <Modal open={!!editDoctor} onClose={() => setEditDoctor(null)} title={`Edit — ${editDoctor?.user?.full_name}`} size="lg">
@@ -957,6 +1007,8 @@ function DoctorsTab({ toast }) {
 function SpecialtiesTab({ toast }) {
   const [specialties, setSpecialties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 12;
   const [createOpen, setCreateOpen] = useState(false);
   const [form, setForm] = useState({ name: "", description: "", icon: "" });
   const [saving, setSaving] = useState(false);
@@ -965,6 +1017,9 @@ function SpecialtiesTab({ toast }) {
     setLoading(true);
     getSpecialties().then(({ data }) => setSpecialties(data)).catch(() => {}).finally(() => setLoading(false));
   }, []);
+
+  const totalPages = Math.max(1, Math.ceil(specialties.length / PAGE_SIZE));
+  const pagedSpecialties = specialties.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleCreate = async () => {
     if (!form.name.trim()) { toast("Tên là bắt buộc", "error"); return; }
@@ -1009,7 +1064,7 @@ function SpecialtiesTab({ toast }) {
         <EmptyState icon="🏥" title="Chưa có chuyên khoa" sub="Thêm chuyên khoa y tế đầu tiên" />
       ) : (
         <div className="admin-dash__specialties-grid">
-          {specialties.map((sp) => (
+          {pagedSpecialties.map((sp) => (
             <div key={sp.id} className="card admin-dash__specialty-card card-hover">
               <div className="admin-dash__specialty-inner">
                 {sp.icon && <span className="admin-dash__specialty-icon">{sp.icon}</span>}
@@ -1025,6 +1080,27 @@ function SpecialtiesTab({ toast }) {
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {specialties.length > PAGE_SIZE && (
+        <div className="admin-dash__pagination">
+          <button
+            className="btn-secondary admin-dash__page-btn"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            ← Trước
+          </button>
+          <span className="admin-dash__page-label">Trang {page} / {totalPages}</span>
+          <button
+            className="btn-secondary admin-dash__page-btn"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+          >
+            Tiếp →
+          </button>
         </div>
       )}
 

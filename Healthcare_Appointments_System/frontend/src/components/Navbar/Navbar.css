@@ -8,10 +8,10 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background-color: rgba(4, 13, 26, 0.80); /* --color-bg at 80% */
+  border-bottom: 1px solid #e2e8f0;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.92); /* white at 92% */
 }
 
 /* ── Inner container ──────────────────────────────────────── */
@@ -50,7 +50,7 @@
   font-family: var(--font-display, inherit);
   font-weight: 700;
   font-size: 1.25rem; /* text-xl */
-  color: #f1f5f9; /* slate-100 */
+  color: #0f172a; /* dark heading text */
   transition: color 0.2s;
 }
 
@@ -102,11 +102,11 @@
   width: 1.75rem;    /* w-7 */
   height: 1.75rem;   /* h-7 */
   border-radius: 9999px;
-  background: linear-gradient(to bottom right, #2dd4bf, #0d9488); /* teal-400 → teal-600 */
+  background: linear-gradient(to bottom right, #10b981, #047857); /* green-500 → green-700 */
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #040d1a; /* navy-950 / --color-bg */
+  color: #ffffff; /* white text on accent */
   font-size: 0.75rem; /* text-xs */
   font-weight: 700;
   flex-shrink: 0;
@@ -117,7 +117,7 @@
   display: none; /* hidden < sm */
   font-size: 0.875rem; /* text-sm */
   font-weight: 500;
-  color: #e2e8f0; /* slate-200 / --color-text */
+  color: #1e293b; /* slate-800 body text */
   max-width: 8.75rem; /* max-w-[140px] */
   overflow: hidden;
   text-overflow: ellipsis;
@@ -161,7 +161,7 @@
 /* ── Dropdown header (role + email) ──────────────────────── */
 .navbar__dropdown-header {
   padding: 0.75rem 1rem; /* py-3 px-4 */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .navbar__dropdown-role {
@@ -174,7 +174,7 @@
 .navbar__dropdown-email {
   font-size: 0.875rem; /* text-sm */
   font-weight: 500;
-  color: #e2e8f0; /* slate-200 */
+  color: #1e293b; /* slate-800 body text */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -204,17 +204,17 @@
 }
 
 .navbar__dropdown-link {
-  color: #cbd5e1; /* slate-300 */
+  color: #334155; /* slate-700 secondary text */
 }
 
 .navbar__dropdown-link:hover {
   color: var(--color-accent-light);
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 /* ── Sign-out button ──────────────────────────────────────── */
 .navbar__dropdown-btn {
-  color: #f87171; /* red-400 */
+  color: #dc2626; /* red-600 — darker for light bg */
 }
 
 .navbar__dropdown-btn:hover {

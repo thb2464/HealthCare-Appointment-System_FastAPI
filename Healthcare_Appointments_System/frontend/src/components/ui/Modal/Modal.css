@@ -15,8 +15,8 @@
 .modal__overlay {
   position: absolute;
   inset: 0;
-  background-color: rgb(2 6 23 / 0.8); /* bg-navy-950/80 */
-  backdrop-filter: blur(4px);           /* backdrop-blur-sm */
+  background-color: rgba(0, 0, 0, 0.4); /* semi-transparent dark backdrop */
+  backdrop-filter: blur(8px);           /* backdrop-blur */
   /* animate-fade-in is applied as a global utility class in JSX */
 }
 
@@ -27,6 +27,8 @@
   max-height: calc(100dvh - 2rem);
   display: flex;
   flex-direction: column;
+  background-color: #ffffff; /* white panel */
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
   /* card + animate-scale-in applied as global utility classes in JSX */
 }
 
@@ -49,8 +51,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem;                                        /* p-6 */
-  border-bottom: 1px solid rgb(255 255 255 / 0.06);      /* border-white/[0.06] */
+  padding: 1.5rem;               /* p-6 */
+  border-bottom: 1px solid #e2e8f0; /* light gray divider */
   flex-shrink: 0;
 }
 
@@ -70,14 +72,14 @@
   border-radius: 0.5rem; /* rounded-lg */
   border: none;
   background: transparent;
-  color: rgb(148 163 184);  /* text-slate-400 */
+  color: #64748b;  /* text-slate-500 */
   cursor: pointer;
   transition: color 150ms ease, background-color 150ms ease; /* transition-colors */
 }
 
 .modal__close-btn:hover {
-  color: rgb(226 232 240);                  /* hover:text-slate-200 */
-  background-color: rgb(255 255 255 / 0.06); /* hover:bg-white/[0.06] */
+  color: #1e293b;                    /* hover: dark body text */
+  background-color: rgba(0, 0, 0, 0.06); /* hover: subtle bg */
 }
 
 /* ── Close icon ─────────────────────────────────────────────── */

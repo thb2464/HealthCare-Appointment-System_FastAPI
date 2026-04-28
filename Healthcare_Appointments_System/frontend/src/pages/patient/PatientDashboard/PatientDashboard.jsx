@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
-import { retryVNPayPayment } from "../../../api/appointmentApi";
+import { retryVNPayPayment, acceptReschedule, declineReschedule } from "../../../api/appointmentApi";
 import { createReview } from "../../../api/reviewApi";
 import AppointmentCard from "../../../components/AppointmentCard/AppointmentCard";
 import SlotPicker from "../../../components/Calendar/SlotPicker/SlotPicker";
@@ -16,6 +16,7 @@ const STATUS_TABS = [
   { value: "", label: "Tất cả" },
   { value: "PENDING", label: "Chờ xác nhận" },
   { value: "CONFIRMED", label: "Đã xác nhận" },
+  { value: "RESCHEDULE_REQUESTED", label: "Yêu cầu đổi lịch" },
   { value: "RESCHEDULED", label: "Đã đổi lịch" },
   { value: "COMPLETED", label: "Hoàn thành" },
   { value: "CANCELLED", label: "Đã hủy" },
@@ -44,8 +45,17 @@ export default function PatientDashboard() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const [statusFilter, setStatusFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
-  const params = useMemo(() => statusFilter ? { status: statusFilter } : {}, [statusFilter]);
-  const { appointments: rawAppointments, loading, cancel, reschedule, refetch } = useAppointments(params);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 20;
+  const params = useMemo(() => {
+    const p = { page, page_size: PAGE_SIZE };
+    if (statusFilter) p.status = statusFilter;
+    return p;
+  }, [statusFilter, page]);
+  const { appointments: rawAppointments, loading, hasMore, cancel, reschedule, refetch } = useAppointments(params);
+
+  // Reset page when filter changes
+  useEffect(() => { setPage(1); }, [statusFilter]);
 
   const appointments = useMemo(() => {
     const sorted = [...rawAppointments].sort((a, b) => {
@@ -151,8 +161,57 @@ export default function PatientDashboard() {
     }
   };
 
+  const handleAcceptReschedule = async (apptId) => {
+    try {
+      await acceptReschedule(apptId);
+      toast("Đã chấp nhận đổi lịch!", "success");
+      refetch();
+    } catch (e) {
+      toast(e.response?.data?.detail || "Thao tác thất bại", "error");
+    }
+  };
+
+  const handleDeclineReschedule = async (apptId) => {
+    try {
+      await declineReschedule(apptId);
+      toast("Đã từ chối yêu cầu đổi lịch", "info");
+      refetch();
+    } catch (e) {
+      toast(e.response?.data?.detail || "Thao tác thất bại", "error");
+    }
+  };
+
   const actions = (appt) => {
     const btns = [];
+    // Doctor requested reschedule → patient decides
+    if (appt.status === "RESCHEDULE_REQUESTED" && appt.reschedule_requested_by === "doctor") {
+      btns.push(
+        <button
+          key="accept-reschedule"
+          onClick={(e) => { e.stopPropagation(); handleAcceptReschedule(appt.id); }}
+          className="patient-dash__action-btn patient-dash__action-btn--payment btn-primary"
+        >
+          Chấp nhận đổi lịch
+        </button>
+      );
+      btns.push(
+        <button
+          key="decline-reschedule"
+          onClick={(e) => { e.stopPropagation(); handleDeclineReschedule(appt.id); }}
+          className="patient-dash__action-btn patient-dash__action-btn--cancel btn-danger"
+        >
+          Từ chối
+        </button>
+      );
+    }
+    // Patient's own pending reschedule request — show waiting state
+    if (appt.status === "RESCHEDULE_REQUESTED" && appt.reschedule_requested_by === "patient") {
+      btns.push(
+        <span key="waiting" className="patient-dash__action-btn patient-dash__action-btn--reschedule btn-secondary" style={{ opacity: 0.7, cursor: "default" }}>
+          Đang chờ bác sĩ duyệt…
+        </span>
+      );
+    }
     // Patients can only reschedule PENDING appointments (backend constraint)
     if (appt.status === "PENDING") {
       btns.push(
@@ -184,6 +243,17 @@ export default function PatientDashboard() {
         </button>
       );
     }
+    if (appt.status === "CONFIRMED") {
+      btns.push(
+        <button
+          key="reschedule-confirmed"
+          onClick={(e) => { e.stopPropagation(); setRescheduleTarget(appt); setNewSlot(null); }}
+          className="patient-dash__action-btn patient-dash__action-btn--reschedule btn-secondary"
+        >
+          Yêu cầu đổi lịch
+        </button>
+      );
+    }
     if (appt.status === "COMPLETED") {
       btns.push(
         <button
@@ -198,7 +268,7 @@ export default function PatientDashboard() {
     return btns;
   };
 
-  const upcoming = appointments.filter((a) => ["PENDING", "CONFIRMED", "RESCHEDULED"].includes(a.status));
+  const upcoming = appointments.filter((a) => ["PENDING", "CONFIRMED", "RESCHEDULED", "RESCHEDULE_REQUESTED"].includes(a.status));
   const filtered = appointments;
 
   const statRows = [
@@ -292,6 +362,27 @@ export default function PatientDashboard() {
         </div>
       )}
 
+      {/* Pagination */}
+      {!loading && filtered.length > 0 && (
+        <div className="patient-dash__pagination">
+          <button
+            className="btn-secondary patient-dash__page-btn"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            ← Trước
+          </button>
+          <span className="patient-dash__page-label">Trang {page}</span>
+          <button
+            className="btn-secondary patient-dash__page-btn"
+            onClick={() => setPage((p) => p + 1)}
+            disabled={!hasMore}
+          >
+            Tiếp →
+          </button>
+        </div>
+      )}
+
       {/* Reschedule modal */}
       <Modal
         open={!!rescheduleTarget}
@@ -299,7 +390,7 @@ export default function PatientDashboard() {
         title="Đổi lịch hẹn"
         size="lg"
       >
-        <SlotPicker doctorId={rescheduleTarget?.doctor?.id} onSelect={setNewSlot} />
+        <SlotPicker doctorId={rescheduleTarget?.doctor?.id} onSelect={setNewSlot} compact />
         <div className="patient-dash__reschedule-section">
           <Button variant="secondary" onClick={() => setRescheduleTarget(null)}>
             Hủy
@@ -466,7 +557,7 @@ export default function PatientDashboard() {
                 Hiện tại: <strong>{new Date(detailAppt.scheduled_at).toLocaleString()}</strong> với BS. {detailAppt.doctor?.user?.full_name}
               </p>
             </div>
-            <SlotPicker doctorId={detailAppt.doctor?.id} onSelect={setDetailSlot} />
+            <SlotPicker doctorId={detailAppt.doctor?.id} onSelect={setDetailSlot} compact />
             <div className="patient-dash__reschedule-section">
               <Button variant="secondary" onClick={() => { setDetailView("info"); setDetailSlot(null); }}>
                 Quay lại

@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.dependencies import CurrentUser, CurrentPatient, DBSession
-from app.models.appointment import Appointment, AppointmentStatus
+from app.models.appointment import Appointment, AppointmentStatus, RefundStatus
 from app.models.availability import Availability
 from app.models.doctor import Doctor
 from app.models.user import UserRole
@@ -28,6 +28,7 @@ from app.schemas.appointment import (
     AppointmentReschedule,
     AppointmentNoShowRequest,
     AppointmentCancelRequest,
+    AppointmentFollowUpCreate,
     AppointmentResponse,
     AppointmentListResponse,
     CheckinTokenResponse,
@@ -52,6 +53,9 @@ _LOAD = [
 
 # Token validity window (seconds)
 _CHECKIN_TOKEN_TTL = 3600  # 1 hour
+
+# Financial constants
+_PENALTY_RATE = 0.30  # 30% of deposit
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -128,11 +132,18 @@ async def _is_slot_available(db: AsyncSession, doctor_id: int, scheduled_at: dat
     if not windows or not any(w.start_time <= slot_time < w.end_time for w in windows):
         return False
 
+    now = datetime.now(timezone.utc)
     conflict = await db.execute(
-        select(Appointment.scheduled_at).where(
+        select(Appointment.id).where(
             Appointment.doctor_id == doctor_id,
             Appointment.scheduled_at == utc_dt.replace(second=0, microsecond=0),
             Appointment.status.notin_([AppointmentStatus.CANCELLED, AppointmentStatus.NOSHOW]),
+            # Exclude expired payment holds (PENDING with expired payment_expires_at)
+            ~(
+                (Appointment.status == AppointmentStatus.PENDING)
+                & (Appointment.payment_expires_at != None)  # noqa: E711
+                & (Appointment.payment_expires_at < now)
+            ),
         )
     )
     return conflict.scalar_one_or_none() is None
@@ -151,6 +162,7 @@ def _validate_status_transition(
             AppointmentStatus.CANCELLED,
             AppointmentStatus.RESCHEDULED,
             AppointmentStatus.NOSHOW,
+            AppointmentStatus.RESCHEDULE_REQUESTED,
         },
         AppointmentStatus.ARRIVED: {
             AppointmentStatus.COMPLETED,
@@ -158,6 +170,11 @@ def _validate_status_transition(
             AppointmentStatus.NOSHOW,
         },
         AppointmentStatus.RESCHEDULED: {AppointmentStatus.CONFIRMED, AppointmentStatus.CANCELLED},
+        AppointmentStatus.RESCHEDULE_REQUESTED: {
+            AppointmentStatus.CONFIRMED,
+            AppointmentStatus.CANCELLED,
+            AppointmentStatus.RESCHEDULED,
+        },
         AppointmentStatus.COMPLETED: set(),
         AppointmentStatus.CANCELLED: set(),
         AppointmentStatus.NOSHOW: set(),
@@ -203,6 +220,7 @@ async def _book(
     doctor_id: int,
     scheduled_at: datetime,
     reason: str | None,
+    follow_up_of: int | None = None,
 ) -> Appointment:
     await _get_active_doctor(db, doctor_id)
 
@@ -253,6 +271,7 @@ async def _book(
         end_at=scheduled_at + timedelta(minutes=slot_minutes),
         status=AppointmentStatus.PENDING,
         reason=reason,
+        follow_up_of=follow_up_of,
     )
     db.add(appt)
     try:
@@ -264,6 +283,45 @@ async def _book(
             detail="This slot is already booked (concurrent request). Please choose another time.",
         )
     return appt
+
+
+# ── Financial helpers ─────────────────────────────────────────────────────────
+
+def _calculate_cancellation_penalty(appt: Appointment) -> tuple[float, float]:
+    """Returns (penalty_amount, refund_amount) based on TASK.md rules."""
+    deposit = float(appt.deposit_amount or 0)
+    if deposit <= 0 or not appt.deposit_paid:
+        return 0.0, 0.0
+
+    hours_until = (appt.scheduled_at - datetime.now(timezone.utc)).total_seconds() / 3600
+
+    if hours_until >= 48:
+        # Early cancel: 30% fee, 70% refund
+        penalty = round(deposit * _PENALTY_RATE, 2)
+        refund = round(deposit - penalty, 2)
+    else:
+        # Late cancel: forfeit 100%
+        penalty = deposit
+        refund = 0.0
+
+    return penalty, refund
+
+
+def _calculate_reschedule_penalty(appt: Appointment, new_time: datetime) -> float:
+    """Returns penalty amount for rescheduling per TASK.md rules."""
+    deposit = float(appt.deposit_amount or 0)
+    if deposit <= 0 or not appt.deposit_paid:
+        return 0.0
+
+    count = (appt.reschedule_count or 0) + 1  # this will be the Nth reschedule
+    hours_until = (new_time - datetime.now(timezone.utc)).total_seconds() / 3600
+
+    if count == 1 and hours_until >= 48:
+        return 0.0  # 1st reschedule >48h: free
+    elif hours_until < 48:
+        return round(deposit * _PENALTY_RATE, 2)  # late reschedule: 30%
+    else:
+        return round(deposit * _PENALTY_RATE, 2)  # subsequent reschedule >48h: surcharge
 
 
 async def _reschedule(
@@ -309,15 +367,19 @@ async def _reschedule(
 
     slot_minutes = await _get_slot_duration(db, appointment.doctor_id, new_time)
 
-    # Financial penalty: if more than 1 reschedule and new time is < 48h away
+    # Financial penalty
+    penalty = _calculate_reschedule_penalty(appointment, new_time)
     appointment.reschedule_count = (appointment.reschedule_count or 0) + 1
-    hours_until = (new_time - datetime.now(timezone.utc)).total_seconds() / 3600
-    if appointment.reschedule_count > 1 and hours_until < 48:
+    if penalty > 0:
         appointment.reschedule_fee_applied = True
+        appointment.penalty_amount = (float(appointment.penalty_amount or 0)) + penalty
 
     appointment.scheduled_at = new_time
     appointment.end_at = new_time + timedelta(minutes=slot_minutes)
     appointment.status = AppointmentStatus.RESCHEDULED
+    appointment.proposed_new_time = None
+    appointment.reschedule_requested_by = None
+    appointment.status_before_reschedule_request = None
     await db.flush()
 
 
@@ -370,6 +432,25 @@ async def _auto_noshow_conflicts(
         await db.flush()
 
 
+# ── Encounter auto-creation helper ────────────────────────────────────────────
+
+async def _create_encounter_on_arrival(db: AsyncSession, appointment: Appointment) -> None:
+    """Create an Encounter record when a patient arrives."""
+    from app.models.encounter import Encounter
+    existing = await db.execute(
+        select(Encounter).where(Encounter.appointment_id == appointment.id)
+    )
+    if existing.scalar_one_or_none():
+        return
+    enc = Encounter(
+        appointment_id=appointment.id,
+        doctor_id=appointment.doctor_id,
+        patient_id=appointment.patient_id,
+    )
+    db.add(enc)
+    await db.flush()
+
+
 # ── Check-in token helpers ─────────────────────────────────────────────────────
 
 def _generate_checkin_token(appointment_id: int, secret: str) -> tuple[str, int]:
@@ -393,7 +474,7 @@ def _verify_checkin_token(token: str, secret: str) -> int:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Check-in token has expired")
 
     msg = f"{appt_id}:{expires_at}".encode()
-    expected_sig = hmac.new(secret.encode(), msg, hashlib.sha256).hexdigest()  # type: ignore[attr-defined]
+    expected_sig = hmac.new(secret.encode(), msg, hashlib.sha256).hexdigest()
     if not hmac.compare_digest(sig, expected_sig):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid check-in token")
 
@@ -525,6 +606,16 @@ async def update_appointment(
         appt.cancellation_reason = payload.cancellation_reason
     if new_status == AppointmentStatus.CONFIRMED:
         await _auto_noshow_conflicts(db, appt.doctor_id, appt.scheduled_at, appt.id)
+    if new_status == AppointmentStatus.ARRIVED:
+        await _create_encounter_on_arrival(db, appt)
+
+    # Follow-up tracking (on COMPLETED)
+    if new_status == AppointmentStatus.COMPLETED:
+        if payload.follow_up_recommended is not None:
+            appt.follow_up_recommended = payload.follow_up_recommended
+        if payload.follow_up_date is not None:
+            appt.follow_up_date = payload.follow_up_date
+
     await db.flush()
     await db.refresh(appt)
 
@@ -543,6 +634,14 @@ async def update_appointment(
             )
         )
     elif payload.status == AppointmentStatus.CANCELLED:
+        # Apply cancellation penalty
+        penalty, refund = _calculate_cancellation_penalty(appt)
+        if penalty > 0 or refund > 0:
+            appt.penalty_amount = penalty
+            appt.refund_amount = refund
+            appt.refund_status = RefundStatus.PENDING if refund > 0 else RefundStatus.NONE
+            await db.flush()
+
         asyncio.create_task(
             send_appointment_cancelled(
                 to_email=patient_email,
@@ -569,6 +668,13 @@ async def update_appointment(
             )
         )
     elif payload.status == AppointmentStatus.NOSHOW:
+        # No-show: forfeit 100% deposit
+        deposit = float(appt.deposit_amount or 0)
+        if deposit > 0 and appt.deposit_paid:
+            appt.penalty_amount = deposit
+            appt.refund_amount = 0
+            await db.flush()
+
         asyncio.create_task(
             send_noshow_recorded(
                 to_email=patient_email,
@@ -581,10 +687,12 @@ async def update_appointment(
     return appt
 
 
+# ── Reschedule negotiation ────────────────────────────────────────────────────
+
 @router.patch(
     "/{appointment_id}/reschedule",
     response_model=AppointmentResponse,
-    summary="Reschedule an appointment",
+    summary="Request or perform a reschedule",
 )
 async def reschedule_appointment(
     appointment_id: int,
@@ -606,26 +714,167 @@ async def reschedule_appointment(
             detail="Only PENDING or CONFIRMED appointments can be rescheduled",
         )
 
+    # Admin/receptionist: immediate reschedule (bypass negotiation)
+    if current_user.role in (UserRole.ADMIN, UserRole.RECEPTIONIST):
+        old_doctor_id = appt.doctor_id
+        await _reschedule(db=db, appointment=appt, new_time=payload.scheduled_at)
+        await _notify_waitlist(db, old_doctor_id)
+        await db.refresh(appt)
+        return appt
+
+    # Patient or doctor: initiate negotiation
     if current_user.role == UserRole.PATIENT:
         if appt.status != AppointmentStatus.PENDING:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Patients can only reschedule PENDING appointments (before doctor confirmation)",
-            )
-    elif current_user.role == UserRole.DOCTOR:
-        if appt.status != AppointmentStatus.CONFIRMED:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Doctors can only reschedule CONFIRMED appointments",
-            )
+            # For CONFIRMED appointments, patient must request (doctor must accept)
+            appt.status_before_reschedule_request = appt.status.value
+            appt.proposed_new_time = payload.scheduled_at
+            appt.reschedule_requested_by = "patient"
+            appt.status = AppointmentStatus.RESCHEDULE_REQUESTED
+            await db.flush()
+            await db.refresh(appt)
+            return appt
+        else:
+            # PENDING: patient can reschedule directly
+            old_doctor_id = appt.doctor_id
+            await _reschedule(db=db, appointment=appt, new_time=payload.scheduled_at)
+            await _notify_waitlist(db, old_doctor_id)
+            await db.refresh(appt)
+            return appt
 
-    # Notify waitlist — the original slot is being freed
+    if current_user.role == UserRole.DOCTOR:
+        if appt.status != AppointmentStatus.CONFIRMED:
+            raise HTTPException(status_code=403, detail="Doctors can only reschedule CONFIRMED appointments")
+        appt.status_before_reschedule_request = appt.status.value
+        appt.proposed_new_time = payload.scheduled_at
+        appt.reschedule_requested_by = "doctor"
+        appt.status = AppointmentStatus.RESCHEDULE_REQUESTED
+        await db.flush()
+        await db.refresh(appt)
+        return appt
+
+    raise HTTPException(status_code=403, detail="Not authorised to reschedule")
+
+
+@router.patch(
+    "/{appointment_id}/reschedule/accept",
+    response_model=AppointmentResponse,
+    summary="Accept a reschedule request (the other party)",
+)
+async def accept_reschedule(
+    appointment_id: int,
+    current_user: CurrentUser,
+    db: DBSession,
+) -> Appointment:
+    result = await db.execute(
+        select(Appointment).options(*_LOAD).where(Appointment.id == appointment_id)
+    )
+    appt = result.scalar_one_or_none()
+    if not appt:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    _assert_access(current_user, appt)
+
+    if appt.status != AppointmentStatus.RESCHEDULE_REQUESTED:
+        raise HTTPException(status_code=400, detail="No pending reschedule request")
+
+    if not appt.proposed_new_time:
+        raise HTTPException(status_code=400, detail="No proposed time found")
+
+    # Verify the OTHER party is accepting
+    if appt.reschedule_requested_by == "patient" and current_user.role == UserRole.PATIENT:
+        raise HTTPException(status_code=403, detail="You cannot accept your own reschedule request")
+    if appt.reschedule_requested_by == "doctor" and current_user.role == UserRole.DOCTOR:
+        raise HTTPException(status_code=403, detail="You cannot accept your own reschedule request")
+
     old_doctor_id = appt.doctor_id
-    await _reschedule(db=db, appointment=appt, new_time=payload.scheduled_at)
+    await _reschedule(db=db, appointment=appt, new_time=appt.proposed_new_time)
     await _notify_waitlist(db, old_doctor_id)
     await db.refresh(appt)
     return appt
 
+
+@router.patch(
+    "/{appointment_id}/reschedule/decline",
+    response_model=AppointmentResponse,
+    summary="Decline a reschedule request",
+)
+async def decline_reschedule(
+    appointment_id: int,
+    current_user: CurrentUser,
+    db: DBSession,
+) -> Appointment:
+    result = await db.execute(
+        select(Appointment).options(*_LOAD).where(Appointment.id == appointment_id)
+    )
+    appt = result.scalar_one_or_none()
+    if not appt:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    _assert_access(current_user, appt)
+
+    if appt.status != AppointmentStatus.RESCHEDULE_REQUESTED:
+        raise HTTPException(status_code=400, detail="No pending reschedule request")
+
+    # Revert to previous status
+    prev = appt.status_before_reschedule_request or AppointmentStatus.CONFIRMED.value
+    appt.status = AppointmentStatus(prev)
+    appt.proposed_new_time = None
+    appt.reschedule_requested_by = None
+    appt.status_before_reschedule_request = None
+    await db.flush()
+    await db.refresh(appt)
+    return appt
+
+
+# ── Follow-up booking ─────────────────────────────────────────────────────────
+
+@router.post(
+    "/{appointment_id}/follow-up",
+    response_model=AppointmentResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Book a follow-up appointment for a completed visit",
+)
+async def book_follow_up(
+    appointment_id: int,
+    payload: AppointmentFollowUpCreate,
+    current_user: CurrentPatient,
+    db: DBSession,
+) -> Appointment:
+    # Fetch parent appointment
+    result = await db.execute(
+        select(Appointment).options(*_LOAD).where(Appointment.id == appointment_id)
+    )
+    parent = result.scalar_one_or_none()
+    if not parent:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    if parent.patient_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not your appointment")
+    if parent.status != AppointmentStatus.COMPLETED:
+        raise HTTPException(status_code=400, detail="Follow-ups can only be booked for COMPLETED appointments")
+
+    appt = await _book(
+        db=db,
+        patient_id=current_user.id,
+        doctor_id=parent.doctor_id,
+        scheduled_at=payload.scheduled_at,
+        reason=payload.reason or f"Follow-up for appointment #{parent.id}",
+        follow_up_of=parent.id,
+    )
+    result = await db.execute(
+        select(Appointment).options(*_LOAD).where(Appointment.id == appt.id)
+    )
+    appt = result.scalar_one()
+    doctor_name = appt.doctor.user.full_name if appt.doctor and appt.doctor.user else "your doctor"
+    asyncio.create_task(
+        send_appointment_confirmation(
+            to_email=current_user.email,
+            patient_name=current_user.full_name,
+            scheduled_at=appt.scheduled_at.isoformat(),
+            doctor_name=doctor_name,
+        )
+    )
+    return appt
+
+
+# ── Arrive / Check-in / No-show ──────────────────────────────────────────────
 
 @router.patch(
     "/{appointment_id}/arrive",
@@ -657,6 +906,7 @@ async def mark_arrived(
         )
 
     appt.status = AppointmentStatus.ARRIVED
+    await _create_encounter_on_arrival(db, appt)
     await db.flush()
     await db.refresh(appt)
     return appt
@@ -695,6 +945,12 @@ async def mark_noshow(
     appt.status = AppointmentStatus.NOSHOW
     if payload.cancellation_reason:
         appt.cancellation_reason = payload.cancellation_reason
+
+    # No-show: forfeit 100% deposit
+    deposit = float(appt.deposit_amount or 0)
+    if deposit > 0 and appt.deposit_paid:
+        appt.penalty_amount = deposit
+        appt.refund_amount = 0
 
     await db.flush()
     await db.refresh(appt)
@@ -781,6 +1037,7 @@ async def checkin_appointment(
         )
 
     appt.status = AppointmentStatus.ARRIVED
+    await _create_encounter_on_arrival(db, appt)
     await db.flush()
     await db.refresh(appt)
     return appt
@@ -821,6 +1078,14 @@ async def cancel_appointment(
     appt.status = AppointmentStatus.CANCELLED
     if payload.cancellation_reason:
         appt.cancellation_reason = payload.cancellation_reason
+
+    # Apply cancellation penalty
+    penalty, refund = _calculate_cancellation_penalty(appt)
+    if penalty > 0 or refund > 0:
+        appt.penalty_amount = penalty
+        appt.refund_amount = refund
+        appt.refund_status = RefundStatus.PENDING if refund > 0 else RefundStatus.NONE
+
     await db.flush()
     await db.refresh(appt)
 

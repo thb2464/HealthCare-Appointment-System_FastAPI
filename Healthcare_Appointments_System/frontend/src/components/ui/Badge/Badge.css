@@ -9,15 +9,16 @@
   flex-shrink: 0;
 }
 
-/* Per-status dot colours (replaces STATUS_DOTS Tailwind strings) */
-.badge-dot--pending      { background-color: rgb(251 191 36);  }  /* amber-400  */
-.badge-dot--confirmed    { background-color: rgb(52  211 153); }  /* teal-400   */
-.badge-dot--arrived      { background-color: rgb(167 139 250); }  /* violet-400 */
-.badge-dot--completed    { background-color: rgb(74  222 128); }  /* green-400  */
-.badge-dot--cancelled    { background-color: rgb(248 113 113); }  /* red-400    */
-.badge-dot--rescheduled  { background-color: rgb(96  165 250); }  /* blue-400   */
-.badge-dot--noshow       { background-color: rgb(251 146 60);  }  /* orange-400 */
+/* Per-status dot colours (darker for readability on white) */
+.badge-dot--pending      { background-color: #d97706; }  /* amber-600  */
+.badge-dot--confirmed    { background-color: #059669; }  /* emerald-600 */
+.badge-dot--arrived      { background-color: #7c3aed; }  /* violet-600 */
+.badge-dot--completed    { background-color: #16a34a; }  /* green-600  */
+.badge-dot--cancelled    { background-color: #dc2626; }  /* red-600    */
+.badge-dot--rescheduled  { background-color: #2563eb; }  /* blue-600   */
+.badge-dot--noshow       { background-color: #ea580c; }  /* orange-600 */
+.badge-dot--reschedule-requested { background-color: #ca8a04; } /* yellow-600 */
 
 /* Fallback — unknown/unrecognised status */
 .badge--unknown     { @apply badge bg-slate-700 text-slate-300; }
-.badge-dot--unknown { background-color: rgb(148 163 184); }       /* slate-400  */
+.badge-dot--unknown { background-color: #94a3b8; }       /* slate-400  */

@@ -53,12 +53,14 @@ async def send_appointment_confirmation(
     to_email: str, patient_name: str, scheduled_at: str, doctor_name: str
 ) -> None:
     await _send(
-        subject="Appointment Confirmed",
+        subject="Appointment Booking Received",
         recipients=[to_email],
         body=(
             f"Dear {patient_name},\n\n"
-            f"Your appointment with Dr. {doctor_name} has been booked for {scheduled_at} (UTC).\n\n"
-            "Please arrive on time. You can reschedule or cancel via your patient dashboard.\n\n"
+            f"Your appointment with Dr. {doctor_name} has been booked for {scheduled_at} (UTC) "
+            "and is pending confirmation.\n\n"
+            "You will receive another notification once the doctor confirms your appointment. "
+            "You can reschedule or cancel via your patient dashboard.\n\n"
             "— MediCare Team"
         ),
     )
@@ -74,21 +76,6 @@ async def send_appointment_confirmed_by_doctor(
             f"Dear {patient_name},\n\n"
             f"Dr. {doctor_name} has confirmed your appointment on {scheduled_at} (UTC).\n\n"
             "We look forward to seeing you!\n\n"
-            "— MediCare Team"
-        ),
-    )
-
-
-async def send_appointment_reminder(
-    to_email: str, patient_name: str, scheduled_at: str, doctor_name: str
-) -> None:
-    await _send(
-        subject="Appointment Reminder",
-        recipients=[to_email],
-        body=(
-            f"Dear {patient_name},\n\n"
-            f"This is a reminder that your appointment with Dr. {doctor_name} "
-            f"is scheduled for {scheduled_at} (UTC+7).\n\n"
             "— MediCare Team"
         ),
     )

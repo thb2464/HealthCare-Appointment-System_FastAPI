@@ -2,23 +2,25 @@ import React from "react";
 import "./Badge.css";
 
 const STATUS_MAP = {
-  pending:     "badge-pending",
-  confirmed:   "badge-confirmed",
-  arrived:     "badge-arrived",
-  completed:   "badge-completed",
-  cancelled:   "badge-cancelled",
-  rescheduled: "badge-rescheduled",
-  noshow:      "badge-noshow",
+  pending:                "badge-pending",
+  confirmed:              "badge-confirmed",
+  arrived:                "badge-arrived",
+  completed:              "badge-completed",
+  cancelled:              "badge-cancelled",
+  rescheduled:            "badge-rescheduled",
+  noshow:                 "badge-noshow",
+  reschedule_requested:   "badge-reschedule-requested",
 };
 
 const STATUS_DOT_MAP = {
-  pending:     "badge-dot--pending",
-  confirmed:   "badge-dot--confirmed",
-  arrived:     "badge-dot--arrived",
-  completed:   "badge-dot--completed",
-  cancelled:   "badge-dot--cancelled",
-  rescheduled: "badge-dot--rescheduled",
-  noshow:      "badge-dot--noshow",
+  pending:                "badge-dot--pending",
+  confirmed:              "badge-dot--confirmed",
+  arrived:                "badge-dot--arrived",
+  completed:              "badge-dot--completed",
+  cancelled:              "badge-dot--cancelled",
+  rescheduled:            "badge-dot--rescheduled",
+  noshow:                 "badge-dot--noshow",
+  reschedule_requested:   "badge-dot--reschedule-requested",
 };
 
 export default function Badge({ status, children, className = "" }) {
