@@ -52,12 +52,12 @@ _LOAD = [
 ]
 
 # Token validity window (seconds)
-_CHECKIN_TOKEN_TTL = 3600  # 1 hour
+_CHECKIN_TOKEN_TTL = 3600  
 
 # Financial constants
-_PENALTY_RATE = 0.30  # 30% of deposit
+_PENALTY_RATE = 0.30  
 
-# Vietnam timezone (UTC+7) — availability times are entered in local time
+
 _VN_TZ = timezone(timedelta(hours=7))
 
 
