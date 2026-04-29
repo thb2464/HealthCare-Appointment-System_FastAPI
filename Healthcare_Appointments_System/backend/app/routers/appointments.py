@@ -57,10 +57,13 @@ _CHECKIN_TOKEN_TTL = 3600  # 1 hour
 # Financial constants
 _PENALTY_RATE = 0.30  # 30% of deposit
 
+# Vietnam timezone (UTC+7) — availability times are entered in local time
+_VN_TZ = timezone(timedelta(hours=7))
 
-# ══════════════════════════════════════════════════════════════════════════════
+
+
 # Booking helpers
-# ══════════════════════════════════════════════════════════════════════════════
+
 
 def _slot_lock_key(doctor_id: int, scheduled_at: datetime) -> int:
     """Stable 64-bit integer for pg_try_advisory_xact_lock."""
@@ -101,8 +104,10 @@ async def _get_active_doctor(db: AsyncSession, doctor_id: int) -> Doctor:
 
 
 async def _get_slot_duration(db: AsyncSession, doctor_id: int, scheduled_at: datetime) -> int:
-    slot_time = scheduled_at.astimezone(timezone.utc).time().replace(second=0, microsecond=0)
-    weekday = scheduled_at.astimezone(timezone.utc).weekday()
+    # Availability windows are in Vietnam local time, so convert to VN for comparison
+    vn_dt = scheduled_at.astimezone(_VN_TZ)
+    slot_time = vn_dt.time().replace(second=0, microsecond=0)
+    weekday = vn_dt.weekday()
     result = await db.execute(
         select(Availability).where(
             Availability.doctor_id == doctor_id,
@@ -118,8 +123,10 @@ async def _get_slot_duration(db: AsyncSession, doctor_id: int, scheduled_at: dat
 
 async def _is_slot_available(db: AsyncSession, doctor_id: int, scheduled_at: datetime) -> bool:
     utc_dt = scheduled_at.astimezone(timezone.utc)
-    slot_time = utc_dt.time().replace(second=0, microsecond=0)
-    weekday = utc_dt.weekday()
+    # Availability windows are in Vietnam local time, so convert for comparison
+    vn_dt = utc_dt.astimezone(_VN_TZ)
+    slot_time = vn_dt.time().replace(second=0, microsecond=0)
+    weekday = vn_dt.weekday()
 
     result = await db.execute(
         select(Availability).where(

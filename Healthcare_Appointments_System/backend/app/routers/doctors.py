@@ -33,6 +33,9 @@ from app.schemas import MessageResponse
 router = APIRouter(prefix="/api/doctors", tags=["Doctors"])
 specialty_router = APIRouter(prefix="/api/specialties", tags=["Specialties"])
 
+# Vietnam timezone (UTC+7) — availability times are entered in local time
+_VN_TZ = timezone(timedelta(hours=7))
+
 
 
 # Availability helpers (inlined from AvailabilityService)
@@ -50,21 +53,27 @@ async def _get_windows(db: AsyncSession, doctor_id: int, weekday: int) -> list[A
 
 
 def _expand_windows(windows: list[Availability], target_date: date) -> list[datetime]:
-    """Expand availability windows into individual slot datetimes (UTC)."""
+    """Expand availability windows into individual slot datetimes (UTC).
+
+    Availability times are stored as local Vietnam time (UTC+7), so we
+    combine them with the VN timezone first, then convert to UTC for storage
+    and comparison with booked appointments.
+    """
     slots: list[datetime] = []
     for w in windows:
-        current = datetime.combine(target_date, w.start_time, tzinfo=timezone.utc)
-        end = datetime.combine(target_date, w.end_time, tzinfo=timezone.utc)
+        current = datetime.combine(target_date, w.start_time, tzinfo=_VN_TZ)
+        end = datetime.combine(target_date, w.end_time, tzinfo=_VN_TZ)
         delta = timedelta(minutes=w.slot_duration_minutes)
         while current + delta <= end:
-            slots.append(current)
+            slots.append(current.astimezone(timezone.utc))
             current += delta
     return sorted(set(slots))
 
 
 async def _get_booked_slots(db: AsyncSession, doctor_id: int, target_date: date) -> set[datetime]:
-    day_start = datetime.combine(target_date, time.min, tzinfo=timezone.utc)
-    day_end   = datetime.combine(target_date, time.max, tzinfo=timezone.utc)
+    # target_date is a Vietnam local date; convert to UTC range
+    day_start = datetime.combine(target_date, time.min, tzinfo=_VN_TZ).astimezone(timezone.utc)
+    day_end   = datetime.combine(target_date, time.max, tzinfo=_VN_TZ).astimezone(timezone.utc)
     result = await db.execute(
         select(Appointment.scheduled_at).where(
             Appointment.doctor_id == doctor_id,
@@ -91,11 +100,13 @@ async def is_slot_available(
     *, db: AsyncSession, doctor_id: int, scheduled_at: datetime
 ) -> bool:
     utc_dt = scheduled_at.astimezone(timezone.utc)
-    slot_time = utc_dt.time().replace(second=0, microsecond=0)
-    windows = await _get_windows(db, doctor_id, utc_dt.weekday())
+    # Compare against availability windows using Vietnam local time
+    vn_dt = utc_dt.astimezone(_VN_TZ)
+    slot_time = vn_dt.time().replace(second=0, microsecond=0)
+    windows = await _get_windows(db, doctor_id, vn_dt.weekday())
     if not windows or not any(w.start_time <= slot_time < w.end_time for w in windows):
         return False
-    booked = await _get_booked_slots(db, doctor_id, utc_dt.date())
+    booked = await _get_booked_slots(db, doctor_id, vn_dt.date())
     return utc_dt.replace(second=0, microsecond=0) not in booked
 
 
