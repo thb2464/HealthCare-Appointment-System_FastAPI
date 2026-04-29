@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     # ── Database ───────────────────────────────────────────────────────────
     DATABASE_URL: str = (
-        "postgresql+asyncpg://postgres:password@localhost:5432/healthcare_db"
+        "postgresql+asyncpg://postgres:password@localhost:5433/healthcare_db"
     )
 
     # ── JWT ────────────────────────────────────────────────────────────────

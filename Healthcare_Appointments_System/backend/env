@@ -5,12 +5,12 @@
 
 # ── Database ──────────────────────────────────────────────────────────────────
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=12345
+POSTGRES_PASSWORD=421842004
 POSTGRES_DB=healthcare_db
 
 # Full async URL used by SQLAlchemy / Alembic
 # (docker-compose sets this automatically; override for local dev)
-DATABASE_URL=postgresql+asyncpg://postgres:12345@localhost:5432/healthcare_db
+DATABASE_URL=postgresql+asyncpg://postgres:421842004@localhost:5433/healthcare_db
 
 # ── JWT ───────────────────────────────────────────────────────────────────────
 SECRET_KEY=randomthingsthatshouldberandomandsecure
