@@ -139,7 +139,7 @@
 }
 
 .doctor-dash__sort-select {
-  width: auto;
+  width: 70%;
   padding-top: 0.375rem;
   padding-bottom: 0.375rem;
   font-size: 0.8125rem;
@@ -150,6 +150,7 @@
    ---------------------------------------------------------- */
 .doctor-dash__view-toggle {
   display: flex;
+  width: 2.5rem;
   border-radius: 0.75rem;
   overflow: hidden;
 }

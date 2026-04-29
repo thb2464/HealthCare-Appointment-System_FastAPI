@@ -1,7 +1,7 @@
 """
 Doctors router — public search, profile management, specialties, availability.
 
-Availability logic (formerly AvailabilityService) is co-located here in the monolith.
+Availability logic is co-located here in the monolith.
 """
 from __future__ import annotations
 
@@ -34,9 +34,9 @@ router = APIRouter(prefix="/api/doctors", tags=["Doctors"])
 specialty_router = APIRouter(prefix="/api/specialties", tags=["Specialties"])
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # Availability helpers (inlined from AvailabilityService)
-# ══════════════════════════════════════════════════════════════════════════════
+
 
 async def _get_windows(db: AsyncSession, doctor_id: int, weekday: int) -> list[Availability]:
     result = await db.execute(
@@ -99,9 +99,9 @@ async def is_slot_available(
     return utc_dt.replace(second=0, microsecond=0) not in booked
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # SPECIALTIES
-# ══════════════════════════════════════════════════════════════════════════════
+
 
 @specialty_router.get(
     "",
@@ -177,9 +177,9 @@ async def delete_specialty(
     return MessageResponse(message="Specialty deleted")
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # DOCTORS — public search & profile
-# ══════════════════════════════════════════════════════════════════════════════
+
 
 @router.get(
     "",
@@ -272,9 +272,9 @@ async def get_doctor(doctor_id: int, db: DBSession) -> Doctor:
     return doctor
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # AVAILABILITY
-# ══════════════════════════════════════════════════════════════════════════════
+
 
 @router.get(
     "/{doctor_id}/slots",
